@@ -55,18 +55,24 @@ def count_det(a,me,i):
  if abs(not_one)==1:
   strange_det += 1
 
-def det_4_ways(a):
+def det_4_ways(a0):
  way=0
+ # 'linbox' is the 4th way, disqualified for providing no sure way
  for m in 'padic','ntl','pari': 
-  # 'linbox' is the 4th way, disqualified for providing no sure way
+  # no way to clear cache, so make copy and then delete it
+  a=sage.all.copy(a0)
   count_det(a,m,way)
+  del a
   way += 1
 
 def solve_right(a,way):
  global t1,tx,strange_det
  t0=time.time()
  for x in range(dim):
-  one=a.solve_right( I[x] ).denominator()
+  try:
+   one=a.solve_right( I[x] ).denominator()
+  except:
+   one=0
   if abs(one) != 1:
    t1[way] += time.time()-t0
    print 'bad determinant, solve_right' % me
@@ -78,7 +84,10 @@ def solve_right(a,way):
  b[0,0] += 1
  t0=time.time()
  for x in range(dim):
-  not_one=b.solve_right( I[x] ).denominator()
+  try:
+   not_one=b.solve_right( I[x] ).denominator()
+  except:
+   not_one=0
   if not_one != 1:
    tx[way] += time.time()-t0
    break
