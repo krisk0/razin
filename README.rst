@@ -40,7 +40,7 @@ Glossary
     C++ numerical/matrice library with gluttonous bigint constructor but clever algorithms. `Here
     <http://shoup.net/ntl/>`_
 
-:Captain J. Flint: 
+:Captain J Flint: 
     fictional Caribbean adventurer (who said pirate?)
 
 :Stepan Razin: 
