@@ -36,8 +36,7 @@ Glossary
     C numerical/matrice library with save-every-penny approch to arithmetic. `Here <http://www.flintlib.org/>`_
 
 :NTL:
-    C++ numerical/matrice library with gluttonous bigint constructor but clever algorithms. `Here
-    <http://shoup.net/ntl/>`_
+    C++ numerical/matrice library with gluttonous bigint constructor. `Here <http://shoup.net/ntl/>`_
 
 :Captain Flint: 
     fictional Caribbean adventurer (who said pirate?)
