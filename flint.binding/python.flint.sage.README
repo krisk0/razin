@@ -1,0 +1,36 @@
+Installation
+============
+
+With portage package manager: 
+ put python-sage-flint-20140310.ebuild into /your/private/overlay/dev-python/python-sage-flint
+ 
+ move 20140310.zip to /distfiles/razin-20140310.zip
+ 
+ # ebuild /your/private/o.../python-sage-flint-20140310.ebuild manifest
+ 
+ # emerge dev-python/python-sage-flint
+ 
+ 
+Without portage:
+ # python2 ./setup.py install
+ 
+ if sage include not found, read comments in setup.py, then
+ 
+ # MY_SAGE_IS_HERE=... EPREFIX=... python2 ./setup.py install
+
+
+Two files should be installed: flint_sage.so and FLINT_...egg-info
+
+
+Test/demo
+=========
+
+# ./try_flint.py should say 'test passed'
+
+Note that constructor has two forms
+
+FAQ
+===
+
+Q1. Why sage library is required?
+A1. Because mpz_t number need to be converted to/from a Python int, and plain Python does not support this. Therefore some Python wrapper for GMP library like gmpy, pycddlib or sage required.

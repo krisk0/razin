@@ -1,0 +1,11 @@
+flint.binding/        Python binding for small piece of FLINT library, requires
+                       sage
+
+unimodular.5way.py    Benchmark 5 ways of checking a 100x100 matrice for 
+                       unimodularity
+unimodular.4way.py    unimodular.5way.py reduced to not use FLINT
+unimodular.5way.cout  Benchmark results for my desksop, with CPU specs as known 
+                       to uname. Re-running the program gives slightly different
+                       result
+
+A_by_B_mod_P.hacks/   Secret voodoo to calculate a*b mod p for small p on amd64 and GPU, public domain

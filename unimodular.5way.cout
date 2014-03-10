@@ -1,0 +1,10 @@
+            U      warped U
+------- --------- ---------
+   Sage  2.13e+02  2.00e+02
+    NTL  6.13e-05  3.05e+01
+   pari  5.32e-05  4.50e+01
+  FLINT  2.29e+01  2.30e+01
+solve_r  1.23e+03  7.39e+00
+
+uname -p says
+Intel(R) Core(TM) i5-2500K CPU @ 3.30GHz
