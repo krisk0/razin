@@ -43,6 +43,6 @@ Glossary
 :Stepan Razin: 
     16xx-1671, kozak, rebel leader (who said bandit?)
 
-:Captain J Flint: 
+:J Flint: 
     fictional Caribbean adventurer (who said pirate?)
 
