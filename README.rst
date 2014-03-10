@@ -40,9 +40,8 @@ Glossary
     C++ numerical/matrice library with gluttonous bigint constructor but clever algorithms. `Here
     <http://shoup.net/ntl/>`_
 
-:Stepan Razin: 
-    16xx-1671, kozak, rebel leader (who said bandit?)
-
-:J Flint: 
+:Captain Flint: 
     fictional Caribbean adventurer (who said pirate?)
 
+:Stepan Razin: 
+    16??-1671, kozak, rebel leader (who said gangster?)
