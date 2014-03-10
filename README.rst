@@ -2,11 +2,11 @@ RAZIN - Rigorous algebraic zero impeding numeration
 =====
 
 For now, nothing big except
+ 
  a) Python binding to FLINT integer matrice;
  b) Unimodularity test benchmarks::
  
              U      warped U
- ------- --------- ---------
     Sage  2.13e+02  2.00e+02
      NTL  6.13e-05  3.05e+01
     pari  5.32e-05  4.50e+01
@@ -32,11 +32,10 @@ Quick integer linear algebra subroutines based on FLINT will be here s0oner or l
 Glossary
 ========
 :FLINT:
-    C numerical/matrice library with save-every-penny approch to arithmetic
-    .. _link: http://www.flintlib.org/
+    C numerical/matrice library with save-every-penny approch to arithmetic. `Here <http://www.flintlib.org/>`_
 :NTL:
-    C++ numerical/matrice library with gluttonous bigint constructor but clever algorithms.
-    .. _link: http://shoup.net/ntl/
+    C++ numerical/matrice library with gluttonous bigint constructor but clever algorithms. `Here
+    <http://shoup.net/ntl/>`_
 :Captain J. Flint: 
     fictional Caribbean adventurer (who said pirate?)
 :Stepan Razin: 
