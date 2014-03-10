@@ -7,20 +7,19 @@ For now, nothing big except
  b) Unimodularity test benchmarks::
  
                               U      warped U
-                     Sage  2.13e+02  2.00e+02
-                      NTL  6.13e-05  3.05e+01
-                     pari  5.32e-05  4.50e+01
-                    FLINT  2.29e+01  2.30e+01
-                  solve_r  1.23e+03  7.39e+00
+                  ------- --------- ---------
+                     Sage  2.14e+02  1.98e+02
+                      NTL  3.01e+01  2.98e+01
+                     pari  4.51e+01  4.01e+01
+                    FLINT  2.26e+01  2.27e+01
+                  solve_r  1.23e+03  7.34e+00
 
 Benchmark result verdict: 
 
-1) if matrice is unimodular, use PARI/GP or NTL (Sage native subroutine 4 million times slower than method='pari').
-2) if matrice is warped unimodular, FLINT is slightly faster (32% faster than NTL).
+1) if matrice is unimodular, use FLINT (NTL on 2nd place, 33% slower).
+2) if matrice is warped unimodular, solve_right quickly discovers it.
 
-Yes, Python is slower than C, but not 4000000 times! Could it be that NTL and PARI/GP determinant calculation is broken? Any example?
-
-My e-mail address is at the bottom of "Hello world" page of my `blog <http://tiny.cc/DKryskov>`_.
+FLINT counts determinant faster than others!
 
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^

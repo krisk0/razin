@@ -1,10 +1,10 @@
             U      warped U
 ------- --------- ---------
-   Sage  2.13e+02  2.00e+02
-    NTL  6.13e-05  3.05e+01
-   pari  5.32e-05  4.50e+01
-  FLINT  2.29e+01  2.30e+01
-solve_r  1.23e+03  7.39e+00
+   Sage  2.14e+02  1.98e+02
+    NTL  3.01e+01  2.98e+01
+   pari  4.51e+01  4.01e+01
+  FLINT  2.26e+01  2.27e+01
+solve_r  1.23e+03  7.34e+00
 
 uname -p says
 Intel(R) Core(TM) i5-2500K CPU @ 3.30GHz
@@ -29,4 +29,4 @@ Table entries:
 Time includes only determinant or right_solve calculation, but not module import or transformation from Sage to FLINT
 
 Last line: solve_right benchmarks.
-Other lines: determinant calculation benchmarks. All praise the winner: NTL.
+Other lines: determinant calculation benchmarks. All praise the winner: FLINT.
