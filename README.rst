@@ -13,12 +13,12 @@ For now, nothing big except
                     FLINT  2.29e+01  2.30e+01
                   solve_r  1.23e+03  7.39e+00
 
-Benchmark explained: 
+Benchmark result verdict: 
 
-1) if matrice is unimodular, use PARI/GP or NTL (Sage native subroutine 4 million times slower).
+1) if matrice is unimodular, use PARI/GP or NTL (Sage native subroutine 4 million times slower than method='pari').
 2) if matrice is warped unimodular, FLINT is slightly faster (32% faster than NTL).
 
-Yes, Python is slower than C, but not 4e6 times! Could it be that NTL and PARI/GP determinant calculation is broken? Any example?
+Yes, Python is slower than C, but not 4000000 times! Could it be that NTL and PARI/GP determinant calculation is broken? Any example?
 
 My e-mail address is at the bottom of "Hello world" page of my `blog <http://tiny.cc/DKryskov>`_.
 
