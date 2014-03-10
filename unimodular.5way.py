@@ -59,7 +59,6 @@ def det_4_ways(a):
  way=0
  # 'linbox' is the 4th way, disqualified for providing no sure way
  for m in 'padic','ntl','pari': 
-  # no way to clear cache, so make copy and then delete it
   count_det(a,m,way)
   a._clear_cache()
   way += 1
