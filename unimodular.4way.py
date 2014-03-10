@@ -46,13 +46,17 @@ def det_4_ways(a):
  way=0
  for m in 'padic','ntl','pari':  
   count_det(a,m,way)
+  a._clear_cache()
   way += 1
 
 def solve_right(a,way):
  global t1,tx,strange_det
  t0=time.time()
  for x in range(dim):
-  one=a.solve_right( I[x] ).denominator()
+  try:
+   one=a.solve_right( I[x] ).denominator()
+  except:
+   one=0
   if abs(one) != 1:
    t1[way] += time.time()-t0
    print 'bad determinant, solve_right' % me
@@ -64,7 +68,10 @@ def solve_right(a,way):
  b[0,0] += 1
  t0=time.time()
  for x in range(dim):
-  not_one=b.solve_right( I[x] ).denominator()
+  try:
+   not_one=a.solve_right( I[x] ).denominator()
+  except:
+   not_one=0
   if not_one != 1:
    tx[way] += time.time()-t0
    break

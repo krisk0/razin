@@ -55,14 +55,13 @@ def count_det(a,me,i):
  if abs(not_one)==1:
   strange_det += 1
 
-def det_4_ways(a0):
+def det_4_ways(a):
  way=0
  # 'linbox' is the 4th way, disqualified for providing no sure way
  for m in 'padic','ntl','pari': 
   # no way to clear cache, so make copy and then delete it
-  a=sage.all.copy(a0)
   count_det(a,m,way)
-  del a
+  a._clear_cache()
   way += 1
 
 def solve_right(a,way):
