@@ -4,7 +4,9 @@ RAZIN - Rigorous algebraic zero impeding numeration
 For now, nothing big except
  
  a) Python binding to FLINT integer matrice;
- b) Unimodularity test benchmarks::
+ b) Unimodularity test benchmarks. 
+ 
+5 algorithms testing big matrice for unimodularity were benchmarked, results in the table below::
  
                               U      warped U
                   ------- --------- ---------
@@ -17,7 +19,7 @@ For now, nothing big except
 Benchmark result verdict: 
 
 1) if matrice is unimodular, use FLINT (NTL on 2nd place, 33% slower).
-2) if matrice is warped unimodular, solve_right quickly discovers it.
+2) if matrice is warped unimodular, solve_right() quickly discovers it.
 
 FLINT counts determinant faster than others!
 
