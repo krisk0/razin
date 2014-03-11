@@ -1,0 +1,6 @@
+10 Mar 2014  Fixed bugs in unimodular.{4,5}way.py, which resulted in
+              incorrect test results or abnormal termination
+
+             Fredrik Johansson, thanks for help. 
+             
+             The secret method _clean_cache() is really hard to find.
