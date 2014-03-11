@@ -19,7 +19,7 @@ Without portage:
  # MY_SAGE_IS_HERE=... EPREFIX=... python2 ./setup.py install
 
 
-Two files should be installed: flint_sage.so and FLINT_...egg-info
+Two files should be installed: flint_sage.so and FLINT_...egg-info. With portage, documentation (this file) will be installed, too.
 
 
 Test/demo
@@ -27,7 +27,7 @@ Test/demo
 
 # ./try_flint.py should say 'test passed'
 
-Note that constructor has two forms
+Note that constructor has two forms.
 
 FAQ
 ===
