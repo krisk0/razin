@@ -5,7 +5,7 @@ For now, nothing big except
  
  a) Python binding to FLINT integer matrice;
  b) Unimodularity test benchmarks. FLINT fastest, NTL on 2nd place
- c) Solve_right benchmarks. FLINT slower than Sage, probably because Sage uses Dixon lifing
+ c) Solve_right() benchmarks. FLINT slower than Sage, probably because Sage uses Dixon lifing
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
