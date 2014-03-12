@@ -8,3 +8,7 @@
 20140312-r0 flint.pyx, class fmpz_mat:
              wrapped fmpz_mat_solve() as solve_right(); 
              added __richcmp__()
+            
+            benchmark_solve_right.py: benchmarked solve_right() in flint_sage and Sage
+            
+            Anybody feels like implementing a good interface to Dixon method?
