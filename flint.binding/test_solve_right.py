@@ -8,15 +8,8 @@ import sage.all
 import flint_sage as flint
 import sys
 
-dim=5
+dim=100
 ZZ=sage.all.ZZ
-
-def straighten( xx ):
- r=[]
- for i in xx:
-  for j in i:
-   r.append(j)
- return r
 
 def random_matrice():
  a=sage.all.random_matrix(ZZ, dim, x=-100, y = 100)
@@ -49,7 +42,8 @@ def test_with(m, precook):
   print 'd=%d' % d
   print 'd=%Xd' % Xd
   sys.exit(1)
- sys.stdout.write('+')
+ #sys.stdout.write('+')
+ sys.stdout.write( ' %s' % d )
 
 a=sage.all.matrix( 2, [5, 5, 7, 8] )
 test_with( a, 0 ),test_with( a, 1 )
@@ -59,5 +53,6 @@ for i in range(10):
  a=random_matrice()
  # test both forms of call
  test_with( a, 0 ),test_with( a, 1 )
+ print
 
 print '\ntest passed'
