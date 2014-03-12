@@ -5,3 +5,11 @@
              
             Test the new functions by implementing a fragment of Stein
              double-determinant algorithm. When test passes, benchmark.
+
+12 Mar 2014 We don't want slow procedure when faster is available
+            
+            Before proceeding to nmod_mat_rref, implement a wrapper to 
+             fmpq_mat_solve_dixon(). And benchmark
+
+            fmpq_mat constructor    fmpq_mat_solve_dixon()
+            convert fmpq_mat to Sage equivalent
