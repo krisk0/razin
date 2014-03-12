@@ -24,7 +24,7 @@ def test_with(m, precook):
  else:
   iF=i
  try:
-  s=m.solve_right(i)
+  s=m.solve_right(i)    # yep, this line works twice for every matrice
  except:
   Xd,d=mF.solve_right(iF)
   assert d==0
