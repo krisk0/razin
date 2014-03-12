@@ -4,3 +4,7 @@
              Fredrik Johansson, thanks for help. 
              
              The secret method _clean_cache() is really hard to find.
+
+20140312-r0 flint.pyx, class fmpz_mat:
+             wrapped fmpz_mat_solve() as solve_right(); 
+             added __richcmp__()
