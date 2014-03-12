@@ -3,3 +3,4 @@ dim=  50    flint: 1.5841e-01     sage: 5.8325e-01    ratio: 3.6819
 dim= 100    flint: 2.0901e+00     sage: 3.8771e+00    ratio: 1.8550
 dim= 200    flint: 4.4848e+01     sage: 3.9009e+01    ratio: 0.8698
 dim= 250    flint: 1.2414e+02     sage: 9.0217e+01    ratio: 0.7267
+dim= 500    flint: 2.7790e+03     sage: 1.0628e+03    ratio: 0.3824
