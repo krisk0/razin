@@ -12,7 +12,9 @@ unimodular.5way.cout  Benchmark results for my desksop, with CPU specs as known
 
 A_by_B_mod_P.hacks/   Secret voodoo to calculate a*b mod p for small p on amd64 and GPU, public domain
 
-Changelog             History of bugs fixes and additions
-To.do                 Plan of changes
+Changelog               History of bugs fixes and additions
+To.do                     Plan of changes
 
-ebuild/               Useful ebuild scripts
+ebuild/                   Useful ebuild scripts
+
+benchmark_solve_right.*   benchmark solve_right() subroutine: script and result
