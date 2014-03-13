@@ -16,6 +16,8 @@
 # Maybe To.do file will give a clue, on what and why I am doing
 
 from sage.rings.integer cimport Integer
+from sage.rings.rational cimport Rational
+
 from sage.matrix.matrix_integer_dense cimport Matrix_integer_dense
 
 include "sage/libs/ntl/decl.pxi"
