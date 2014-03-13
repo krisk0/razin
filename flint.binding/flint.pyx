@@ -37,6 +37,7 @@ cdef extern from 'flint/fmpq.h':
   long den
  ctypedef fmpq fmpq_t[1]
  char* fmpq_get_str(char* rez, int b, const fmpq_t x)
+ void fmpq_set(fmpq_t tgt, const fmpq_t src)
  
 # matrix imported
 cdef extern from 'flint/fmpz_mat.h':
