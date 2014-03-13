@@ -5,7 +5,7 @@ For now, I only offer
  
  a) Python binding to FLINT integer matrice;
  b) Unimodularity test benchmarks. **FLINT fastest, NTL on 2nd place**
- c) Solve_right() benchmarks. **fmpz_mat_solve() tested and benchmarked**, mpq_mat_solve_dixon() will be tested soon. The latter is expected to be faster on big matrix than the former
+ c) Matrice inverse benchmark (4 methods). fmpz_mat_solve() good for smaller matrice, Sage .inverse() is a sure winner for big matrix
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
