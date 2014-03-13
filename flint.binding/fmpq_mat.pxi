@@ -7,6 +7,12 @@ cdef extern from 'flint/fmpq_mat.h':
  int fmpq_mat_equal(const fmpq_mat_t a,const fmpq_mat_t b)
  void fmpq_mat_scalar_div_fmpz(fmpq_mat_t tgt,const fmpq_mat_t sou,
   const fmpz_t f)
+ int  fmpq_mat_get_fmpz_mat(fmpz_mat_t tgt,const fmpq_mat_t sou)
+ void fmpq_mat_set_fmpz_mat(fmpq_mat_t tgt,const fmpz_mat_t sou)
+ void fmpq_mat_set_fmpz_mat_div_fmpz(fmpq_mat_t tgt,const fmpz_mat_t sou,
+  const fmpz_t d)
+ int fmpq_mat_solve_dixon(fmpq_mat_t X, const fmpq_mat_t A, const fmpq_mat_t B)
+ int fmpq_mat_inv(fmpq_mat_t X, const fmpq_mat_t A)
 
 def raw_entry( n, d ):
  if d==1:
@@ -40,14 +46,21 @@ cdef class fmpq_mat:
   else:
    if len(m)==2:
     q_sage,t=m
-    fmpz_init( q )
-    fmpz_set_mpz( q, (<Integer>q_sage).value )
     fmpq_mat_init(self.matQQ, (<fmpz_mat>t).matr[0].r, (<fmpz_mat>t).matr[0].c )
-    size = (<fmpz_mat>t).matr[0].r * (<fmpz_mat>t).matr[0].c
-    for i in range(size):
-     fmpq_set_fmpz_frac( self.matQQ[0].entries+i, (<fmpz_mat>t).matr[0].\
-      entries+i, q )
-    fmpz_clear( q )
+    if q_sage == 1:
+     fmpq_mat_set_fmpz_mat( self.matQQ, (<fmpz_mat>t).matr )
+    else:
+     fmpz_init( q )
+     fmpz_set_mpz( q, (<Integer>q_sage).value )
+     if 0:
+      size = (<fmpz_mat>t).matr[0].r * (<fmpz_mat>t).matr[0].c
+      for i in range(size):
+       fmpq_set_fmpz_frac( self.matQQ[0].entries+i, (<fmpz_mat>t).matr[0].\
+        entries+i, q )
+     else:
+      # There is a special function. No need to do this in Python
+      fmpq_mat_set_fmpz_mat_div_fmpz( self.matQQ, (<fmpz_mat>t).matr, q )
+     fmpz_clear( q )
    else:
     rows,cols,li=m
     fmpq_mat_init(self.matQQ, <long>rows, <long>cols )
@@ -110,7 +123,27 @@ cdef class fmpq_mat:
    r = not r
   return r
 
-def scalar_div_fmpq_3arg(fmpq_mat tgt,fmpq_mat sou,Integer fA):
+ def solve_dixon(self,fmpq_mat B):
+  '''
+   if self is singular, returns None
+
+   else returns X such that self * X = B
+  '''
+  cdef fmpq_mat r=fmpq_mat.__new__(fmpq_mat)
+  fmpq_mat_init( r.matQQ, B.matQQ[0].r, B.matQQ[0].c )
+  if fmpq_mat_solve_dixon(r.matQQ, self.matQQ, B.matQQ ):
+   return r
+   
+ def inv(self):
+  '''
+  return inverse of self, or None
+  '''
+  cdef fmpq_mat r=fmpq_mat.__new__(fmpq_mat)
+  fmpq_mat_init( r.matQQ, self.matQQ[0].r, self.matQQ[0].c )
+  if fmpq_mat_inv(r.matQQ, self.matQQ):
+   return r
+
+def scalar_div_fmpq_3arg(fmpq_mat tgt, fmpq_mat sou, Integer fA):
  '''
  sets tgt to sou/f
  
@@ -123,3 +156,4 @@ def scalar_div_fmpq_3arg(fmpq_mat tgt,fmpq_mat sou,Integer fA):
  fmpz_set_mpz( f, fA.value )
  fmpq_mat_scalar_div_fmpz( tgt.matQQ, sou.matQQ, f )
  fmpz_clear( f )
+
