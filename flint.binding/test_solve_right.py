@@ -33,7 +33,7 @@ def test_with(m, precook):
  except:
   print '\n singular case, dim=%s, calling flint solve_right()' % m.nrows()
   try:
-   Xd,d=mF.solve_right(iF) # crash here, exception handling does not work
+   Xd,d=mF.solve_right(iF) 
   except:
    print 'singular matrice, exception in flint solve_right()'
    return
