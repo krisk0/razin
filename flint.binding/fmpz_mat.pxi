@@ -1,5 +1,5 @@
 # This program is part of RAZIN
-# Licence: GPL
+# Licence: GNU General Public License (GPL)
 
 cdef extern from 'flint/fmpz_mat.h':
  #long* fmpz_mat_entry(fmpz_mat_t mat, long i, long j)
@@ -15,9 +15,11 @@ cdef class fmpz_mat:
 
  cdef fmpz_mat_t matr
  
- def __init__(self, m): 
-  # m is Matrix_integer_dense or tuple (rows,cols,li) where 
-  #  li is list or array of sage Integers
+ def __init__(self, m):
+  '''
+   m is Matrix_integer_dense or tuple (rows,cols,li) where 
+    li is list or array of sage Integers
+  '''
   cdef Py_ssize_t size,i
   if isinstance(m,tuple):
    fmpz_mat_init(self.matr,m[0],m[1])
@@ -75,8 +77,6 @@ cdef class fmpz_mat:
    If A is singular, return (None,0)
    
    B must have proper dimensions
-   
-   this
   '''
   if isinstance(B,fmpz_mat):
    return self.solve_right_slave(B)
