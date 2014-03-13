@@ -18,3 +18,5 @@ To.do                     Plan of changes
 ebuild/                   Useful ebuild scripts
 
 benchmark_solve_right.*   benchmark solve_right() subroutine: script and result
+
+benchmark_Dixon_square*   benchmark different algorithms to invert a matrice, Dixon lifting included
