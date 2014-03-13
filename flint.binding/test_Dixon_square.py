@@ -11,7 +11,7 @@ import sys
 ZZ=sage.all.ZZ
 write=sys.stdout.write
 Integer=sage.all.Integer
-dim0=4
+dim0=10
 
 def random_matrice(dim):
  return sage.all.random_matrix( ZZ, dim, x=-100, y=100 )
@@ -55,12 +55,12 @@ def singular_test( mZ, mQ, iZ, iQ ):
 a=sage.all.matrix( 2, [5, 5, 7, 8] )
 test_with( a )
 a[1,0],a[1,1]=-5,-5
-print 'Singular matrice:\n',a
+#print 'Singular matrice:\n',a
 test_with( a )
 
 sys.stdout.write('\n+')
 for i in range(10):
- dim=dim0 + 2*i
+ dim=dim0 + 10*i
  a=random_matrice( dim )
  test_with( a )
  for j in range(dim):
