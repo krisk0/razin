@@ -1,15 +1,21 @@
 RAZIN - Rigorous algebraic zero impeding numeration
 =====
 
-For now, nothing big except
+For now, I only offer
  
  a) Python binding to FLINT integer matrice;
- b) Unimodularity test benchmarks. FLINT fastest, NTL on 2nd place
- c) Solve_right() benchmarks. FLINT slower than Sage, probably because Sage uses Dixon lifing
+ b) Unimodularity test benchmarks. **FLINT fastest, NTL on 2nd place**
+ c) Solve_right() benchmarks. **fmpz_mat_solve() tested and benchmarked**, mpq_mat_solve_dixon() will be tested soon. The latter is expected to be faster on big matrix than the former.
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
 See *filelist.txt*. 
+
+What's the target?
+^^^^^^^^^^^^^^^^^^
+Mid-range target is fast HNF computation with an algorithm resembling W.Stein double-determinant. Python wrapper is minimalistic and only contains functions required to reach the goal or to test/benchmark/experiment with algorithms.
+
+Only FLINT functions will be used for solving hard sub-problems, unless functions from another library (NTL, IML, LinBox, ...) turn to be faster or a serious problem with FLINT discovered. Components of FLINT wrapped into flint_sage Python package work as they should. If you think otherwise, your bug-report is welcome.
 
 Glossary
 ^^^^^^^^
