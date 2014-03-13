@@ -10,7 +10,8 @@ This program finds inverse of a random matrice in different ways, thus testing
  wrappers for fmpz_mat_solve, fmpq_mat_solve_dixon, fmpq_mat_inv
 
 if watch_canonical=1, then print some information if raw_str() returns different
- information (which can only happen when one of the is not in canonical form)
+ information (which can only happen when one of the matrix is not in canonical 
+ form)
 '''
 
 import sage.all
