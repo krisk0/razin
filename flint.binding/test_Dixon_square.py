@@ -3,6 +3,7 @@
 
 # This program is part of RAZIN
 # Copyright Денис Крыськов 2014
+# Licence: GNU General Public License (GPL)
 
 '''
 Test wrappers for fmpz_mat_solve, fmpq_mat_solve_dixon, fmpq_mat_inv
