@@ -66,9 +66,9 @@ ext_modules = \
 setup\
  (
   name = 'FLINT wrapper, callable with sage matrice',
-  description = 'FLINT integer matrice bindings',
-  long_description = 'Only one algorithm for now: determinant. '+
-   'However other algorithms are easy to add',
+  description = 'FLINT integer/rational matrice bindings',
+  long_description = 'Some matrice algorithms such as det, solve_right, '+
+   'inverse ',
   platforms = ['Whichever sage supports'],
   cmdclass = {'build_ext':build_ext},
   version='20140309',
