@@ -45,12 +45,16 @@ for i in range(1):
  s0,s1,s2=str(b0),str(b1),str(b2)
  assert s0 == s1
  assert s1 == s2
+ assert b0 == b1
+ assert b1 == b2
  print s0,'\n'
  print b2.raw_str()
 
  b2=sage_ZZ_to_flint_QQ(3,a)
- print '\nb/3=',b2
- print b2.raw_str() # -2 at the beginning of the line shows that 
-                    # constructor divides away denominator
+ flint.scalar_div_fmpq_3arg( b0, b1, Integer(3) )
+ print '\nb2=%s' % b2.raw_str() # -2 at the beginning of the line shows that 
+                                #  constructor divides away denominator
+ print 'b0=%s' % b0.raw_str()
+ assert b0 == b2
 
 print 'test passed'
