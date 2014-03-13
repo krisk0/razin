@@ -34,7 +34,7 @@ def test_with( m ):
  iZ=flint.fmpz_mat( i )
  iQ=flint.fmpq_mat( (Integer(1),iZ) )
  try:
-  sS=m.solve_right(i)
+  sS=m.inverse()
  except:
   write('-')
   singular_test( mZ, mQ, iZ, iQ )
@@ -81,7 +81,7 @@ test_with( a )
 
 sys.stdout.write('\n')
 for i in range(10):
- dim=dim0 + 10*i
+ dim=dim0 + 8*i
  for j in range(7):
   a=random_matrice( dim )
   test_with( a )
