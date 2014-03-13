@@ -11,5 +11,5 @@
             Before proceeding to nmod_mat_rref, implement a wrapper to 
              fmpq_mat_solve_dixon(). And benchmark
 
-            fmpq_mat constructor    fmpq_mat_solve_dixon()
+            fmpq_mat constructor    fmpq_mat_solve_dixon() fmpq_mat_inv()
             convert fmpq_mat to Sage equivalent
