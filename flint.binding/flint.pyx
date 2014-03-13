@@ -40,6 +40,7 @@ cdef extern from 'flint/fmpq.h':
  void fmpq_set(fmpq_t tgt, const fmpq_t src)
  void fmpq_set_fmpz_frac(fmpq_t tgt, const fmpz_t p, const fmpz_t q)
  void fmpq_set_mpq(fmpq_t tgt, const mpq_t src)
+ void fmpq_get_mpq(mpq_t tgt, const fmpq_t src)
 
 # matrix imported
 cdef extern from 'flint/fmpz_mat.h':
