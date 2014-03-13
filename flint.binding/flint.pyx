@@ -4,7 +4,7 @@
 
 ###########################################################################
 
- #original code in /sage/libs/flint
+ #original code in .../sage/libs/flint
 #       Copyright (C) 2013 Fredrik Johansson <fredrik.johansson@gmail.com>
  #modified by Денис Крыськов to access some fmpX_mat_XXX() subroutines 
 
@@ -21,7 +21,7 @@ from sage.matrix.matrix_integer_dense cimport Matrix_integer_dense
 include "sage/libs/ntl/decl.pxi"
 include "sage/ext/interrupt.pxi"
 
-# numbers
+# numbers imported
 cdef extern from 'flint/fmpz.h':
  ctypedef long fmpz_t[1]
  void fmpz_set_mpz(fmpz_t tgt, mpz_t sou)
@@ -35,7 +35,7 @@ cdef extern from 'flint/fmpq.h':
   long den
  ctypedef fmpq fmpq_t[1]
  
-# matrix
+# matrix imported
 cdef extern from 'flint/fmpz_mat.h':
  ctypedef struct fmpz_mat_struct:
   long* entries
@@ -52,6 +52,6 @@ cdef extern from 'flint/fmpq_mat.h':
   fmpq** rows
  ctypedef fmpq_mat_struct fmpq_mat_t[1]
 
-# python types and methods
+# Python types and methods
 include "fmpz_mat.pxi"
 include "fmpq_mat.pxi"
