@@ -13,7 +13,7 @@ See *filelist.txt*
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^
-Mid-range target is fast HNF computation with an algorithm resembling W.Stein double-determinant. Python wrapper is minimalistic and only contains functions required to reach the goal or to test/benchmark/experiment with algorithms
+Mid-range target is fast HNF computation with an algorithm resembling W.Stein double-determinant. Python wrapper is minimalistic and only contains functions required to reach the goal or to test/benchmark/experiment with algorithms.
 
 Only FLINT functions will be used for solving hard sub-problems, unless functions from another library (NTL, IML, LinBox, ...) turn to be faster or a serious problem with FLINT discovered. Presently components of FLINT wrapped into flint_sage Python package work as they should. If you think otherwise, your bug-report is welcome
 
