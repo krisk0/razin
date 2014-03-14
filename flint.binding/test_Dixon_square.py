@@ -47,7 +47,7 @@ def test_with( m ):
   sys.exit(1)
  X=flint.fmpq_mat( (d, Xd) )
  Y=mQ.solve_dixon( iQ )
- W=mQ.inv()
+ W=mQ.inverse()
  assert X == Y
  assert Y == W
  write('+')
@@ -71,7 +71,7 @@ def singular_test( mZ, mQ, iZ, iQ ):
  assert zero==0
  X=mQ.solve_dixon( iQ )
  assert X==None
- W=mQ.inv()
+ W=mQ.inverse()
  assert W==None
 
 a=sage.all.matrix( 2, [5, 5, 7, 8] )

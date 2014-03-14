@@ -63,7 +63,7 @@ def singular_test( mZ, mQ, iZ, iQ ):
  assert zero==0
  X=mQ.solve_dixon( iQ )
  assert X==None
- W=mQ.inv()
+ W=mQ.inverse()
  assert W==None
 
 a=sage.all.matrix( 2, [5, 5, 7, 8] )
