@@ -62,3 +62,4 @@ cdef extern from 'flint/fmpq_mat.h':
 # Python types and methods
 include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
+include "nmod_mat.pyx"
