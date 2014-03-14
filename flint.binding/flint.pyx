@@ -24,12 +24,18 @@ include "sage/libs/ntl/decl.pxi"
 include "sage/ext/interrupt.pxi"
 
 # numbers imported
+cdef extern from 'gmp.h':
+ ctypedef unsigned long mp_limb_t
+ ctypedef unsigned long mp_bitcnt_t
+
 cdef extern from 'flint/fmpz.h':
  ctypedef long fmpz_t[1]
  void fmpz_set_mpz(fmpz_t tgt, mpz_t sou)
  void fmpz_init(fmpz_t x)
  void fmpz_get_mpz(mpz_t tgt, fmpz_t sou)
  void fmpz_clear(fmpz_t f)
+ mp_limb_t fmpz_mod_ui(fmpz_t f, const fmpz_t g, mp_limb_t x)
+ void fmpz_set_ui(fmpz_t tgt, mp_limb_t val)
 
 cdef extern from 'flint/fmpq.h':
  ctypedef struct fmpq:
