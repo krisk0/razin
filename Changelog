@@ -12,3 +12,8 @@
             benchmark_solve_right.py: benchmarked solve_right() in flint_sage and Sage
             
             Anybody feels like implementing a good interface to Dixon method?
+
+20140313-r1: fmpq_mat constructor workin
+
+20140314-r0: Some fmpq_mat methods wrapped. benchmark_Dixon_square.py terminated.
+             Sage .inverse() is a winner for matrix larger than 170

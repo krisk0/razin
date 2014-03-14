@@ -1,5 +1,9 @@
+*.cout                Output of python script (usually benchmark or test result)
+*.py                  .py in root directory: Python script, usually benchmarks, usually requires
+                       flint_sage
+
 flint.binding/        Python binding for small piece of FLINT library, requires
-                       sage
+                       sage. Installs as flint_sage
 
 unimodular.5way.py    Benchmark 5 ways of checking a 100x100 matrice for 
                        unimodularity
