@@ -34,3 +34,13 @@ FAQ
 
 Q1. Why sage library is required?
 A1. Because mpz_t number need to be converted to/from a Python int, and plain Python does not support this. Therefore some Python wrapper for GMP library like gmpy, pycddlib or sage required.
+
+Q1. Your binding to fmpq_mat is ugly
+     f=flint_sage.fmpq_mat( (Integer(1), flint_sage.fmpz_mat(s)) )
+A1. No, my binding to fmpz_mat and fmpq_mat is beautiful
+     mZ=flint_sage.fmpz_mat( m )
+     mQ=flint_sage.fmpq_mat( (Integer(1), mZ) )
+     
+    And have you seen numpy array constructor?
+     a=numpy.resize( numpy.array( [], dtype=None ), 10 )
+     

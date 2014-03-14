@@ -3,7 +3,7 @@ RAZIN - Rigorous algebraic zero impeding numeration
 
 For now, I only offer
  
- a) Python binding to FLINT integer and rational matrice;
+ a) Python binding to some methods of FLINT;
  b) Some algorithms benchmarks (such as determinant, linear equations solver).
  
 Where are the files?
