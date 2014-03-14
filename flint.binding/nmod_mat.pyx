@@ -25,7 +25,7 @@ cdef extern from 'flint/nmod_mat.h':
  void nmod_mat_init(nmod_mat_t tgt,long rows,long cols,mp_limb_t n)
 
 def AmodB(Integer a, Integer b):
- ' test that mp_limb_t artihmetic works in Cython '
+ ' test that mp_limb_t arithmetic works in Cython '
  cdef Integer r=Integer(0)
  cdef mp_limb_t A=mpz_get_ui(a.value)
  cdef mp_limb_t B=mpz_get_ui(b.value)
