@@ -31,7 +31,7 @@ cdef class fmpq_mat:
    or tuple
     (q,t) where q is Sage Integer and i is fmpz_mat
     (rows,cols,li) where (rows,cols) are dimensions and li is list or array of
-     Sage Rational
+     Sage Rational or list or array of smth that can be converted to rational
      
    contents of raw_str() shows that 2-argument form sets matrice into canonical 
     form
