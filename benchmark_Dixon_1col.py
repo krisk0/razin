@@ -53,6 +53,7 @@ def test_with( m ):
 
 def print_rez(dim):
  print '\n%3d   %.2e    %.2e     %.2e' % (dim,t_sage,t_matz,t_matq)
+ sys.stdout.flush()
 
 print '        sage    solve_right      Dixon'
 for i in range(33):
