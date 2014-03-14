@@ -52,14 +52,7 @@ cdef class fmpq_mat:
     else:
      fmpz_init( q )
      fmpz_set_mpz( q, (<Integer>q_sage).value )
-     if 0:
-      size = (<fmpz_mat>t).matr[0].r * (<fmpz_mat>t).matr[0].c
-      for i in range(size):
-       fmpq_set_fmpz_frac( self.matQQ[0].entries+i, (<fmpz_mat>t).matr[0].\
-        entries+i, q )
-     else:
-      # There is a special function. No need to do this in Python
-      fmpq_mat_set_fmpz_mat_div_fmpz( self.matQQ, (<fmpz_mat>t).matr, q )
+     fmpq_mat_set_fmpz_mat_div_fmpz( self.matQQ, (<fmpz_mat>t).matr, q )
      fmpz_clear( q )
    else:
     rows,cols,li=m
