@@ -39,6 +39,8 @@ def test_with( m ):
   sS=m.inverse()
  except:
   t_sage += time.time()-t0
+  # ups, this subroutine can be removed, so 
+  #  the whole file could be a dozen lines shorter 
   singular_test( mZ, mQ, iZ, iQ )
   return
  t1=time.time()
