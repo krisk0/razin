@@ -3,9 +3,8 @@ RAZIN - Rigorous algebraic zero impeding numeration
 
 For now, I only offer
  
- a) Python binding to FLINT integer matrice;
- b) Unimodularity test benchmarks. **FLINT fastest, NTL on 2nd place**
- c) Matrice inverse benchmark (4 methods). fmpz_mat_solve() good for smaller matrice, Sage .inverse() is a sure winner for big matrix
+ a) Python binding to FLINT integer and rational matrice;
+ b) Some algorithms benchmarks (such as determinant, linear equations solver).
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
@@ -13,9 +12,11 @@ See *filelist.txt*
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^
-Mid-range target is fast HNF computation with an algorithm resembling W.Stein double-determinant. Python wrapper is minimalistic and only contains functions required to reach the goal or to test/benchmark/experiment with algorithms.
+Mid-range target is fast HNF computation with an algorithm resembling W.Stein double-determinant. Python wrapper is minimalistic and only contains functions required to reach the goal or to test/benchmark/experiment subroutines/algorithms.
 
-Only FLINT functions will be used for solving hard sub-problems, unless functions from another library (NTL, IML, LinBox, ...) turn to be faster or a serious problem with FLINT discovered. Presently components of FLINT wrapped into flint_sage Python package work as they should. If you think otherwise, your bug-report is welcome
+Only FLINT functions will be used for solving hard sub-problems, unless a function from another library (NTL, IML, LinBox, ...) turn to be faster or a serious problem with FLINT discovered. Presently components of FLINT wrapped into flint_sage Python package work as they should. If you think otherwise, your bug-report is welcome
+
+*I wrote the paragraph above in the morning, to discover in the evening that FLINT is not so good at inverting big matrices as dear old Sage*
 
 Glossary
 ^^^^^^^^
@@ -28,7 +29,6 @@ Glossary
 
 :NTL:
     C++ numerical/matrice library with gluttonous bigint constructor. `Here <http://shoup.net/ntl/>`_
-
 
 :Captain Flint: 
     fictional Caribbean adventurer (who said pirate?)
