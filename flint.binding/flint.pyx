@@ -60,5 +60,5 @@ cdef extern from 'flint/fmpq_mat.h':
  ctypedef fmpq_mat_struct fmpq_mat_t[1]
 
 # Python types and methods
-include "fmpz_mat.pxi"
-include "fmpq_mat.pxi"
+include "fmpz_mat.pyx"
+include "fmpq_mat.pyx"

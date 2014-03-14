@@ -49,7 +49,7 @@ def test_with( m ):
  Y=mQ.solve_dixon( iQ )
  t3=time.time()
  t_Dixon += t3-t2
- W=mQ.inv()
+ W=mQ.inverse()
  t__inv += time.time()-t3
 
 def singular_test( mZ, mQ, iZ, iQ ):
@@ -59,7 +59,7 @@ def singular_test( mZ, mQ, iZ, iQ ):
  t2=time.time()
  X=mQ.solve_dixon( iQ )
  t3=time.time()
- W=mQ.inv()
+ W=mQ.inverse()
  t4=time.time()
  t_matz += t2-t1
  t_Dixon += t3-t2
