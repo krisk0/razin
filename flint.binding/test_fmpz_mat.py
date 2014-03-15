@@ -21,7 +21,6 @@ def straighten( xx ):
 def random_matrice():
  return sage.all.random_matrix(ZZ, dim, x=-100, y = 100)
 
-sys.stdout.write('+')
 for i in range(10):
  a=random_matrice()
  # both forms of constructors work
@@ -30,5 +29,7 @@ for i in range(10):
  else:
   b=flint.fmpz_mat( (dim, dim, straighten(list(a))) )
  assert a==b.export_sage()
+ if i==0:
+  print b.export_sage()
 
 print '\ntest passed'
