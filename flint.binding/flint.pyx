@@ -20,6 +20,7 @@ from sage.rings.rational cimport Rational
 
 from sage.matrix.matrix_integer_dense cimport Matrix_integer_dense
 
+from libc.stdlib cimport malloc, free
 include "sage/libs/ntl/decl.pxi"
 include "sage/ext/interrupt.pxi"
 
@@ -68,4 +69,4 @@ cdef extern from 'flint/fmpq_mat.h':
 # Python types and methods
 include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
-include "nmod_mat.pyx"
+#include "nmod_mat.pyx"   # this module does nothing useful, not compiling

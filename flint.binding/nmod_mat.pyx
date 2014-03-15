@@ -1,6 +1,14 @@
 # This program is part of RAZIN
 # Licence: GNU General Public License (GPL)
 
+'''
+nmod_mat_rref and nmod_mat_lu don't do what I want
+
+nmod_mat_lu appears to malfunction for non-prime moduli
+
+Thus this module currently has nothing useful for me
+'''
+
 cdef extern from 'flint/nmod_vec.h':
  ctypedef struct nmod_t:
   mp_limb_t n
@@ -18,7 +26,9 @@ cdef extern from 'flint/nmod_mat.h':
  
  void nmod_mat_init(nmod_mat_t tgt,long rows,long cols,mp_limb_t n)
  void nmod_mat_clear(nmod_mat_t mat)
- long nmod_mat_rref(nmod_mat_t A)
+ long nmod_mat_rref(nmod_mat_t A) 
+ # unclear what nmod_mat_rref does. It appears to return spoilt HNF
+ long nmod_mat_lu(long *P, nmod_mat_t A, int rank_check)
 
 cdef extern from 'flint/fmpz_mat.h':
  # these two functions undocumented, as of version 2.4.1
@@ -54,12 +64,26 @@ cdef class nmod_mat:
   
  def export_nonnegative_fmpz_mat(self):
   ' lifts oneself to ZZ. returns result as non-negative fmpz_mat '
-  cdef Py_ssize_t size,i
+  cdef Py_ssize_t i,j
   cdef fmpz_mat r=fmpz_mat.__new__(fmpz_mat)
+  cdef mp_limb_t* on_row
   fmpz_mat_init( r.matr, self.matZn[0].r, self.matZn[0].c )
-  size = self.matZn[0].r * self.matZn[0].c
-  for i in range(size):
-   fmpz_set_ui( r.matr[0].entries+i, self.matZn[0].entries[i] )
+  for i in range(self.matZn[0].r):
+   on_row=self.matZn[0].rows[i]
+   for j in range(self.matZn[0].c):
+    fmpz_set_ui( r.matr[0].entries+i*self.matZn[0].c+j, on_row[j] )
+  return r
+
+ def export_nonnegative_fmpz_mat_upper(self):
+  ' like export_nonnegative_fmpz_mat, but only outputs diagonal and upper part '
+  cdef Py_ssize_t i,j
+  cdef fmpz_mat r=fmpz_mat.__new__(fmpz_mat)
+  cdef mp_limb_t* on_row
+  fmpz_mat_init( r.matr, self.matZn[0].r, self.matZn[0].c )
+  for i in range(self.matZn[0].r):
+   on_row=self.matZn[0].rows[i]
+   for j in range(i,self.matZn[0].c):
+    fmpz_set_ui( r.matr[0].entries+i*self.matZn[0].c+j, on_row[j] )
   return r
 
  def export_balanced_fmpz_mat(self):
@@ -73,11 +97,14 @@ cdef class nmod_mat:
   fmpz_mat_set_nmod_mat( r.matr, self.matZn )
   return r
 
- def hermite_form(self):
+ def rref(self):
   '''
-  Bring oneself into row-echelon form aka Pernet/Stein/Sage Hermite Normal Form
+  Bring oneself into row-echelon form 
   
   return rank
+  
+  I don't know what this procedure does, but it certainly does not count HNF
+   because it does not preserve deteminant
   '''
   cdef Integer r=Integer(0)
   cdef long rank
@@ -85,18 +112,50 @@ cdef class nmod_mat:
   mpz_set_si(r.value,rank)
   return r
 
+ def __repr__(self):
+   return 'nmod_mat(%i, %i, [%s])' % (self.matZn[0].r, self.matZn[0].c,
+            (', '.join(map(str, self.entries()))))
+
+ def entries(self):
+  cdef Py_ssize_t i,j
+  cdef Integer t
+  cdef mp_limb_t* on_row
+  r,t=[],Integer(0)
+  for i in range(self.matZn[0].r):
+   on_row=self.matZn[0].rows[i]
+   for j in range(self.matZn[0].c):
+    mpz_set_ui( t.value, on_row[j] )
+    r.append( int(t) )
+  return r
+
 def fmpz_mat_hermite_form(fmpz_mat A,Integer M):
  '''
  A: n*m matrice with m>=n, whose 1st n columns form a non-singular 
   matrice B
- M: integer in range 2..2**64-1, such that det(B) divides M
- 
+ M: integer in range 2..2**64-1, det(B) divides M
  return Pernet/Stein/Sage HNF of A over ring of integers as fmpz_mat
+ 
+ ups, for non-prime M this subroutine does not work
  '''
  a=nmod_mat(A,M)
- rank=a.hermite_form()
- cdef fmpz_mat b=a.export_nonnegative_fmpz_mat()
- if rank<a.matZn[0].r:
-  ' if rank over residue ring is smaller, then put M into lower-right corner '
-  fmpz_set_mpz( b.matr[0].entries + (a.matZn[0].r * a.matZn[0].c - 1), M.value )
+ print 'taken modulo',M,':',a
+ cdef long* p=<long*>malloc(a.matZn[0].r * sizeof(long))
+ nmod_mat_lu(p,a.matZn,<int>0)
+ '''
+ for matrice 5,5,3,2 modulo 10 nmod_mat_lu returns 5,5,3,7 
+ 
+ but equality 
+ 1 0   5 5   5 5
+ 3,1 * 0 7 = 3 2
+ does not hold
+ 
+ However, for same matrice 5,5,-7,-8 modulo 13 result is correct:
+ 
+ 5 5   1 0   5  5
+ 6 5 = 9 1 * 0 12
+ '''
+ print 'hermite form:',a
+ print 'p',p[0],' ',p[1]
+ cdef fmpz_mat b=a.export_nonnegative_fmpz_mat_upper()
+ free(p)
  return b
