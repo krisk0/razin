@@ -68,39 +68,43 @@ cdef class fmpq_mat:
 
  def entries_str(self):
   ' this function is not for speed, but for sanity check '
-  cdef Py_ssize_t size,i
+  cdef Py_ssize_t i,j
   cdef char* s
-  size=self.matQQ[0].r * self.matQQ[0].c
-  for i in range(size):
-   s=fmpq_get_str( NULL, 10, self.matQQ[0].entries+i )
-   S=s
-   S=S.replace(' ','')
-   if i==0:
-    r = S
-   else:
-    r += ','+S
+  cdef fmpq* on_row
+  for i in range(self.matQQ[0].r):
+   on_row=self.matQQ[0].rows[i]
+   for j in range(self.matQQ[0].c):
+    s=fmpq_get_str( NULL, 10, on_row+j )
+    S=s
+    S=S.replace(' ','')
+    if i==0 and j==0:
+     r = S
+    else:
+     r += ','+S
   return r
  
  def raw_str(self):
   '''
-  extract all numerators and denominators directly
+  extract all numerators and denominators bypassing fmpq_get_str()
   return result as a space-separated string
   '''
-  cdef Py_ssize_t size,i
+  cdef Py_ssize_t i,j
   cdef Integer num,den
   num,den=Integer(0),Integer(0)
   cdef mpq_t e
   mpq_init( e )
-  size=self.matQQ[0].r * self.matQQ[0].c
-  for i in range(size):
-   fmpq_get_mpq( e, self.matQQ[0].entries+i )
-   mpz_set( num.value, mpq_numref( e ) )
-   mpz_set( den.value, mpq_denref( e ) )
-   s=raw_entry( num, den )
-   if i==0:
-    r = s
-   else:
-    r += ' '+s
+  cdef fmpq* on_row
+  for i in range(self.matQQ[0].r):
+   on_row=self.matQQ[0].rows[i]
+   for j in range(self.matQQ[0].c):
+    fmpq_get_mpq( e, on_row+j )
+    mpz_set( num.value, mpq_numref( e ) )
+    mpz_set( den.value, mpq_denref( e ) )
+    s=raw_entry( num, den )
+    if i==0 and j==0:
+     r = s
+    else:
+     r += ' '+s
   mpq_clear( e )
   return r
  
