@@ -4,7 +4,7 @@ Installation
 With portage package manager: 
  put python-sage-flint-20140310.ebuild into /your/private/overlay/dev-python/python-sage-flint
  
- move 20140310.zip to /distfiles/razin-20140310.zip
+ move 2014xyzw-rv.zip to /distfiles/razin-2014xyzw-rv.zip, if you don't want to re-download the .zip from Github
  
  # ebuild /your/private/o.../python-sage-flint-20140310.ebuild manifest
  
@@ -26,8 +26,6 @@ Test
 ====
 
 Any of test_*.py script should say something like 'test passed'
-
-Note that constructors may have more than one form.
 
 
 FAQ
