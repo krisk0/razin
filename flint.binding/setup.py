@@ -65,11 +65,11 @@ ext_modules = \
 
 setup\
  (
-  name = 'FLINT wrapper, callable with sage matrice',
+  name = 'FLINT wrapper, accessed with Sage matrix or numbers',
   description = 'FLINT integer/rational matrice bindings',
-  long_description = 'Some matrice algorithms such as det, solve_right, '+
-   'inverse ',
-  platforms = ['Whichever sage supports'],
+  long_description = 'For now, some FLINT algorithms for integer linear '+
+   'algebra exposed to Python',
+  platforms = ['64-bit supported by sage, for details scan python.flint.sage.README for technical req'],
   cmdclass = {'build_ext':build_ext},
   version='20140309',
   ext_modules = ext_modules,

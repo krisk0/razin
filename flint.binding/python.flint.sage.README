@@ -27,22 +27,31 @@ Test
 
 Any of test_*.py script should say something like 'test passed'
 
-Note that constructors have usually two or more forms.
+Note that constructors may have more than one form.
 
 
 FAQ
 ===
 
-Q1. Why sage library is required?
+Q0. What are the technical requirements of the package?
+A0. GMP, Sage, 64-bit platform, Python ver.2.x; GMP should define mp_limb_t to be unsigned long.
+
+    Use of MPIR instead of GMP might be possible, try this at your own risk.
+    
+    Why 64-bit? Because I did not test 32-bit installation of Sage or GMP, and have no plans to do so.
+
+    Why Python2? Because I have not tested flint_sage on Python3. I doubt that it will work faster under Python3.
+
+Q1. Why Sage library is required?
 A1. Because mpz_t number need to be converted to/from a Python int, and plain Python does not support this. Therefore some Python wrapper for GMP library like gmpy, pycddlib or Sage required.
 
-Q1. Your binding to fmpq_mat is ugly
+Q2. Your binding to fmpq_mat is ugly
      f=flint_sage.fmpq_mat( (Integer(1), flint_sage.fmpz_mat(s)) )
-A1. No, my binding to fmpz_mat and fmpq_mat is beautiful
+A2. No, my binding to fmpz_mat and fmpq_mat is beautiful
      mZ=flint_sage.fmpz_mat( m )
      mQ=flint_sage.fmpq_mat( (Integer(1), mZ) )
     Compare with numpy array constructor
      a=numpy.resize( numpy.array( [], dtype=None ), 10 )
 
-Q2. The .zip file contains whole lot of everything, but no documentation for your Python package. Where do I find useful information about what functions are available and how to call them?
+Q3. The .zip file contains whole lot of everything, but no documentation for your Python package. Where do I find useful information about what functions are available and how to call them?
 A3. Ha, you just answered your question yourself. .py files (such as test_*.py and benchmark*.py) are samples/demo/test and .cout are captured output of relevant .py files (for instance benchmark_solve_right.cout is what benchmark_solve_right.py output on my desktop).
