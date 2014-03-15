@@ -50,7 +50,7 @@ cdef class fmpz_mat:
    on_row=self.matr[0].rows[i]
    for j in range(self.matr[0].c):
     fmpz_get_mpz( t.value, on_row+j )
-   r.append( int(t) )
+    r.append( int(t) )
   return r
   
  def solve_right_slave(self,fmpz_mat B):
