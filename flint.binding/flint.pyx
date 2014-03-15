@@ -16,7 +16,9 @@
 # Maybe To.do file will give a clue, on what and why I am doing
 
 from sage.rings.integer cimport Integer
+#from sage.rings.integer_ring import ZZ
 from sage.rings.rational cimport Rational
+from sage.matrix.constructor import Matrix
 
 from sage.matrix.matrix_integer_dense cimport Matrix_integer_dense
 

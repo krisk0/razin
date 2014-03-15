@@ -40,6 +40,18 @@ cdef class fmpz_mat:
    return "fmpz_mat(%i, %i, [%s])" % (self.matr[0].r, self.matr[0].c,
             (", ".join(map(str, self.entries()))))
 
+ def export_sage(self):
+  ' export self as sage Matrix_integer_dense '
+  cdef Matrix_integer_dense r=Matrix( self.matr[0].r, self.matr[0].c )
+  cdef Py_ssize_t i,j,k=0
+  cdef long* on_row
+  for i in range(self.matr[0].r):
+   on_row=self.matr[0].rows[i]
+   for j in range(self.matr[0].c):
+    fmpz_get_mpz( r._entries[k], on_row+j )
+    k += 1
+  return r
+
  def entries(self):
   ' return flat list of entries converted to Python int '
   cdef Py_ssize_t i,j
