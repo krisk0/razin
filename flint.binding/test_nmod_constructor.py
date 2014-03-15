@@ -5,6 +5,11 @@
 # Copyright Денис Крыськов 2014
 # Licence: GNU General Public License (GPL)
 
+'''
+This program tests nmod_mat constructor and export_nonnegative_fmpz_mat()
+ method
+'''
+
 import sage.all
 import flint_sage as flint
 import random
@@ -16,8 +21,11 @@ def test(a,b,loud):
  assert b<2**64
  c=a % b
  n=flint.nmod_mat(flint.fmpz_mat(a),Integer(b))
- d=n.export_fmpz_mat()
- assert d==flint.fmpz_mat(c)
+ d=n.export_nonnegative_fmpz_mat()
+ if d != flint.fmpz_mat(c):
+  print 'mismatch, sage matrice=\n',c
+  print 'd=\n',d
+  assert 0
  if loud:
   print c
 
