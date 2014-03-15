@@ -58,15 +58,15 @@ cdef class fmpz_mat:
   cdef fmpz_t d
   fmpz_init( d )
   d_sage = Integer(0)
-  sig_on()
+  #sig_on()
   if fmpz_mat_solve( Xd.matr, d, self.matr, B.matr ):
    fmpz_get_mpz( d_sage.value, d )
    fmpz_clear( d )
-   sig_off()
+   #sig_off()
    return Xd, d_sage
   fmpz_clear( d )
   #fmpz_mat_clear( Xd.matr )  un-commenting this line results in unhandled crash
-  sig_off()
+  #sig_off()
   return None,d_sage
 
  def solve_right(self,B):
