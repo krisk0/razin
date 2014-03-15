@@ -21,7 +21,7 @@ def sub_det(a):
  if a.nrows() == a.ncols():
   d=a.determinant()
  else:
-  d=matrix_from_columns( range(a.nrows()) ).determinant()
+  d=a.matrix_from_columns( range(a.nrows()) ).determinant()
  return abs(d)
 
 def test_dump(a,h):
@@ -29,26 +29,45 @@ def test_dump(a,h):
 
 def test(a,loud):
  b=sub_det(a)
- if b<2 or b>=2**64:
+ if b<2 or b>=2**63:
   print 'bad determinant, test skipped'
   return
+ b *= 2
  sage_r=a.hermite_form()
  nmod_r=flint.fmpz_mat_hermite_form( flint.fmpz_mat( a ), b )
  if loud:
   test_dump(a,sage_r)
+  print 'nmod result:',nmod_r
  if nmod_r != flint.fmpz_mat( sage_r ):
   if not loud:
    test_dump(a,sage_r)
    print 'nmod result:',nmod_r
+  print 'test failed'
+  sys.exit(1)
 
-a2=matrix( 2, [ 5,5,-7,-8] )
-u2=matrix( 2, [ 1,77,0,-1] ) * matrix( 2, [ 1,0,-87,1] )
+def m(x):
+ dim=int( len(x)**.5 )
+ return matrix( dim, x )
+
+a2=m( [ 5,5,-7,-8] )
+
+h=flint.fmpz_mat_hermite_form( flint.fmpz_mat( a2 ), Integer(13) )
+print 'h=',h
+h=flint.fmpz_mat_hermite_form( flint.fmpz_mat( a2 ), Integer(10) )
+print 'h=',h
+assert 0
+
+u2=m( [ 1,77,0,-1] ) * m( [ 1,0,-87,1] )
 assert sub_det(u2) == 1
 test( a2, 1 )
 test( u2*a2, 1)
 test( a2*u2, 1)
 
+v2=m( [ 1,67,0,-1] )
+b2=a2 * u2 * v2 * m( [ 3,0,30,36] )
 
+test( b2, 1 )
+test( b2 * m( [-1, 17, 0, 1 ] ), 1 )
 
 x=y=2**64-1
 z=2**64
