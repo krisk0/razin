@@ -23,7 +23,7 @@ def random_matrice():
 
 for i in range(10):
  a=random_matrice()
- # both forms of constructors work
+ # both forms of constructor work
  if i&1:
   b=flint.fmpz_mat( a )
  else:
