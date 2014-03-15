@@ -9,11 +9,23 @@
              wrapped fmpz_mat_solve() as solve_right(); 
              added __richcmp__()
             
-            benchmark_solve_right.py: benchmarked solve_right() in flint_sage and Sage
+            benchmark_solve_right.py: benchmarked solve_right() in flint_sage and 
+             Sage
             
-            Anybody feels like implementing a good interface to Dixon method?
+            Anybody feels like implementing a good interface to Dixon method? 
+            Question answered, thanks Fredrick
 
 20140313-r1: fmpq_mat constructor workin
 
 20140314-r0: Some fmpq_mat methods wrapped. benchmark_Dixon_square.py terminated.
              Sage .inverse() is a winner for matrix larger than 170
+
+15 Mar 2014  Spent few hours wrapping methods nmod_mat_
+
+             Tests show that nmod_mat_rref does not preserve matrice determinant, and 
+              nmod_mat_lu* malfunction for non-prime moduli
+              
+             So how do I count HNF over ring? Do I need to use NTL HNF? 
+             
+             I wonder what fmpz_mat_fflu, fmpz_mat_rref, 
+              fmpz_mat_rref_fraction_free do
