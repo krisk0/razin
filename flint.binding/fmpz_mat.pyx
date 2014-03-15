@@ -41,12 +41,15 @@ cdef class fmpz_mat:
             (", ".join(map(str, self.entries()))))
 
  def entries(self):
-  cdef Py_ssize_t size,i
+  ' return flat list of entries converted to Python int '
+  cdef Py_ssize_t i,j
   cdef Integer t
-  size=self.matr[0].r * self.matr[0].c
+  cdef long* on_row
   r,t=[],Integer(0)
-  for i in range(size):
-   fmpz_get_mpz( t.value, self.matr[0].entries+i )
+  for i in range(self.matr[0].r):
+   on_row=self.matr[0].rows[i]
+   for j in range(self.matr[0].c):
+    fmpz_get_mpz( t.value, on_row+j )
    r.append( int(t) )
   return r
   
