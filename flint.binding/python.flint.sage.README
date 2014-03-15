@@ -42,7 +42,7 @@ A0. GMP, Sage, 64-bit platform, Python ver.2.x; GMP should define mp_limb_t to b
 
     Why Python2? Because I have not tested flint_sage on Python3. I doubt that it will work faster under Python3.
     
-    flint_sage is about speed, rather than completent support for everything or your convenience
+    flint_sage is about speed, rather than complete support for everything or your convenience
 
 Q1. Why Sage library is required?
 A1. Because mpz_t number need to be converted to/from a Python int, and plain Python does not support this. Therefore some Python wrapper for GMP library like gmpy, pycddlib or Sage required
