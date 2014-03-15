@@ -66,7 +66,7 @@ cdef class fmpz_mat:
    return Xd, d_sage
   fmpz_clear( d )
   #fmpz_mat_clear( Xd.matr )  un-commenting this line results in unhandled crash
-  ' is this a leak of memory? '
+  ' is this leaking memory? '
   #sig_off()
   return None,d_sage
 
