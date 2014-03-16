@@ -10,6 +10,9 @@ cdef extern from 'flint/fmpz_mat.h':
  int fmpz_mat_solve(fmpz_mat_t X, fmpz_t den, const fmpz_mat_t A, const 
   fmpz_mat_t B)
  int fmpz_mat_equal(const fmpz_mat_t a,const fmpz_mat_t b)
+ long fmpz_mat_rref(fmpz_mat_t res, fmpz_t den, const fmpz_mat_t A)
+ long fmpz_mat_rref_fraction_free(long* perm, fmpz_mat_t B, fmpz_t den, 
+  const fmpz_mat_t A)
 
 cdef class fmpz_mat:
 
@@ -110,6 +113,42 @@ cdef class fmpz_mat:
 
  def __dealloc__(self):
   fmpz_mat_clear(self.matr)
+
+ def rref(self):
+  '''
+  explore what fmpz_mat_rref() does
+  
+  return triple rank,den,matrice
+  '''
+  cdef fmpz_mat r=fmpz_mat.__new__( fmpz_mat )
+  fmpz_mat_init( r.matr, self.matr[0].r, self.matr[0].c )
+  cdef fmpz_t den
+  fmpz_init( den )
+  cdef long rank=fmpz_mat_rref(r.matr, den, self.matr )
+  cdef Integer d=Integer(0)
+  fmpz_get_mpz( d.value, den )
+  fmpz_clear( den )
+  return int(rank),d,r
+
+ """
+ no such function documentation exists but not code
+ def rref_fraction_free(self):
+  '''
+  explore what fmpz_mat_rref_fraction_free() does
+  
+  return triple rank,den,matrice
+  '''
+  cdef fmpz_mat r=fmpz_mat.__new__( fmpz_mat )
+  fmpz_mat_init( r.matr, self.matr[0].r, self.matr[0].c )
+  cdef fmpz_t den
+  fmpz_init( den )
+  cdef long rank=fmpz_mat_rref_fraction_free(NULL, 
+   r.matr, den, self.matr )
+  cdef Integer d=Integer(0)
+  fmpz_get_mpz( d.value, den )
+  fmpz_clear( den )
+  return int(rank),d,r
+ """
 
 def det(fmpz_mat i):
  cdef fmpz_t d
