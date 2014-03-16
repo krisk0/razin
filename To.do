@@ -18,6 +18,15 @@
             
             convert fmpq_mat to Sage equivalent *not done* Do I need it?
             
-            test if fmpz_mat_fflu, fmpz_mat_rref, fmpz_mat_rref_fraction_free
+15 Mar 2014 test if fmpz_mat_fflu, fmpz_mat_rref, fmpz_mat_rref_fraction_free
              do smth useful for me. If they count HNF, benchmark against NTL
-             HNF
+             HNF. 
+             
+16 Mar 2014 --- Done. The procedures return strange result, destroy input
+             matrice, and fmpz_mat_rref_fraction_free is no longer there.
+             
+            Bill Hart confirmed that FLINT currently does not do row 
+            transformation on matrice over residue ring. So I will implement
+            nmod_mat_HNF() for square non-singular matrice.
+            
+            
