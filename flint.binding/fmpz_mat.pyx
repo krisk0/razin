@@ -11,8 +11,6 @@ cdef extern from 'flint/fmpz_mat.h':
   fmpz_mat_t B)
  int fmpz_mat_equal(const fmpz_mat_t a,const fmpz_mat_t b)
  long fmpz_mat_rref(fmpz_mat_t res, fmpz_t den, const fmpz_mat_t A)
- long fmpz_mat_rref_fraction_free(long* perm, fmpz_mat_t B, fmpz_t den, 
-  const fmpz_mat_t A)
 
 cdef class fmpz_mat:
 
@@ -37,7 +35,6 @@ cdef class fmpz_mat:
    for i from 0 <= i < size:
     fmpz_set_mpz(self.matr[0].entries+i, \
      (<Matrix_integer_dense>m)._entries[i] )
-  #fmpz_mat_print(self.matr)
  
  def __repr__(self):
    return "fmpz_mat(%i, %i, [%s])" % (self.matr[0].r, self.matr[0].c,
