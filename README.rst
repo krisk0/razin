@@ -1,10 +1,11 @@
 RAZIN - Rigorous algebraic zero impeding numeration
 =====
 
-For now, I only offer
+For now, I offer
  
- a) Python binding to some methods of FLINT;
- b) some algorithms benchmarks (such as determinant, linear equations solver)
+    A subroutine to calculate HNF of a square integer matrice with low determinant;
+    Python binding to some methods of FLINT;
+    some algorithms benchmarks (such as determinant, linear equations solver)
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
