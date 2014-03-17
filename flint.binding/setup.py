@@ -71,7 +71,8 @@ setup\
   description = 'FLINT integer/rational matrice bindings',
   long_description = 'For now, some FLINT algorithms for integer linear '+
    'algebra exposed to Python',
-  platforms = ['64-bit supported by Sage, for details scan python.flint.sage.README for technical req'],
+  platforms = ['64-bit supported by Sage, for details scan python.flint.sa'+
+               'ge.README for technical req'],
   cmdclass = {'build_ext':build_ext},
   version='20140309',
   ext_modules = ext_modules,
