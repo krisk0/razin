@@ -9,7 +9,7 @@ For now, I offer
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
-See *filelist.txt*. The fastest in galaxy subroutine to compute HNF via modular technique is in flint.binding/nmod_mat_HNF.c
+See *filelist.txt*. My subroutine to compute HNF via modular technique is in flint.binding/nmod_mat_HNF.c
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^
@@ -33,6 +33,6 @@ Glossary
 
 :Captain Flint: 
     fictional Caribbean adventurer (who said pirate?)
-nmod_mat_HNF.c
+
 :Stepan Razin: 
     16??-1671, kozak, rebel leader (who said gangster?)
