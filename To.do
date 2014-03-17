@@ -2,7 +2,7 @@
              equation and counting HNF over Z/nZ.
              
             fmpz_mat_solve+ nmod_mat_rref --- ups, this procedure does not
-             for non-prime moduli
+             work for non-prime moduli
              
             Test the new functions by implementing a fragment of Stein
              double-determinant algorithm. When test passes, benchmark.
@@ -21,13 +21,19 @@
 15 Mar 2014 test if fmpz_mat_fflu, fmpz_mat_rref, fmpz_mat_rref_fraction_free
              do smth useful for me. If they count HNF, benchmark against NTL
              HNF. 
-             
-16 Mar 2014 --- Done. The procedures return strange result, destroy input
-             matrice, and fmpz_mat_rref_fraction_free is no longer there.
-             
+
+            --- Done. The procedures return strange result, destroy input
+            matrice, and fmpz_mat_rref_fraction_free is no longer there.
+
             Bill Hart confirmed that FLINT currently does not do row 
             transformation on matrice over residue ring. So I will implement
             nmod_mat_HNF() for square non-singular matrice.
+             
             
-17 Mar 2014 Test passes, now benchmark. What subroutines to benchmark against
+17 Mar 2014 nmod_mat_HNF() test passes, now benchmark. What subroutines to benchmark against
              except Sage _hnf_modn() and NTL mat_ZZ.h HNF?
+
+            benchmark_nmod_mat_HNF-sage.py says my beautiful C code is slightly slower than 
+             ugly Cython ._hnf_modn_impl()
+             
+            where did I make mistake?
