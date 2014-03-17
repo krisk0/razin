@@ -135,7 +135,7 @@ def fmpz_mat_hermite_form(fmpz_mat A,Integer M):
  '''
  A: square non-singular over Z matrice
  
- M: in range 2..2**64-1, det(A) divides M
+ M: in range 2..2**64-1, abs(det(A)) divides M
  
  return Pernet/Stein/Sage HNF of A over ring of integers as fmpz_mat
 
