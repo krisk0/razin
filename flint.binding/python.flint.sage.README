@@ -25,6 +25,8 @@ If you feel like optimizing, prepend compiler options:
 
 Two files are installed: flint_sage.so and FLINT_...egg-info. With portage, documentation (this file) will be installed, too.
 
+Note that setup.py script re-creates file nmod_mat_HNF.c even though the latter is included into .zip. This is feature and not a bug.
+
 
 Test
 ====
