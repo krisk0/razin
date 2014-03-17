@@ -5,14 +5,17 @@ HNF: Hermite Normal Form as defined by W.Stein/C.Pernet
 
 Input data:
 ~~~~~~~~~~
-A: square non-singular over integers, A.r>0, modulo n=A->mod.n is a multiple of 
-   determinant (these 2 numbres can be equal)
-
-let H be HNF of A over Z
+A: square non-singular over integers, A.r>0, det(A) is a multiple of n=A->mod.n
+   (can be equal)
 
 Output data:
 ~~~~~~~~~~~
-A modified so new A=H
+A modified so new A = HNF of old A over Z
+ 
+Literature:
+~~~~~~~~~~
+"Hermite Normal Form Computation Using Modulo Determinant Arithmetic"
+aka DomichKannanTrotter87.pdf 
 */
  {
  }
