@@ -9,7 +9,7 @@ For now, I offer
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
-See *filelist.txt*
+See *filelist.txt*. The fastest in galaxy subroutine to compute HNF via modular technique is in flint.binding/nmod_mat_HNF.c
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^
