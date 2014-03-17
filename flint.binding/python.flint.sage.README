@@ -18,6 +18,10 @@ Without portage:
  
  # MY_SAGE_IS_HERE=... EPREFIX=... python2 ./setup.py install
 
+If you feel like optimizing, prepend compiler options:
+
+ # CFLAGS='-O2 ... ' MY_SAGE_IS_HERE=... EPREFIX=... python2 ./setup.py install
+
 
 Two files are installed: flint_sage.so and FLINT_...egg-info. With portage, documentation (this file) will be installed, too.
 
