@@ -120,7 +120,6 @@ DKryskov_gcd_ui_2arg( mp_limb_t alpha, mp_limb_t betta )
   return n_gcd( betta , alpha );
  }
 
-
 static __inline__ void
 DKryskov_nmod_zero_line(nmod_mat_t A,long i,long j,mp_limb_t* scrth)
  {
