@@ -77,17 +77,6 @@ DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
   return -1;
  }
 
-static void nmod_mat_print(nmod_mat_t A)
-// nmod_mat_print_pretty was printing garbage like [%%2lu %%2lu]
- {
-  long i,j;
-  for(i=0;i<A->r;i++)
-   {
-    for(j=0;j<A->c;j++)
-     printf("%lu ",nmod_mat_entry(A,i,j));
-    printf("\n");
-   }
- }
 
 #include <assert.h>
 static __inline__ mp_limb_t
