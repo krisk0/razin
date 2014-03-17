@@ -128,7 +128,7 @@ cdef class fmpz_mat:
   return int(rank),d,r
 
  """
- no such function documentation exists but not code
+ no such function: documentation exists but not code
  def rref_fraction_free(self):
   '''
   explore what fmpz_mat_rref_fraction_free() does
