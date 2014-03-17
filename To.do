@@ -29,4 +29,5 @@
             transformation on matrice over residue ring. So I will implement
             nmod_mat_HNF() for square non-singular matrice.
             
-            
+17 Mar 2014 Test passes, now benchmark. What subroutines to benchmark against
+             except Sage _hnf_modn() and NTL mat_ZZ.h HNF?

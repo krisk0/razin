@@ -30,6 +30,9 @@ cdef extern from 'flint/nmod_mat.h':
  # unclear what nmod_mat_rref does. It appears to return spoilt HNF
  long nmod_mat_lu(long *P, nmod_mat_t A, int rank_check)
 
+cdef extern from './nmod_mat_HNF.c':
+ void nmod_mat_HNF(nmod_mat_t A)
+
 cdef extern from 'flint/fmpz_mat.h':
  # these two functions undocumented, as of version 2.4.1
  void fmpz_mat_get_nmod_mat(nmod_mat_t Amod, const fmpz_mat_t A)
@@ -129,6 +132,28 @@ cdef class nmod_mat:
   return r
 
 def fmpz_mat_hermite_form(fmpz_mat A,Integer M):
+ '''
+ A: square non-singular over Z and Z/M*Z
+ 
+ M: in range 2..2**64-1, det(B) divides M
+ 
+ return Pernet/Stein/Sage HNF of A over ring of integers as fmpz_mat
+
+ Before asking me questions, count HNF of 
+  [  5  5 ]
+  [ -7 -8 ]
+ and 
+  [   66551115 -1211111295]
+  [  -92996400  1692368196] 
+ using modular technique
+ '''
+ a=nmod_mat(A,M)
+ #sig_on() # added temporarily to shorten assert failed dump
+ nmod_mat_HNF(a.matZn)
+ #sig_off()
+ return a.export_nonnegative_fmpz_mat_upper()
+
+def fmpz_mat_hermite_form____not_working(fmpz_mat A,Integer M):
  '''
  A: n*m matrice with m>=n, whose 1st n columns form a non-singular 
   matrice B

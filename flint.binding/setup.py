@@ -63,6 +63,8 @@ ext_modules = \
    )
  ]
 
+os.system( './delete_debug_C_code.sh' )
+
 setup\
  (
   name = 'FLINT wrapper, accessed with Sage matrix or numbers',
