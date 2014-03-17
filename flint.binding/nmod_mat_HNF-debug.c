@@ -18,6 +18,8 @@
 
   However the latter is auto-generated out of the former with 
    ./delete_debug_C_code.sh
+   
+  mod_mat_HNF.c should be easier to understand than this file
 #endif
 
 static __inline__ long 
