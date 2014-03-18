@@ -3,7 +3,7 @@ RAZIN - Rigorous algebraic zero impeding numeration
 
 For now, I offer
  
-  a) A subroutine to calculate HNF of a square integer matrice with low determinant;
+  a) A subroutine to calculate HNF of a square integer matrice with low determinant *faster than Sage method doing the same*;
   b) Python binding to some methods of FLINT;
   c) some algorithms benchmarks (such as determinant, linear equations solver)
  
