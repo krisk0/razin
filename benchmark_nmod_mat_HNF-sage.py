@@ -26,12 +26,15 @@ ZZ=sage.all.ZZ
 write=sys.stdout.write
 Integer=sage.all.Integer
 dim0=20
+dim_increases=19
+volume=10
 t_sage=0
 t_mine=[0,0,0]
-
+coin_fell_on_the_edge=[0,0]
 
 def random_data(dim):
  ' returns matrice and absolute value of its determinant '
+ global coin_fell_on_the_edge
  n = m = dim
  while 1:
   A=sage.all.random_matrix( ZZ, dim, x=-100, y=100 )
@@ -41,7 +44,8 @@ def random_data(dim):
   try:
    (d1,d2) = double_det (B,c,d, proof=True)
   except:
-   print 'ups, coin fell on the edge, point 0'
+   print 'coin fell on the edge, point 0'
+   coin_fell_on_the_edge[0] += 1
    continue
   (g,k,l) = d1._xgcd (d2, minimal=True)
   assert g >= 0
@@ -55,6 +59,7 @@ def random_data(dim):
   not_g=abs( flint.det(flint.fmpz_mat( W )) )
   if not_g != g:
    print 'coin fell on the edge, real det=%d != %d' (not_g,g)
+   coin_fell_on_the_edge[1] += 1
   return W,g
 
 def test_with( W, g ):
@@ -90,11 +95,17 @@ def dump_time(d):
   t_mine[2])
  sys.stdout.flush()
 
+def coin_fall_on_the_edge():
+ for i in range(2):
+  if coin_fell_on_the_edge[i]:
+   print 'at stage %s coin fell on the edge %s times' % \
+    (i,coin_fell_on_the_edge[i])
+
 print ' dim   sage          x1           x2           x3' 
-for i in range(19):
+for i in range(dim_increases):
  dim=dim0+i*10
  zero_time()
- for j in range(30):
+ for j in range(volume):
   W,g=random_data(dim)
   test_with(W,g)
  dump_time(dim)
