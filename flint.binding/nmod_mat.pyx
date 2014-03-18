@@ -1,14 +1,6 @@
 # This program is part of RAZIN
 # Licence: GNU General Public License (GPL)
 
-'''
-nmod_mat_rref and nmod_mat_lu don't do what I want
-
-nmod_mat_lu appears to malfunction for non-prime moduli
-
-Thus this module currently has nothing useful for me
-'''
-
 cdef extern from 'flint/nmod_vec.h':
  ctypedef struct nmod_t:
   mp_limb_t n
@@ -148,9 +140,9 @@ def fmpz_mat_hermite_form(fmpz_mat A,Integer M):
  using modular technique
  '''
  a=nmod_mat(A,M)
- #sig_on() # added temporarily to shorten assert failed dump
+ sig_on() # added temporarily to shorten assert failed dump
  nmod_mat_HNF(a.matZn)
- #sig_off()
+ sig_off()
  return a.export_nonnegative_fmpz_mat_upper()
 
 def fmpz_mat_hermite_form____not_working(fmpz_mat A,Integer M):

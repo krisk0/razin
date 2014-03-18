@@ -34,3 +34,10 @@
               implemented it. C code (cleaned from debug statements) is 318 
               lines long. The subroutine turned to be slower than its analog 
               in Sage
+
+20140318-r0  Corrected documentation on fmpz_mat_hermite_form() and 
+              nmod_mat_HNF() interface
+
+20140318-r1  my modular HNF is at least 2.35 times faster (ratio depends on 
+             dimension). See file benchmark_nmod_mat_HNF-sage.cout
+             

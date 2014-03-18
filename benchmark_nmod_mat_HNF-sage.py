@@ -67,23 +67,16 @@ def test_with( W, g ):
  t0=time.time()
  sage = W._hnf_mod(2*g)
  t_sage += time.time()-t0
- mine,all_equal=[],1
  for i in range(3):
   t1=time.time()
   r=flint.fmpz_mat_hermite_form( flint.fmpz_mat( W ), g*(i+1) )
   t_mine[i] += time.time()-t1
-  mine.append( r.export_sage() )
- three_plus=''
- for i in range(3):
-  if sage == mine[i]:
-   three_plus += '+'
-  else:
-   three_plus += '-'
- print three_plus
- if three_plus != '+++':
-  print 'result incorrect, g=%s' % g
-  print W
-  sys.exit(1)
+  if( r.export_sage() != sage ):
+   print 'result incorrect, g=%s mult=%s\n' % (g,i+1)
+   print W.str()
+   print '\n',sage.str()
+   print '\n',r.export_sage().str()
+   sys.exit(1)
 
 def zero_time():
  global t_sage,t_mine
@@ -101,6 +94,7 @@ def coin_fall_on_the_edge():
    print 'at stage %s coin fell on the edge %s times' % \
     (i,coin_fell_on_the_edge[i])
 
+sage.all.set_random_seed('20140318')
 print ' dim   sage          x1           x2           x3' 
 for i in range(dim_increases):
  dim=dim0+i*10

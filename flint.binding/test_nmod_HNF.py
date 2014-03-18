@@ -22,26 +22,20 @@ ZZ=sage.all.ZZ
 randint=sage.all.randint
 random_matrix=sage.all.random_matrix
 
-def sub_det(a):
- if a.nrows() == a.ncols():
-  d=a.determinant()
- else:
-  d=a.matrix_from_columns( range(a.nrows()) ).determinant()
- return abs(d)
-
 def test_dump(a,h):
  print 'hnf of\n',a,'\nequals\n',h
 
 def test(a,loud):
- b=sub_det(a)
+ b=abs( a.determinant() )
  if b<2 or b>=2**63:
   print 'bad determinant, internal error'
   sys.exit(1)
  sage_r=a.hermite_form()
- if loud:
-  print '\n\n\n'
-  test_dump(a,sage_r)
  for mult in 1,2:
+  if loud:
+   print '\n\n\n'
+   test_dump(a,sage_r)
+   print '\n\n'
   nmod_r=flint.fmpz_mat_hermite_form( flint.fmpz_mat( a ), b*mult )
   if nmod_r != flint.fmpz_mat( sage_r ):
    if not loud:
@@ -67,7 +61,7 @@ def m(x):
 a2=m( [ 5,5,-7,-8] )
 
 u2=m( [ 1,77,0,-1] ) * m( [ 1,0,-87,1] )
-assert sub_det(u2) == 1
+assert abs(u2.determinant()) == 1
 test( a2, 1 )
 test( u2*a2, 1)
 test( a2*u2, 1)
@@ -123,7 +117,7 @@ def test_serie(dim):
  print 'dim=',dim
  test_serie_1(dim,vol,loud) 
 
-for i in range(3,33):
+for i in range(3,13):  # approximately one day for 3,33
  test_serie(i)
 
 print 'test passed'

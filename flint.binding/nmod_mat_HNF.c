@@ -14,9 +14,15 @@
 
 static __inline__ long 
 DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
+/*
+ -3 if diagonal element is 1
+ -2 if all is zero
+ -1 if single non-zero
+ line>0 if A[line,i] is non-zero
+*/
  {
   long i0=-1,i1=-1,k=col;
-  mp_limb_t m0=A->mod.n;
+  mp_limb_t m0=det_tgt;
   mp_limb_t m1=m0;
   mp_limb_t* kP;
   mp_limb_t Ak;
@@ -44,6 +50,12 @@ DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
      {
       m1=m0; i1=i0;
       m0=Ak;  i0=k;
+      if( (m0 == 1) && (i1 != -1) )
+       {
+        if( k > col )
+         MP_PTR_SWAP( A->rows[col], A->rows[i0] );
+        return -3;
+       }
       k += 1;
       continue;
      }
@@ -51,6 +63,12 @@ DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
     if(Ak < m1)
      {
       m1=Ak; i1=k;
+      if( m0 == 1 )
+       {
+        if( i0 > col )
+         MP_PTR_SWAP( A->rows[col], A->rows[i0] );
+        return -3;
+       }
      }
     k += 1;
    }
@@ -71,12 +89,18 @@ DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
   if(i0 == -1)
    return -2;
   if(i0 != col)
-   {
-    MP_PTR_SWAP( A->rows[col], A->rows[i0] );
-   }
+   MP_PTR_SWAP( A->rows[col], A->rows[i0] );
   return -1;
  }
 
+static __inline__ void 
+vec_print( const char* m, mp_limb_t* v, long s )
+ {
+  printf(m);
+  long i;
+  for(i=0;i<s;i++)
+   printf("%lu ",v[i]);
+ }
 
 #include <assert.h>
 static __inline__ mp_limb_t
@@ -109,27 +133,51 @@ DKryskov_gcd_ui_2arg( mp_limb_t alpha, mp_limb_t betta )
   return n_gcd( betta , alpha );
  }
 
-static __inline__ void
-DKryskov_nmod_zero_line(nmod_mat_t A,long i,long j,mp_limb_t* scrth)
+static __inline__ long
+DKryskov_nmod_zero_line(nmod_mat_t A,long i,long j,mp_limb_t n,mp_limb_t* scrth)
+//returns 1 iff new A[i,i] becomes 1
  {
   assert(i != j);
-  mp_limb_t x=nmod_mat_entry(A,i,i);
-  mp_limb_t y=nmod_mat_entry(A,j,i);
-  assert(x);
-  assert(y);
-  mp_limb_t n=A->mod.n;
-  mp_limb_t u,v,g;
-  assert(g);
-  g=DKryskov_gcd_ui(&u,&v,x,y,n);
-  mp_limb_t iPLUS=i+1;
+  long iPLUS=i+1;
   mp_limb_t* alpha=A->rows[i]+iPLUS;
   mp_limb_t* betta=A->rows[j]+iPLUS;
+  mp_limb_t x=alpha[-1];
+  mp_limb_t y=betta[-1];
+  assert(x>1);
+  assert(y>1);
+  mp_limb_t u,v,g;
+  g=DKryskov_gcd_ui(&u,&v,x,y,n);
+  assert(g);
   mp_limb_t vec_len=A->c-iPLUS;
   _nmod_vec_scalar_mul_nmod(    scrth, alpha, vec_len, u  , A->mod );
-  _nmod_vec_scalar_addmul_nmod( scrth, betta, vec_len, v  , A->mod );
-  _nmod_vec_scalar_mul_nmod(    betta, betta, vec_len, x/g , A->mod );
-  _nmod_vec_scalar_addmul_nmod( betta, alpha, vec_len, n-y/g, A->mod );
+  _nmod_vec_scalar_addmul_nmod( scrth, betta, vec_len, v   , A->mod );
+  _nmod_vec_scalar_mul_nmod(    betta, betta, vec_len, (x/g) , A->mod );
+  _nmod_vec_scalar_addmul_nmod( betta, alpha, vec_len, (n-y/g) , A->mod );
   memcpy(alpha,scrth,vec_len*sizeof(mp_limb_t));
+  alpha[-1]=g;
+  betta[-1]=0;
+  return g==1;
+ }
+
+static __inline__ void
+DKryskov_nmod_easy_zl(nmod_mat_t A,long i,long j,mp_limb_t n)
+//act like DKryskov_nmod_zero_line, but return nothing and use the fact that
+// betta=0
+ {
+  assert(i != j);
+  long iPLUS=i+1;
+  mp_limb_t* alpha=A->rows[i]+iPLUS;
+  mp_limb_t* betta=A->rows[j]+iPLUS;
+  mp_limb_t x=alpha[-1];
+  mp_limb_t y=betta[-1];
+  assert(x>1);
+  assert(y>1);
+  mp_limb_t u,v,g;
+  g=DKryskov_gcd_ui(&u,&v,x,y,n);
+  assert(g);
+  mp_limb_t vec_len=A->c-iPLUS;
+  _nmod_vec_scalar_mul_nmod( betta, alpha, vec_len, (n-y/g) , A->mod );
+  _nmod_vec_scalar_mul_nmod( alpha, alpha, vec_len, u  , A->mod );
   alpha[-1]=g;
   betta[-1]=0;
  }
@@ -146,14 +194,20 @@ DKryskov_nmod_Gauss_upper_last_col(nmod_mat_t A,long last_col)
 
 static __inline__ void 
 DKryskov_nmod_Gauss_upper(nmod_mat_t A)
+/*
+zap A over diagonal
+attempt to avoid row operations if possible
+*/
  {
   long last_i=A->c-1;
   long j,i;
-  mp_limb_t n=A->mod.n;
+  mp_limb_t n=nmod_mat_entry(A,1,1);
+  for(i=2;i<=last_i;i++)
+   n *= nmod_mat_entry(A,i,i);
   mp_limb_t* sP,*tP;
-  mp_limb_t s,t;
+  mp_limb_t s,t_ori,t_upd;
   for(i=1;i<last_i;i++)
-   { 
+   {
     sP=&nmod_mat_entry( A, i,i );
     mp_limb_t s=*sP;
     assert(s);
@@ -161,15 +215,23 @@ DKryskov_nmod_Gauss_upper(nmod_mat_t A)
     for(j=i;j--;)
      {
       tP=&nmod_mat_entry( A, j,i );
-      t=*tP;
-      if(t)
+      t_ori=*tP;
+      if(t_ori >= s)
        {
-        mp_limb_t q=t/s;
-        if(q)
-         _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-q, A->mod );
-        assert( *tP < s);
+        t_upd=t_ori % n;
+        if(t_upd < s)
+         // don't need vector operation
+         nmod_mat_entry( A, j,i ) = t_upd;
+        else
+         {
+          mp_limb_t q=t_upd/s;
+          _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-q, A->mod );
+          *tP %= n;
+         }
        }
+      assert( *tP < s );
      }
+    n /= s; 
    }
   DKryskov_nmod_Gauss_upper_last_col( A, last_i );
  }
@@ -177,6 +239,7 @@ DKryskov_nmod_Gauss_upper(nmod_mat_t A)
 static __inline__ void 
 DKryskov_nmod_early_abort(nmod_mat_t A,long e)
 //all columns after e have 1 on diagonal, so save some effort
+// TODO: apply decreasing modulo to avoid row operations
  {
   long m=A->c;
   long i,j;
@@ -215,15 +278,15 @@ DKryskov_nmod_early_abort(nmod_mat_t A,long e)
  }
 
 static __inline__ void
-DKryskov_nmod_reduce_diag(nmod_mat_t A,long i,mp_limb_t det_tgt,mp_limb_t* t)
+DKryskov_nmod_reduce_diag(nmod_mat_t A,long i,mp_limb_t det_tgt,mp_limb_t* scratch)
  {
   assert(i<A->c-1);
   if( det_tgt % nmod_mat_entry(A,i,i) )
    {
-    assert( 0 == nmod_mat_entry(A,i+1,i) );
+    assert( 0 == nmod_mat_entry(A,i+1,i) % det_tgt );
     // Read DomichKannanTrotter87.pdf before asking me questions
     nmod_mat_entry(A,i+1,i)=det_tgt;
-    DKryskov_nmod_zero_line(A,i,i+1,t);
+    (void)DKryskov_nmod_zero_line(A,i,i+1,det_tgt,scratch);
    }
  }
 
@@ -231,6 +294,36 @@ static __inline__ void
 DKryskov_nmod_reduce_last( mp_limb_t* se_corner, mp_limb_t det_tgt )
  {
   *se_corner = DKryskov_gcd_ui_2arg( *se_corner, det_tgt );
+ }
+
+static __inline__ void
+DKryskov_nmod_1_lower(nmod_mat_t A,long col,long j,mp_limb_t n)
+/*
+A[col,col] is known to be 1
+zap column col starting from row j
+operate modulo n
+*/
+ {
+  long m=A->c;
+  mp_limb_t* sP=A->rows[col]+col;
+  assert( 1 == *sP );
+  long v_len = m-col;
+  while(j < m)
+   {
+    mp_limb_t* tP=A->rows[j]+col;
+    mp_limb_t t_ori=*tP;
+    if(t_ori)
+     {
+      mp_limb_t t_upd=t_ori % n;
+      if(t_upd)
+       {
+        _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-t_upd, A->mod );
+       }
+      else
+       *tP = 0;
+     }
+    ++j;
+   }
  }
 
 void
@@ -257,9 +350,9 @@ aka DomichKannanTrotter87.pdf
   long i;
   mp_limb_t* scratch=(mp_limb_t*)malloc( sizeof(mp_limb_t) * (m-1) );
   long det_tgt=A->mod.n;
-  for(i=0;i<m;i++)
-   {
-    // main loop: zap lower part, fix diagonal
+  for(i=0;;i++)
+   {// main loop: zap below diagonal, fix diagonal, maintain decreasing modulo
+    assert( (i>=0) && (i<m) );
     long j=DKryskov_nmod_find_nonzero(A,i,det_tgt);
     if(j==-2)
      {
@@ -288,23 +381,41 @@ aka DomichKannanTrotter87.pdf
        //skip to Gauss_upper
        break; 
      }
+    if(j==-3)
+     { 
+      // some rows operations required, diagonal element = 1
+      DKryskov_nmod_1_lower(A,i,i+1,det_tgt);
+      // no need to fix diagonal or change det_tgt
+      continue;
+     }
     if(j>=0)
      {
-      // some rows operations required
-      DKryskov_nmod_zero_line(A,i,j,scratch);
+      // some rows operations required, general case
+      if(DKryskov_nmod_zero_line(A,i,j,det_tgt,scratch))
+       {
+        j=i+1;
+        if(j<m)
+         DKryskov_nmod_1_lower(A,i,j,det_tgt);
+        continue;
+       }
       j=i;
       while(1)
        {
-        j += 1;
-        if(j>=m)
+        if( ++j >= m )
          break;
         if( nmod_mat_entry(A,j,i) )
          {
-          DKryskov_nmod_zero_line(A,i,j,scratch);
+          if(DKryskov_nmod_zero_line(A,i,j,det_tgt,scratch))
+           {
+            if( ++j < m )
+             DKryskov_nmod_1_lower(A,i,j,det_tgt);
+            break;
+           }
          }
        }
      }
     DKryskov_nmod_reduce_diag(A,i,det_tgt,scratch);
+    assert( 0 == det_tgt % nmod_mat_entry(A,i,i) );
     det_tgt /= nmod_mat_entry(A,i,i);
     if( (det_tgt==1) && (i<m-1) )
      {
