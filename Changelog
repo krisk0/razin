@@ -30,5 +30,7 @@
              I wonder what fmpz_mat_fflu, fmpz_mat_rref, 
               fmpz_mat_rref_fraction_free do
 
-17 Mar 2014  Invented new algorithm, implemented it. Putting 330 lines of 
-              cleaned C code into Github
+17 Mar 2014  Invented ?new? algorithm to compute HNF modulo small number, 
+              implemented it. C code (cleaned from debug statements) is 318 
+              lines long. The subroutine turned to be slower than its analog 
+              in Sage

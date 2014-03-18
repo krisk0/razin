@@ -30,10 +30,14 @@
             nmod_mat_HNF() for square non-singular matrice.
              
             
-17 Mar 2014 nmod_mat_HNF() test passes, now benchmark. What subroutines to benchmark against
-             except Sage _hnf_modn() and NTL mat_ZZ.h HNF?
+17 Mar 2014 nmod_mat_HNF() test passes, now benchmark. What subroutines to 
+             benchmark against except Sage _hnf_modn() and NTL mat_ZZ.h HNF?
 
-            benchmark_nmod_mat_HNF-sage.py says my beautiful C code is slightly slower than 
-             ugly Cython ._hnf_modn_impl()
+            benchmark_nmod_mat_HNF-sage.py says my beautiful C code is slower
+             than ugly Cython ._hnf_modn_impl()
              
-            where did I make mistake?
+            where did I make mistake? Arrr, I am doing 4 scalar multiplications
+             even if pivot element is 1
+            
+            Rewrite nmod_mat_HNF-debug.c. Introduce 3 subroutines instead of one
+             (one for general case, one for small modulo, one for degree of 2).
