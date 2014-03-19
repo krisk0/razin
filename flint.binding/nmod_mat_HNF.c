@@ -8,9 +8,7 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-//This C code is automagically generated out of nmod_mat_HNF-debug.c
-
-#define NDEBUG 1
+#define BUG0_nmod_mat_HNF 1
 
 static __inline__ long 
 DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
@@ -93,15 +91,6 @@ DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
   return -1;
  }
 
-static __inline__ void 
-vec_print( const char* m, mp_limb_t* v, long s )
- {
-  printf(m);
-  long i;
-  for(i=0;i<s;i++)
-   printf("%lu ",v[i]);
- }
-
 #include <assert.h>
 static __inline__ mp_limb_t
 DKryskov_gcd_ui(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y,mp_limb_t n)
@@ -157,29 +146,6 @@ DKryskov_nmod_zero_line(nmod_mat_t A,long i,long j,mp_limb_t n,mp_limb_t* scrth)
   alpha[-1]=g;
   betta[-1]=0;
   return g==1;
- }
-
-static __inline__ void
-DKryskov_nmod_easy_zl(nmod_mat_t A,long i,long j,mp_limb_t n)
-//act like DKryskov_nmod_zero_line, but return nothing and use the fact that
-// betta=0
- {
-  assert(i != j);
-  long iPLUS=i+1;
-  mp_limb_t* alpha=A->rows[i]+iPLUS;
-  mp_limb_t* betta=A->rows[j]+iPLUS;
-  mp_limb_t x=alpha[-1];
-  mp_limb_t y=betta[-1];
-  assert(x>1);
-  assert(y>1);
-  mp_limb_t u,v,g;
-  g=DKryskov_gcd_ui(&u,&v,x,y,n);
-  assert(g);
-  mp_limb_t vec_len=A->c-iPLUS;
-  _nmod_vec_scalar_mul_nmod( betta, alpha, vec_len, (n-y/g) , A->mod );
-  _nmod_vec_scalar_mul_nmod( alpha, alpha, vec_len, u  , A->mod );
-  alpha[-1]=g;
-  betta[-1]=0;
  }
 
 static __inline__ void 
@@ -431,7 +397,7 @@ aka DomichKannanTrotter87.pdf
  }
 
 /*
-I will be greatly irritated if you tell me that this algorithm is wrong
+I would be greatly irritated if you tell me that this algorithm is wrong
  WITHOUT GIVING EXAMPLE OF INPUT DATA that make it fail
 
 Report bugs via Github mechanism or e-mail

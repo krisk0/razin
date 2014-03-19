@@ -13,7 +13,7 @@
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
-import os,sys
+import os,sys,re
 osE=os.environ.get
 write=sys.stdout.write
 
@@ -63,7 +63,57 @@ ext_modules = \
    )
  ]
 
-os.system( './delete_debug_C_code.sh' )
+# perl/sed vile magic converted to Python
+def re_sub( d, sou, tgt ):
+ e=re.compile(sou)
+ return e.sub( tgt, d )
+
+def zap_subr( d, subr ):
+ # the following expression eats too much :
+ #  'static.*?'+subr+'.*?λ }λ'
+ # so doing replacement 'static.*?'+subr -> subr in stupid way
+ p0=d.find(subr)
+ p1=d[:p0].rfind('static')
+ d=d[:p1]+d[p0:]
+ e1=re.compile( subr+'.*?λ }λ' )
+ d=e1.sub( '', d )
+ return d
+
+tail_warning='''
+I would be greatly irritated if you tell me that this algorithm is wrong
+ WITHOUT GIVING EXAMPLE OF INPUT DATA that make it fail
+
+Report bugs via Github mechanism or e-mail
+
+My e-mail is in my blog, detailed information on how to get it is close to tail
+ of setup.py'''
+
+def sed_and_perl__goodbye( oN, iN ):
+ '''
+ This subroutine filters C file, removing what is not needed in production
+  code
+ 
+ sed and perl on my computer fail to properly substitute regular expessions 
+ so I re-implement the functionality of delete_debug_C_code.sh in Python
+ '''
+ unwanted=re.compile( 'MPLUS|MMUL' )
+ with open( oN, 'wb' ) as o, open( iN, 'rb' ) as i:
+  d,r=i.readlines(),''
+  for s in d:
+   if unwanted.search(s):
+    continue
+   r += s.replace('\n','λ')
+  r = re_sub ( r, ' *#' ,'#' )
+  r = re_sub ( r, '#if .*?#endifλ' ,'' )
+  r = re_sub ( r, 'λλλstatic', 'λλstatic' )
+  for s in 'nmod_mat_print','vec_print','DKryskov_nmod_easy_zl':
+   r = zap_subr( r, s )
+  for i in range(10):
+   r=r.replace( 'λλλ', 'λλ' )
+  o.write( r.replace('λ','\n') )
+  o.write( '/*'+tail_warning+'\n*/' )
+
+sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'nmod_mat_HNF-debug.c' )
 
 setup\
  (
