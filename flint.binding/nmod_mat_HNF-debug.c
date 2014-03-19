@@ -11,15 +11,16 @@
 #define BUG0_nmod_mat_HNF 1
 
 #if 0
- WARNING
+ ****** WARNING ******
 
   Two files are put online in same directory: 
    nmod_mat_HNF-debug.c (this file) and mod_mat_HNF.c
 
-  However the latter is auto-generated out of the former with 
-   ./delete_debug_C_code.sh
+  However the latter is auto-generated out of the former with setup.py
    
-  mod_mat_HNF.c should be easier to understand than this file
+  ***************************************************************
+  * mod_mat_HNF.c should be easier to understand than this file *
+  ***************************************************************
 #endif
 
 static __inline__ long 
@@ -459,7 +460,7 @@ operate modulo n
     #endif
  }
 
-void
+slong 
 nmod_mat_HNF(nmod_mat_t A)
 /*
 HNF: Hermite Normal Form as defined by W.Stein/C.Pernet
@@ -477,6 +478,8 @@ Output A contains matrice H: its diagonal and above entries match those of H:
 
 for i<=j A[i,j]=H[i,j]
  
+Return code: 0
+ 
 Literature:
 ~~~~~~~~~~
 "Hermite Normal Form Computation Using Modulo Determinant Arithmetic"
@@ -485,10 +488,11 @@ aka DomichKannanTrotter87.pdf
  {
   long m=A->c;
   long i;
+  long bad_n=0;
   mp_limb_t* scratch=(mp_limb_t*)malloc( sizeof(mp_limb_t) * (m-1) );
   long det_tgt=A->mod.n;
   for(i=0;;i++)
-   {// main loop: zap below diagonal, fix diagonal, maintain decreasing modulo
+   {// main loop: zap lower, fix diagonal, maintain decreasing modulo
     assert( (i>=0) && (i<m) );
     #if BUG0_nmod_mat_HNF
      printf("nmod_mat_HNF() i=%ld n=%lu\n",i,det_tgt);
@@ -516,8 +520,9 @@ aka DomichKannanTrotter87.pdf
        {
         if(i==m-1)
          {
-          // bad input: modulo not a multiple of matrice determinant
+          // bad input: n on input not a multiple of matrice determinant
           DKryskov_nmod_reduce_last( &nmod_mat_entry(A,i,i), det_tgt );
+          bad_n=1;
           break;
          }
        }
@@ -576,6 +581,7 @@ aka DomichKannanTrotter87.pdf
    }// main loop end
   free(scratch);
   DKryskov_nmod_Gauss_upper(A);
+  return bad_n;
  }
 
 #undef MPLUS
