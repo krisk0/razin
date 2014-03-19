@@ -3,7 +3,7 @@
                        flint_sage
 
 flint.binding/        Python binding for small piece of FLINT library, requires
-                       sage. Installs as flint_sage
+                       sage. Installs as flint_sage. Tests in separate files test* 
 
 unimodular.5way.py    Benchmark 5 ways of checking a 100x100 matrice for 
                        unimodularity
@@ -24,3 +24,13 @@ ebuild/                   Useful ebuild scripts
 benchmark_solve_right.*   benchmark solve_right() subroutine: script and result
 
 benchmark_Dixon_square*   benchmark different algorithms to invert a matrice, Dixon lifting included
+
+**************************
+ATTENTION! new file prefix   test_benchmark
+**************************
+                             test and benchmark
+                             
+The files shall reside in flint.binding/
+ 
+test_benchmark_nmod_mat_HNF-ntl.py   check if NTL HNF() function works, benchmark
+test_benchmark_nmod_mat_HNF-ntl.cout benchmark result. Time ratio NTL/mine
