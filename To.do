@@ -46,6 +46,7 @@
             // 402 lines/4 days = 100 lines of code per day. Awfully slow
 
             To further speed up, fix subroutine DKryskov_nmod_early_abort() and
-             specialize the code for small modulo (<2**32)
+             specialize the code for small modulo (<2**32). Also can shorten 
+             some vectors by 1 when doing row operations
              
             The task in paragraph above delayed for indefinite period
