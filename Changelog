@@ -38,13 +38,15 @@
 20140318-r0  Corrected documentation on fmpz_mat_hermite_form() and 
               nmod_mat_HNF() interface
 
-20140318-r1  my modular HNF is at least 2.35 times faster (ratio depends on 
-              dimension). See file benchmark_nmod_mat_HNF-sage.cout
+20140318-r1  my modular HNF is at least 2.35 times faster than Sage method doing 
+              the same (ratio depends on dimension). See file 
+              benchmark_nmod_mat_HNF-sage.cout
              
 20140319-r0  the fastest in galaxy C code to count HNF modulo lattice slightly 
               cleaned and now contains 402 lines including 17 assert lines
 
-             nmod_mat_HNF() interface changed to return 0 iff determinant 
-              confirmed. This is last interface change for this subroutine. 
+             nmod_mat_HNF() interface changed: this subroutine returns 0 iff 
+              determinant confirmed. This is last interface change for this 
+              subroutine. 
               
              I mean it. Really last last change of the interface.
