@@ -16,7 +16,7 @@ import sys,time
 try:
  import flint_sage as flint
 except:
- print 'ups, you forgot to install flint_sage Python wrapper'
+ print 'you forgot to install flint_sage Python wrapper'
  sys.exit(1)
 
 import sage.matrix.matrix_integer_dense_hnf
