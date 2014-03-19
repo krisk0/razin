@@ -82,7 +82,7 @@ def test_serie_1(dim,vol,loud):
  for k in range(1,max_k):
   assert k <= dim
   for x in range(vol):
-   ' create matrice with abs(det)<2**63 and smith form with k entries>1 '
+   ' create matrice with abs(det)<2**63 and diagonal with k entries>1 '
    nums=small_nums(k)
    A=sage.all.identity_matrix(ZZ,dim)
    for i in range(k-1):
@@ -117,7 +117,7 @@ def test_serie(dim):
  print 'dim=',dim
  test_serie_1(dim,vol,loud) 
 
-for i in range(3,13):  # approximately one day for 3,33
- test_serie(i)
-
-print 'test passed'
+if __name__ == "__main__":
+ for i in range(3,13):  # approximately one day for 3,33
+  test_serie(i)
+ print 'test passed'
