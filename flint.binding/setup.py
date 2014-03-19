@@ -75,9 +75,8 @@ def zap_subr( d, subr ):
  p0=d.find(subr)
  p1=d[:p0].rfind('static')
  d=d[:p1]+d[p0:]
- e1=re.compile( subr+'.*?λ }λ' )
- d=e1.sub( '', d )
- return d
+ e=re.compile( subr+'.*?λ }λ' )
+ return e.sub( '', d )
 
 tail_warning='''
 I would be greatly irritated if you tell me that this algorithm is wrong
