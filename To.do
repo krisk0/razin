@@ -43,6 +43,7 @@
              (one for general case, one for small modulo, one for degree of 2).
 
 19 Mar 2014 nmod_mat_HNF-debug.c is at least 2 times faster than Sage method.
+            // 402 lines/4 days = 100 lines of code per day. Awfully slow
 
             To further speed up, fix subroutine DKryskov_nmod_early_abort() and
              specialize the code for small modulo (<2**32)
