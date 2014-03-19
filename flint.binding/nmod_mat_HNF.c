@@ -333,12 +333,16 @@ HNF: Hermite Normal Form as defined by W.Stein/C.Pernet
 
 Input data:
 ~~~~~~~~~~
-A: square, non-singular over integers, A.r>0, n=A->mod.n is a multiple of
-  abs(det(A)) (can be equal)
+A: square, non-singular over integers, n=A->mod.n is a multiple of abs(det(A))
+ (can be equal)
 
 Output data:
 ~~~~~~~~~~~
-A modified so new A = HNF of old A over Z
+Define H := HNF( input A )
+
+Output A contains matrice H: its diagonal and above entries match those of H:
+
+for i<=j A[i,j]=H[i,j]
  
 Literature:
 ~~~~~~~~~~
@@ -399,10 +403,8 @@ aka DomichKannanTrotter87.pdf
         continue;
        }
       j=i;
-      while(1)
+      while( ++j < m)
        {
-        if( ++j >= m )
-         break;
         if( nmod_mat_entry(A,j,i) )
          {
           if(DKryskov_nmod_zero_line(A,i,j,det_tgt,scratch))

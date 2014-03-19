@@ -543,10 +543,8 @@ aka DomichKannanTrotter87.pdf
         continue;
        }
       j=i;
-      while(1)
+      while( ++j < m)
        {
-        if( ++j >= m )
-         break;
         if( nmod_mat_entry(A,j,i) )
          {
           if(DKryskov_nmod_zero_line(A,i,j,det_tgt,scratch))
