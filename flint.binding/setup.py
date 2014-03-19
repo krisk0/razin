@@ -5,7 +5,8 @@
 # Copyright Денис Крыськов 2014
 # License: GNU General Public License (GPL)
 
-# This program locates sage library, then builds flint_sage Python module
+# This program locates Sage library, crunches C code, then builds flint_sage 
+#  Python module
 
 # If this program fails to find sage include, set MY_SAGE_IS_HERE to point to 
 #  directory containing sage/rings/integer
