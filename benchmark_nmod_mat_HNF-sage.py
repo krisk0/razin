@@ -31,6 +31,7 @@ volume=10
 t_sage=0
 t_mine=[0,0,0]
 coin_fell_on_the_edge=[0,0]
+shut_up=1
 
 def random_data(dim):
  ' returns matrice and absolute value of its determinant '
@@ -49,11 +50,13 @@ def random_data(dim):
    continue
   (g,k,l) = d1._xgcd (d2, minimal=True)
   assert g >= 0
-  print "Stein double-det g=%s"%g
+  if not shut_up:
+   print "Stein double-det g=%s"%g
   CUTOFF = 2**30
   # aint not interesting to count HNF of unimodular matrice, so g>0
   if g==1 or 2*g > CUTOFF:
-   print 'bad det, going back'
+   if not shut_up:
+    print 'bad det, going back'
    continue
   W = B.stack (k*c + l*d)
   not_g=abs( flint.det(flint.fmpz_mat( W )) )
@@ -95,7 +98,7 @@ def coin_fall_on_the_edge():
     (i,coin_fell_on_the_edge[i])
 
 sage.all.set_random_seed('20140318')
-print ' dim   sage          x1           x2           x3' 
+print ' dim    sage         x1           x2           x3' 
 for i in range(dim_increases):
  dim=dim0+i*10
  zero_time()
@@ -103,3 +106,4 @@ for i in range(dim_increases):
   W,g=random_data(dim)
   test_with(W,g)
  dump_time(dim)
+coin_fall_on_the_edge()
