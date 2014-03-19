@@ -119,8 +119,8 @@ setup\
  (
   name = 'FLINT wrapper, accessed with Sage matrix or numbers',
   description = 'FLINT integer/rational matrice bindings',
-  long_description = 'For now, some FLINT algorithms for integer linear '+
-   'algebra exposed to Python',
+  long_description = 'For now, some FLINT and my home-brewed algorithms for '+
+   'integer linear algebra exposed to Python',
   platforms = ['64-bit supported by Sage, for details scan python.flint.sa'+
                'ge.README for technical req'],
   cmdclass = {'build_ext':build_ext},

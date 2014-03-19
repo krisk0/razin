@@ -41,3 +41,10 @@
             
             Rewrite nmod_mat_HNF-debug.c. Introduce 3 subroutines instead of one
              (one for general case, one for small modulo, one for degree of 2).
+
+19 Mar 2014 nmod_mat_HNF-debug.c is at least 2 times faster than Sage method.
+
+            To further speed up, fix subroutine DKryskov_nmod_early_abort() and
+             specialize the code for small modulo (<2**32)
+             
+            The task in paragraph above delayed for indefinite period
