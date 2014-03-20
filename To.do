@@ -40,7 +40,8 @@
              even if pivot element is 1
             
             Rewrite nmod_mat_HNF-debug.c. Introduce 3 subroutines instead of one
-             (one for general case, one for small modulo, one for degree of 2).
+             (one for general case, one for small modulo, one for degree of 2)
+             --- delayed
 
 19 Mar 2014 nmod_mat_HNF-debug.c is at least 2 times faster than Sage method.
             // 402 lines/4 days = 100 lines of code per day. Awfully slow
@@ -50,3 +51,9 @@
              some vectors by 1 when doing row operations
              
             The task in paragraph above delayed for indefinite period
+
+20 Mar 2014 re-implement Stein double-determinant algorithm (proof=1) with no 
+             modification, just using faster subroutines for salvation of linear
+             system and calculating HNF of matrice with small determinant
+            
+            profile: see what fragment takes most times

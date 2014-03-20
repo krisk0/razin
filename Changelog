@@ -52,3 +52,7 @@
              I mean it. Really last last change of the interface.
 
 19 Mar 2014 NTL HNF benchmarked. Guess who wins?
+
+20 Mar 2014 explored fmpz_mat_fflu
+
+            Looks like this function correctly counts determinant
