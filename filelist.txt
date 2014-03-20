@@ -1,6 +1,6 @@
 *.cout                Output of python script (usually benchmark or test result)
-*.py                  .py in root directory: Python script, usually benchmarks, usually requires
-                       flint_sage
+*.py                  .py in root directory: Python script, usually benchmark
+                       or test, usually requires flint_sage
 
 flint.binding/        Python binding for small piece of FLINT library, requires
                        sage. Installs as flint_sage. Tests in separate files test* 
@@ -14,23 +14,24 @@ unimodular.5way.cout  Benchmark results for my desksop, with CPU specs as known
                        
                       Benchmark data explained.
 
-A_by_B_mod_P.hacks/   Secret voodoo to calculate a*b mod p for small p on amd64 and GPU, public domain
+A_by_B_mod_P.hacks/   Secret voodoo to calculate a*b mod p for small p on amd64 
+                        and GPU, public domain
 
 Changelog               History of bugs fixes and additions
 To.do                     Plan of changes
 
 ebuild/                   Useful ebuild scripts
 
-benchmark_solve_right.*   benchmark solve_right() subroutine: script and result
-
-benchmark_Dixon_square*   benchmark different algorithms to invert a matrice, Dixon lifting included
+benchmark_*             benchmark script and result
 
 **************************
 ATTENTION! new file prefix   test_benchmark
 **************************
-                             test and benchmark
+                             shall contain test and benchmark script and result
                              
 The files shall reside in flint.binding/
- 
+
+                             For example
+
 test_benchmark_nmod_mat_HNF-ntl.py   check if NTL HNF() function works, benchmark
 test_benchmark_nmod_mat_HNF-ntl.cout benchmark result. Time ratio NTL/mine
