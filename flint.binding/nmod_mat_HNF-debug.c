@@ -429,6 +429,7 @@ operate modulo n
   long m=A->c;
   mp_limb_t* sP=A->rows[col]+col;
   assert( 1 == *sP );
+  //TODO: skip counting elements of column col, to save time
   long v_len = m-col;
   while(j < m)
    {
