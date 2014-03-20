@@ -53,6 +53,6 @@
 
 19 Mar 2014 NTL HNF benchmarked. Guess who wins?
 
-20 Mar 2014 explored fmpz_mat_fflu
+20 Mar 2014 wrapped fmpz_mat_fflu, tried it on small matrice
 
             Looks like this function correctly counts determinant
