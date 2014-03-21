@@ -39,7 +39,9 @@ cdef extern from 'flint/fmpz.h':
  void fmpz_clear(fmpz_t f)
  mp_limb_t fmpz_mod_ui(fmpz_t f, const fmpz_t g, mp_limb_t x)
  void fmpz_set_ui(fmpz_t tgt, mp_limb_t val)
-
+ void fmpz_lcm(fmpz_t f , const fmpz_t g , const fmpz_t h)
+ void fmpz_one(fmpz_t tgt)
+ 
 cdef extern from 'flint/fmpq.h':
  ctypedef struct fmpq:
   long num
@@ -50,6 +52,7 @@ cdef extern from 'flint/fmpq.h':
  void fmpq_set_fmpz_frac(fmpq_t tgt, const fmpz_t p, const fmpz_t q)
  void fmpq_set_mpq(fmpq_t tgt, const mpq_t src)
  void fmpq_get_mpq(mpq_t tgt, const fmpq_t src)
+ void fmpq_div_fmpz(fmpq_t tgt, const fmpq_t sou, const fmpz_t x)
 
 # matrix imported
 cdef extern from 'flint/fmpz_mat.h':
