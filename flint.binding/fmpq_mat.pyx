@@ -13,6 +13,18 @@ cdef extern from 'flint/fmpq_mat.h':
   const fmpz_t d)
  int fmpq_mat_solve_dixon(fmpq_mat_t X, const fmpq_mat_t A, const fmpq_mat_t B)
  int fmpq_mat_inv(fmpq_mat_t X, const fmpq_mat_t A)
+ void fmpq_mat_scalar_div_fmpz( fmpq_mat_t tgt, const fmpq_mat_t sou, 
+  const fmpz_t x)
+ void fmpq_mat_set(fmpq_mat_t tgt, const fmpq_mat_t sou)
+
+# small auxillary C subroutines operating on fmpq_mat_t
+'''
+cdef extern from './fmpq_mat/canonicalize_extract_common_denominator.c':
+ void fmpq_mat_canonicalize_extract_common_denominator(fmpq_t d,fmpq_mat_t A)
+
+cdef extern from './fmpq_mat/extract_common_denominator.c':
+ void fmpq_mat_extract_common_denominator(fmpq_t d,fmpq_mat_t A)
+'''
 
 def raw_entry( n, d ):
  if d==1:
@@ -39,10 +51,8 @@ cdef class fmpq_mat:
   cdef Py_ssize_t size,i
   cdef fmpz_t q
   if isinstance(m,fmpq_mat):
-   fmpq_mat_init(self.matQQ, (<fmpq_mat>m).matQQ.r, (<fmpq_mat>m).matQQ.c )
-   size = (<fmpq_mat>m).matQQ[0].r * (<fmpq_mat>m).matQQ[0].c
-   for i in range(size):
-    fmpq_set( self.matQQ[0].entries+i, (<fmpq_mat>m).matQQ[0].entries+i )
+   fmpq_mat_init( self.matQQ, (<fmpq_mat>m).matQQ.r, (<fmpq_mat>m).matQQ.c )
+   fmpq_mat_set( self.matQQ, (<fmpq_mat>m).matQQ )
   else:
    if len(m)==2:
     q_sage,t=m
@@ -60,6 +70,14 @@ cdef class fmpq_mat:
     size = <long>rows * <long>cols
     for i in range(size):
      fmpq_set_mpq( self.matQQ[0].entries+i, (<Rational>li[i]).value )
+
+ def extract_numerator( self, Integer i ):
+  ' returns numertor of a[i,0] as Sage Integer '
+  cdef Integer r=Integer(0)
+  #fmpz_get_mpz( r.value, self.matQQ[0].rows[i][0].num )
+  cdef fmpq* on_row=self.matQQ[0].rows[i]
+  fmpz_get_mpz( r.value, <long*>on_row )
+  return r
  
  def __repr__(self):
   ' this function is not for speed, but for sanity check '
@@ -154,3 +172,8 @@ def scalar_div_fmpq_3arg(fmpq_mat tgt, fmpq_mat sou, Integer fA):
  fmpq_mat_scalar_div_fmpz( tgt.matQQ, sou.matQQ, f )
  fmpz_clear( f )
 
+def fmpq_mat_scalar_div(fmpq_mat a, Integer d):
+ ' returns a/d as fmpq_mat '
+ cdef fmpq_mat b=fmpq_mat.__new__(fmpq_mat)
+ fmpq_mat_init( b.matQQ, a.matQQ[0].r, a.matQQ[0].c )
+ scalar_div_fmpq_3arg( b, a, d ) 

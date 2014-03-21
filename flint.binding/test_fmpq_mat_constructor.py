@@ -35,11 +35,14 @@ def random_matrice():
 def sage_ZZ_to_flint_QQ( d, a ):
  return F( (Integer(d), flint.fmpz_mat( a ) ) )
 
-for i in range(1):
+for i in range(5):
  a=random_matrice()
  a[0,0]=-6
  print 'Sage a=\n',a
  b0=sage_ZZ_to_flint_QQ( 1, a )
+ for i in range(dim):
+  j=Integer(i)
+  assert( b0.extract_numerator( j ) == a[j,0] )
  b1=F( b0 )
  b2=F( (dim,dim,straighten( list(a) ) ) )
  s0,s1,s2=str(b0),str(b1),str(b2)
