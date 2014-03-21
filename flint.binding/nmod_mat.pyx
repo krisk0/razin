@@ -21,6 +21,7 @@ cdef extern from 'flint/nmod_mat.h':
  long nmod_mat_rref(nmod_mat_t A) 
  # unclear what nmod_mat_rref does. It appears to return spoilt HNF
  long nmod_mat_lu(long *P, nmod_mat_t A, int rank_check)
+ mp_limb_t nmod_mat_det(nmod_mat_t A)
 
 cdef extern from './nmod_mat_HNF.c':
  void nmod_mat_HNF(nmod_mat_t A)
@@ -122,8 +123,19 @@ cdef class nmod_mat:
     mpz_set_ui( t.value, on_row[j] )
     r.append( int(t) )
   return r
+  
+ def determinant(self):
+  cdef Integer r=Integer(0)
+  cdef mp_limb_t d=nmod_mat_det(self.matZn)
+  mpz_set_ui( r.value, d )
+  return r
 
-def fmpz_mat_hermite_form(fmpz_mat A,Integer M):
+def det_modulo_prime(Matrix_integer_dense sage, Integer p):
+ # TODO: to speed-up, directly convert Sage matrice to nmod_mat
+ cdef fmpz_mat a=fmpz_mat( sage )
+ return nmod_mat( a, p ).determinant()
+
+def fmpz_mat_hermite_form(fmpz_mat A, Integer M):
  '''
  A: square non-singular over Z matrice
  
@@ -140,9 +152,9 @@ def fmpz_mat_hermite_form(fmpz_mat A,Integer M):
  using modular technique
  '''
  a=nmod_mat(A,M)
- sig_on() # added temporarily to shorten assert failed dump
+ #sig_on() # added temporarily to shorten assert failed dump
  nmod_mat_HNF(a.matZn)
- sig_off()
+ #sig_off()
  return a.export_nonnegative_fmpz_mat_upper()
 
 def fmpz_mat_hermite_form____not_working(fmpz_mat A,Integer M):
