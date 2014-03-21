@@ -76,7 +76,34 @@ cdef class fmpq_mat:
   cdef Integer r=Integer(0)
   #fmpz_get_mpz( r.value, self.matQQ[0].rows[i][0].num )
   cdef fmpq* on_row=self.matQQ[0].rows[i]
-  fmpz_get_mpz( r.value, <long*>on_row )
+  fmpz_get_mpz( r.value, <long*>on_row ) # dirty trick to get .num field
+                                         # should be a better way to do this
+  return r
+ 
+ def entry_div( self, Integer i, Integer d ):
+  ' changes self: a[i,0] /= d '
+  cdef fmpq* on_row=self.matQQ[0].rows[i]
+  cdef fmpz_t u
+  fmpz_init( u )
+  fmpz_set_mpz( u, d.value )
+  fmpq_div_fmpz( on_row, on_row, u )
+  fmpz_clear( u )
+ 
+ def denominator( self ):
+  ' returns common denominator, assumes self in canonical form '
+  cdef fmpz_t lcm
+  fmpz_init(lcm)
+  fmpz_one(lcm)
+  cdef long i,j
+  cdef fmpq* on_row
+  cdef long c=self.matQQ[0].c
+  for i in range(self.matQQ[0].r):
+   on_row=self.matQQ[0].rows[i]
+   for j in range(c):
+    fmpz_lcm(lcm, lcm, (<long*>(on_row+j))+1 )
+  cdef Integer r=Integer(0)
+  fmpz_get_mpz( r.value, lcm )
+  fmpz_clear(lcm)
   return r
  
  def __repr__(self):
@@ -176,4 +203,5 @@ def fmpq_mat_scalar_div(fmpq_mat a, Integer d):
  ' returns a/d as fmpq_mat '
  cdef fmpq_mat b=fmpq_mat.__new__(fmpq_mat)
  fmpq_mat_init( b.matQQ, a.matQQ[0].r, a.matQQ[0].c )
- scalar_div_fmpq_3arg( b, a, d ) 
+ scalar_div_fmpq_3arg( b, a, d )
+ return b

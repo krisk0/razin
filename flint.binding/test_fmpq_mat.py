@@ -59,5 +59,8 @@ for i in range(5):
                                 #  constructor divides away denominator
  print 'b0=%s' % b0.raw_str()
  assert b0 == b2
+ if b0.raw_str().find('/3') != -1:
+  assert 3==b0.denominator()
+  print 'denominator test passes'
 
 print 'test passed'
