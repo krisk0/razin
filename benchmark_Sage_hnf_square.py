@@ -322,8 +322,6 @@ def create_table_to_print( d ):
 
 def save_time( n, b, exp_no, col ):
  ' fill 2 entries in table_to_print '
- print 'savin time into col=%s, rows %s,%s, min time %s,%s' % \
-  ( col, 1+exp_no, 1+len(dim_data)+exp_no, t_sage_min, t_mine_min )
  save_time_subr( t_sage_min, t_sage_max, 1+exp_no, col )
  save_time_subr( t_mine_min, t_mine_max, 1+len(dim_data)+exp_no, col )
 
