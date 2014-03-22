@@ -13,7 +13,7 @@ See *filelist.txt*.
 
 The fastest in open-source world subroutine to compute HNF of a matrice with small in absolute value determinant is in *flint.binding/nmod_mat_HNF.c*
 
-The fastest in open-source world subroutine to compute HNF of an arbitrary non-singular matrice is in benchmark_Sage_hnf_square.py
+The fastest in open-source world subroutine to compute HNF of an arbitrary non-singular matrice is in *benchmark_Sage_hnf_square.py*
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^
