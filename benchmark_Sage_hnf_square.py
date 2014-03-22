@@ -157,7 +157,9 @@ def reimplemented_add_column( B, H_B, a ):
  return r
 
 def reimplement_small_det_HNF(W, g):
- #instead of W._hnf_mod(2*g)
+ #instead of W._hnf_mod(2*g):
+ if g==1:
+  return sage.all.identity_matrix(ZZ, W.nrows())
  return flint.fmpz_mat_hermite_form( fmpz_mat( W ), Integer(g) )
  
 def reimplemented_hnf_square( A ):
