@@ -16,15 +16,7 @@ cdef extern from 'flint/fmpq_mat.h':
  void fmpq_mat_scalar_div_fmpz( fmpq_mat_t tgt, const fmpq_mat_t sou, 
   const fmpz_t x)
  void fmpq_mat_set(fmpq_mat_t tgt, const fmpq_mat_t sou)
-
-# small auxillary C subroutines operating on fmpq_mat_t
-'''
-cdef extern from './fmpq_mat/canonicalize_extract_common_denominator.c':
- void fmpq_mat_canonicalize_extract_common_denominator(fmpq_t d,fmpq_mat_t A)
-
-cdef extern from './fmpq_mat/extract_common_denominator.c':
- void fmpq_mat_extract_common_denominator(fmpq_t d,fmpq_mat_t A)
-'''
+ void fmpq_mat_mul(fmpq_mat_t tgt, const fmpq_mat_t A, const fmpq_mat_t B )
 
 def raw_entry( n, d ):
  if d==1:
@@ -42,11 +34,13 @@ cdef class fmpq_mat:
    m is fmpq_mat
    or tuple
     (q,t) where q is Sage Integer and i is fmpz_mat
-    (rows,cols,li) where (rows,cols) are dimensions and li is list or array of
-     Sage Rational or list or array of smth that can be converted to rational
+    (rows,cols,li) where (rows,cols) are dimensions and li is a list or array of
+     Sage Rational 
      
-   contents of raw_str() shows that 2-argument form sets matrice into canonical 
-    form
+   WARNING
+    this constructor seg-faults on m not matching the above specification.
+    This is a feature, not a bug, 
+                                  I WON'T CHANGE THAT
   '''
   cdef Py_ssize_t size,i
   cdef fmpz_t q
@@ -68,11 +62,61 @@ cdef class fmpq_mat:
     rows,cols,li=m
     fmpq_mat_init(self.matQQ, <long>rows, <long>cols )
     size = <long>rows * <long>cols
+    try:
+     if size>len(li):
+      size=len(li)
+    except:
+     pass
     for i in range(size):
      fmpq_set_mpq( self.matQQ[0].entries+i, (<Rational>li[i]).value )
 
+ def mul( self, fmpq_mat c ):
+  '''
+  multiplies self by c on the right: a = a * c
+  '''
+  cdef fmpq_mat_t s
+  fmpq_mat_init( s, self.matQQ[0].r, c.matQQ[0].c )
+  fmpq_mat_mul( s, self.matQQ, c.matQQ )
+  fmpq_mat_clear( self.matQQ )
+  self.matQQ[0].entries=s.entries
+  self.matQQ[0].r=s.r
+  self.matQQ[0].c=s.c
+  self.matQQ[0].rows=s.rows
+
+ def export_fmpz_mat( self ):
+  '''
+  if a=self is integral, export it as fmpz_mat
+
+  else return None
+  '''
+  cdef fmpz_mat i=fmpz_mat.__new__(fmpz_mat)  
+  fmpz_mat_init( i.matr, self.matQQ[0].r, self.matQQ[0].c )
+  cdef long ok=fmpq_mat_get_fmpz_mat( i.matr, self.matQQ )
+  if ok:
+   return i
+  print 'non-integral matrice:',self
+
+ def export_column( self ):
+  ' export left-most column of self as Sage Vector_rational_dense '
+  # TODO: the line below calls Python. How to stay inside Cython?
+  cdef Vector_rational_dense r=vector( QQ, self.matQQ[0].r )
+  cdef long i
+  for i in range(self.matQQ[0].r):
+   fmpq_get_mpq( r._entries[i], self.matQQ[0].rows[i] )
+  return r
+
+ def export_entry( self, i, j ):
+  ' return a[i,j] as Sage Rational '
+  cdef Rational e=Rational(0)
+  #fmpq_get_mpq( e.value, self.matQQ[0].rows[mpz_get_ui(i.value)]+
+  # mpz_get_ui(j.value))
+  cdef long ii=<long>i
+  cdef long jj=<long>j
+  fmpq_get_mpq( e.value, self.matQQ[0].rows[ii]+jj )
+  return e
+
  def extract_numerator( self, Integer i ):
-  ' returns numertor of a[i,0] as Sage Integer '
+  ' returns numerator of a[i,0] as Sage Integer '
   cdef Integer r=Integer(0)
   #fmpz_get_mpz( r.value, self.matQQ[0].rows[i][0].num )
   cdef fmpq* on_row=self.matQQ[0].rows[i]
@@ -80,14 +124,26 @@ cdef class fmpq_mat:
                                          # should be a better way to do this
   return r
  
- def entry_div( self, Integer i, Integer d ):
+ def entry_div_Integer( self, i, Integer d ):
   ' changes self: a[i,0] /= d '
-  cdef fmpq* on_row=self.matQQ[0].rows[i]
+  cdef long ii=<long>i
+  cdef fmpq* on_row=self.matQQ[0].rows[ii]
   cdef fmpz_t u
   fmpz_init( u )
   fmpz_set_mpz( u, d.value )
-  fmpq_div_fmpz( on_row, on_row, u )
+  fmpq_div_fmpz( on_row, on_row, u ) # official method called, matrice stays 
+                                     #  canonical
   fmpz_clear( u )
+ 
+ def entry_mul_Rational( self, i, Rational m):
+  ' changes self: a[i,0] *= m '
+  cdef long ii=<long>i
+  cdef fmpq* on_row=self.matQQ[0].rows[ii]
+  cdef fmpq_t q
+  fmpq_init( q )
+  fmpq_set_mpq( q, m.value )
+  fmpq_mul( on_row, on_row, q )
+  fmpq_clear( q )
  
  def denominator( self ):
   ' returns common denominator, assumes self in canonical form '
@@ -100,7 +156,7 @@ cdef class fmpq_mat:
   for i in range(self.matQQ[0].r):
    on_row=self.matQQ[0].rows[i]
    for j in range(c):
-    fmpz_lcm(lcm, lcm, (<long*>(on_row+j))+1 )
+    fmpz_lcm(lcm, lcm, (<long*>(on_row+j))+1 ) # how to do this cleanly?
   cdef Integer r=Integer(0)
   fmpz_get_mpz( r.value, lcm )
   fmpz_clear(lcm)
@@ -134,10 +190,9 @@ cdef class fmpq_mat:
   return result as a space-separated string
   '''
   cdef Py_ssize_t i,j
-  cdef Integer num,den
-  num,den=Integer(0),Integer(0)
+  cdef Integer num=Integer(0),den=Integer(0)
   cdef mpq_t e
-  mpq_init( e )
+  mpq_init( e ) # no error here, that is the usual way to initialize mpq_t
   cdef fmpq* on_row
   for i in range(self.matQQ[0].r):
    on_row=self.matQQ[0].rows[i]
@@ -185,6 +240,16 @@ cdef class fmpq_mat:
   if fmpq_mat_inv(r.matQQ, self.matQQ):
    return r
 
+def column_to_fmpq_mat( Vector_rational_dense c ):
+ ' convert Sage rational vector to fmpq_mat of dimension n*1 '
+ cdef fmpq_mat a=fmpq_mat.__new__(fmpq_mat)
+ cdef long n=c._degree
+ fmpq_mat_init( a.matQQ, n, 1 )
+ cdef long i
+ for i in range(n):
+  fmpq_set_mpq( a.matQQ[0].entries+i, c._entries[i] )
+ return a
+
 def scalar_div_fmpq_3arg(fmpq_mat tgt, fmpq_mat sou, Integer fA):
  '''
  sets tgt to sou/f
@@ -204,4 +269,17 @@ def fmpq_mat_scalar_div(fmpq_mat a, Integer d):
  cdef fmpq_mat b=fmpq_mat.__new__(fmpq_mat)
  fmpq_mat_init( b.matQQ, a.matQQ[0].r, a.matQQ[0].c )
  scalar_div_fmpq_3arg( b, a, d )
+ return b
+
+def fmpq_mat_scalar_mul_rational(fmpq_mat a, Rational m):
+ ' returns a*m as fmpq_mat '
+ cdef fmpq_mat b=fmpq_mat.__new__(fmpq_mat)
+ fmpq_mat_init( b.matQQ, a.matQQ[0].r, a.matQQ[0].c )
+ cdef fmpq_t q
+ fmpq_init( q )
+ fmpq_set_mpq( q, m.value )
+ cdef long i,size=a.matQQ[0].r * a.matQQ[0].c
+ for i in range(size):
+  fmpq_mul(  b.matQQ[0].entries+i, a.matQQ[0].entries+i, q )
+ fmpq_clear( q )
  return b

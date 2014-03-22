@@ -35,7 +35,7 @@ def random_matrice():
 def sage_ZZ_to_flint_QQ( d, a ):
  return F( (Integer(d), flint.fmpz_mat( a ) ) )
 
-for i in range(5):
+for i in range(7):
  a=random_matrice()
  a[0,0]=-6
  print 'Sage a=\n',a
@@ -54,6 +54,9 @@ for i in range(5):
  print b2.raw_str()
 
  b2=sage_ZZ_to_flint_QQ(3,a)
+ assert b2.export_column()*3 == a.column(0)
+ assert flint.column_to_fmpq_mat( a.column(0)/3 ).export_column() * 3 == \
+  a.column(0)
  flint.scalar_div_fmpq_3arg( b0, b1, Integer(3) )
  print '\nb2=%s' % b2.raw_str() # -2 at the beginning of the line shows that 
                                 #  constructor divides away denominator
@@ -62,5 +65,14 @@ for i in range(5):
  if b0.raw_str().find('/3') != -1:
   assert 3==b0.denominator()
   print 'denominator test passes'
+  
+# test constructor with triple with short array
+s=F( (3,4,(-Rational(3),Rational(4)) ) )
+assert s.export_entry( Integer(0), Integer(0) ) == -3
+assert s.export_entry( Integer(0), Integer(1) ) == 4
+assert s.export_entry( Integer(0), Integer(2) ) == 0
+assert s.export_entry( 0, 0 ) == -3
+assert s.export_entry( 0, 1 ) == 4
+assert s.export_entry( 0, 2 ) == 0
 
 print 'test passed'

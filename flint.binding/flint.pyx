@@ -18,9 +18,12 @@
 from sage.rings.integer cimport Integer
 #from sage.rings.integer_ring import ZZ
 from sage.rings.rational cimport Rational
+from sage.rings.rational_field import QQ
 from sage.matrix.constructor import Matrix
 
 from sage.matrix.matrix_integer_dense cimport Matrix_integer_dense
+from sage.modules.vector_rational_dense cimport Vector_rational_dense
+from sage.modules.free_module_element import vector
 
 from libc.stdlib cimport malloc, free
 include "sage/libs/ntl/decl.pxi"
@@ -47,12 +50,15 @@ cdef extern from 'flint/fmpq.h':
   long num
   long den
  ctypedef fmpq fmpq_t[1]
+ void fmpq_init( fmpq_t x )
+ void fmpq_clear( fmpq_t x )
  char* fmpq_get_str(char* rez, int b, const fmpq_t x)
  void fmpq_set(fmpq_t tgt, const fmpq_t src)
  void fmpq_set_fmpz_frac(fmpq_t tgt, const fmpz_t p, const fmpz_t q)
  void fmpq_set_mpq(fmpq_t tgt, const mpq_t src)
  void fmpq_get_mpq(mpq_t tgt, const fmpq_t src)
  void fmpq_div_fmpz(fmpq_t tgt, const fmpq_t sou, const fmpz_t x)
+ void fmpq_mul(fmpq_t tgt, const fmpq_t a, const fmpq_t b)
 
 # matrix imported
 cdef extern from 'flint/fmpz_mat.h':
