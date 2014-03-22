@@ -289,7 +289,11 @@ def benchmark( dim, bits, tries, experiment_no, col_no ):
   if t_mine_max > 60:
    print 'n=%s bits=%s time=%.1f  benchmarks done=%s, skipping further tries' \
     % (dim,bits,t_mine_max,i+1)
-   break   
+   break
+ if t_sage_max==-1:
+  t_sage_max=t_sage_min
+ if t_mine_max==-1:
+  t_mine_max=t_mine_min
  save_time( dim, bits, experiment_no, col_no )
 
 def create_table_to_print( d ):
