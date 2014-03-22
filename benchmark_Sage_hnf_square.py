@@ -22,7 +22,7 @@ This program also benchmarks the new subroutine against hnf_square(), checks
 '''
 
 import sage.all
-import sys,time,numpy,re
+import sys,time,numpy
 try:
  import flint_sage as flint
 except:
