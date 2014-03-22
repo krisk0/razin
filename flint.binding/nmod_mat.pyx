@@ -157,17 +157,13 @@ def fmpz_mat_hermite_form(fmpz_mat A, Integer M):
  #sig_off()
  return a.export_nonnegative_fmpz_mat_upper()
 
-def fmpz_mat_hermite_form____not_working(fmpz_mat A,Integer M):
+def plu_modulo_prime(fmpz_mat A,Integer M):
  '''
- A: n*m matrice with m>=n, whose 1st n columns form a non-singular 
-  matrice B
- M: integer in range 2..2**64-1, det(B) divides M
- return Pernet/Stein/Sage HNF of A over ring of integers as fmpz_mat
+ call nmod_mat_lu on A taken modulo M
  
- ups, for non-prime M this subroutine does not work
+ forget p and return modified matrice
  '''
  a=nmod_mat(A,M)
- print 'taken modulo',M,':',a
  cdef long* p=<long*>malloc(a.matZn[0].r * sizeof(long))
  nmod_mat_lu(p,a.matZn,<int>0)
  '''
@@ -183,8 +179,6 @@ def fmpz_mat_hermite_form____not_working(fmpz_mat A,Integer M):
  5 5   1 0   5  5
  6 5 = 9 1 * 0 12
  '''
- print 'hermite form:',a
- print 'p',p[0],' ',p[1]
- cdef fmpz_mat b=a.export_nonnegative_fmpz_mat_upper()
+ cdef fmpz_mat b=a.export_nonnegative_fmpz_mat()
  free(p)
  return b
