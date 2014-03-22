@@ -95,8 +95,7 @@ def reimplemented_double_det(A, b, c):
  if vn == 0:
   raise ValueError('coin fell on the edge: v[n-1] is zero')
  vn=1/vn
- w=flint.fmpq_mat_scalar_mul_rational( v, -vn )
-   # w = (-1/vn)*v
+ w=flint.fmpq_mat_scalar_mul_rational( v, -vn )   # w = (-1/vn)*v
  w.entry_mul_Rational( n, vn )  # w[n-1] = w[n-1]/vn
  dc = det_given_divisor(A.augment(c), w.denominator(), proof=True)
  if debug_mode:
@@ -157,7 +156,7 @@ def reimplemented_add_column( B, H_B, a ):
  return r
 
 def reimplement_small_det_HNF(W, g):
- #instead of W._hnf_mod(2*g):
+ # instead of W._hnf_mod(2*g)
  if g==1:
   return sage.all.identity_matrix(ZZ, W.nrows())
  return flint.fmpz_mat_hermite_form( fmpz_mat( W ), Integer(g) )
@@ -338,8 +337,7 @@ def save_time_subr( mIn, mAx, row, col ):
  else:
   e,e1=fmt % mIn,fmt % mAx
   if e != e1:
-   e=e+'–'+e1
-   #e=e+'-'+e1
+   e=e+'-'+e1
  table_to_print[ row, col ] = e
 
 sage.all.set_random_seed('20140320')
@@ -370,9 +368,10 @@ def pretty_print_result( t, f0 ):
    w=f[j][1]
    if len(s) == w:
     x=w-len( s.lstrip() )
-    if x>2:
+    if x >= 2:
      y=x>>1
      s=s[y:]+( ' ' * y )
+     assert len(s)==w
    write(s)
    if j<c-1:
     write(' ')
