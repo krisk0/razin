@@ -77,7 +77,7 @@ cdef extern from 'flint/fmpq_mat.h':
   fmpq** rows
  ctypedef fmpq_mat_struct fmpq_mat_t[1]
 
-# Python types and methods
+# Python-visible types and methods
 include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
 include "nmod_mat.pyx"
