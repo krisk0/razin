@@ -55,8 +55,8 @@ dim_data=[(  50,     8,     512   ),
           ( 250,     8,     512   ),
           ( 500,     8,     256   ),
           (1000,     8,     128   ),
-          (2000,     8,       8   ),
-          (4000,     8,       8   )]
+          (2000,     8,       8   ), # with dim=4000 program got killed
+          (3000,     8,       8   )] #  ?out of memory?
 five=5
 if debug_mode:
  dim_data=[(   4,     8,     512   ),
@@ -238,12 +238,16 @@ def do_benchmark( m ):
  t0=t1-t0
  if t0<t_sage_min:
   t_sage_min=t0
+  if t_sage_max < 0:
+   t_sage_max=t_sage_min
  else:
   if t0>t_sage_max:
    t_sage_max=t0
  t1=t2-t1
  if t1<t_mine_min:
   t_mine_min=t1
+  if t_mine_max < 0:
+   t_mine_max=t_mine_min
  else:
   if t1>t_mine_max:
    t_mine_max=t1
@@ -278,7 +282,7 @@ def benchmark( dim, bits, tries, experiment_no, col_no ):
  '''
  run 2 algorithms multiple times (not more than tries time), store time
 
- early-abort if accumulated t_mine_max>60
+ early-abort after 2 or more tries if t_mine_max>60
  '''
  global t_sage_min,t_sage_max,t_mine_min,t_mine_max
  t_sage_max=t_mine_max=-1
@@ -286,14 +290,10 @@ def benchmark( dim, bits, tries, experiment_no, col_no ):
  for i in range( tries ):
   m=random_data( dim, bits )
   do_benchmark( m )
-  if t_mine_max > 60:
+  if t_mine_max > 60 and i:
    print 'n=%s bits=%s time=%.1f  benchmarks done=%s, skipping further tries' \
     % (dim,bits,t_mine_max,i+1)
    break
- if t_sage_max==-1:
-  t_sage_max=t_sage_min
- if t_mine_max==-1:
-  t_mine_max=t_mine_min
  save_time( dim, bits, experiment_no, col_no )
 
 def create_table_to_print( d ):
