@@ -54,6 +54,19 @@
 
 20 Mar 2014 re-implement Stein double-determinant algorithm (proof=1) with no 
              modification, just using faster subroutines for salvation of linear
-             system and calculating HNF of matrice with small determinant
+             system and calculating HNF of matrice with small determinant --- done
             
             profile: see what fragment takes most times
+
+22 Mar 2014 found Strassen multiplication algorithm in Matvei Nazaruk Git
+
+            https://github.com/matveinazaruk/Strassen/commit/
+             ef4eda1de8ce193a47204fa67ec42862f579b54e
+
+            if the code compiles, maybe include it in Razin?
+
+
+            After finding H = HNF(A) I need to find transformation matrice U such
+             that U * H = A.
+            Obviously no FLINT function exists that does it efficiently. Should I
+             write my own?
