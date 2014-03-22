@@ -3,13 +3,17 @@ RAZIN - Rigorous algebraic zero impeding numeration
 
 For now, I offer
  
-  a) A subroutine to calculate HNF of a square integer matrice with low determinant *faster than Sage method doing the same*;
+  a) Subroutines to quickly calculate HNF of an integer matrice in two practically important cases: a) non-singular and b) non-singular, with known small in absolute value determinant;
   b) Python binding to some methods of FLINT;
   c) some algorithms benchmarks (such as determinant, linear equations solver)
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
-See *filelist.txt*. My subroutine to compute HNF via modular technique is in flint.binding/nmod_mat_HNF.c
+See *filelist.txt*.
+
+The fastest in open-source world subroutine to compute HNF of a matrice with small in absolute value determinant is in *flint.binding/nmod_mat_HNF.c*
+
+The fastest in open-source world subroutine to compute HNF of an arbitrary non-singular matrice is in benchmark_Sage_hnf_square.py
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^

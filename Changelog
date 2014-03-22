@@ -56,3 +56,9 @@
 20 Mar 2014 wrapped fmpz_mat_fflu, tried it on small matrice
 
             Looks like this function correctly counts determinant
+
+22 Mar 2014 re-implemented W.Stein double-determinant algorithm using faster
+             subroutines including Dixon linear solver and my modular HNF
+
+            The new subroutine is faster than Sage. For instance
+             n=100 bits=256 max time sage/mine=2.91527295113/2.11966109276
