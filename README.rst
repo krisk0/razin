@@ -3,7 +3,9 @@ RAZIN - Rigorous algebraic zero impeding numeration
 
 For now, I offer
  
-  a) Subroutines to quickly calculate HNF of an integer matrice in two practically important cases: a) non-singular and b) non-singular, with known small in absolute value determinant;
+  a) Subroutines to quickly calculate HNF of an integer matrice in two practically important cases:
+         a) non-singular and
+         b) non-singular, with known small in absolute value determinant;
   b) Python binding to some methods of FLINT;
   c) some algorithms benchmarks (such as determinant, linear equations solver)
  
