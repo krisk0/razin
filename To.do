@@ -65,8 +65,11 @@
 
             if the code compiles, maybe include it in Razin?
 
-
             After finding H = HNF(A) I need to find transformation matrice U such
              that U * H = A.
             Obviously no FLINT function exists that does it efficiently. Should I
              write my own?
+            Ups, I can find that U, but it won't do any good because HNF computatio
+            is very fast compared to other matrice operation. For instance
+            computing det U is terribly slow. Wrong way, go back.
+
