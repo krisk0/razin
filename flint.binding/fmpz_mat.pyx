@@ -4,6 +4,7 @@
 cdef extern from 'flint/fmpz_mat.h':
  #long* fmpz_mat_entry(fmpz_mat_t mat, long i, long j)
  void fmpz_mat_det(fmpz_t det, const fmpz_mat_t m)
+ void fmpz_mat_det_modular(fmpz_t det, const fmpz_mat_t m,int proved)
  void fmpz_mat_print(fmpz_mat_t m)
  void fmpz_mat_clear(fmpz_mat_t m)
  void fmpz_mat_init(fmpz_mat_t m, long rows, long cols)
@@ -156,6 +157,17 @@ def det(fmpz_mat i):
  cdef Integer r
  fmpz_init( d )
  fmpz_mat_det( d, i.matr )
+ r=Integer(0)
+ fmpz_get_mpz( r.value, d )
+ fmpz_clear( d )
+ #can return either r or int(r)
+ return r
+
+def det_modular(fmpz_mat i):
+ cdef fmpz_t d
+ cdef Integer r
+ fmpz_init( d )
+ fmpz_mat_det_modular( d, i.matr, <int>1 )
  r=Integer(0)
  fmpz_get_mpz( r.value, d )
  fmpz_clear( d )
