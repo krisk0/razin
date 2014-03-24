@@ -61,3 +61,7 @@ A2. No, my binding to fmpz_mat and fmpq_mat is beautiful
 
 Q3. The .zip file contains whole lot of everything, but no documentation for your Python package. Where do I find useful information about what functions are available and how to call them?
 A3. Ha, you just answered your question yourself. .py files (such as test_*.py and benchmark*.py) are samples/demo/test and .cout are captured output of relevant .py files (for instance benchmark_solve_right.cout is what benchmark_solve_right.py output on my desktop)
+
+Q4. Your Python interface is disorganized and inconsistent. Your files are a mess.
+A4. However, I am coming near to my mid-range target of modding W.Stein double-det algorithm. My implementation outruns
+his.
