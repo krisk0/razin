@@ -25,6 +25,14 @@ Only FLINT functions will be used for solving hard sub-problems, unless a functi
 
 *I wrote the paragraph above in the morning, to discover in the evening that FLINT is not so good at inverting big matrices as dear old Sage*
 
+Bugs?
+^^^^^
+If you find out that some subroutine of Razin produces bad result or crashes, your bug-report is welcome. If it includes the following data: sample code including input data, description of what happens, expected data (in case you think output is wrong). For instance, if you think that fmpz_mat_hermite_form() works incorrectly, provide
+
+  a) your code forming input matrice,
+  b) output matrice,
+  c) the correct output.
+
 Glossary
 ^^^^^^^^
 
