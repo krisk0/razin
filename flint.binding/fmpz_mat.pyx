@@ -14,7 +14,8 @@ cdef extern from 'flint/fmpz_mat.h':
  long fmpz_mat_rref(fmpz_mat_t res, fmpz_t den, const fmpz_mat_t A)
  long fmpz_mat_fflu(fmpz_mat_t B, fmpz_t den, long* perm, const fmpz_mat_t A,
   int rank_check)
-
+ void fmpz_mat_det_bound(fmpz_t bound, const fmpz_mat_t A)
+ 
 cdef class fmpz_mat:
 
  cdef fmpz_mat_t matr
@@ -151,13 +152,30 @@ cdef class fmpz_mat:
   fmpz_clear( d )
   free(p)
   return b,d_sage,p_list
+  
+ def determinant( self ):
+  cdef fmpz_t d
+  cdef Integer r=Integer(0)
+  fmpz_init( d )
+  fmpz_mat_det( d, self.matr )
+  fmpz_get_mpz( r.value, d )
+  fmpz_clear( d )
+  return r
+  
+ def hadamard_bound( self ):
+  cdef fmpz_t d
+  cdef Integer r=Integer(0)
+  fmpz_init( d )
+  fmpz_mat_det_bound( d, self.matr )
+  fmpz_get_mpz( r.value, d )
+  fmpz_clear( d )
+  return r
 
 def det(fmpz_mat i):
  cdef fmpz_t d
- cdef Integer r
+ cdef Integer r=Integer(0)
  fmpz_init( d )
  fmpz_mat_det( d, i.matr )
- r=Integer(0)
  fmpz_get_mpz( r.value, d )
  fmpz_clear( d )
  #can return either r or int(r)
@@ -171,5 +189,4 @@ def det_modular(fmpz_mat i):
  r=Integer(0)
  fmpz_get_mpz( r.value, d )
  fmpz_clear( d )
- #can return either r or int(r)
  return r
