@@ -85,3 +85,6 @@
             record g values and h.b.(A)/h.b.(U) where A and U
             are as above and h.b.() is Hadamard bound on determinant;
             record count of tries in solve_system_with_difficult_last_row()
+
+            give example of infinite loop in solve_system_with_difficult_last_row
+            bug-report Sage team

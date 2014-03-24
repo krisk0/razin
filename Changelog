@@ -62,3 +62,6 @@
 
             The new subroutine is faster than Sage. For instance
              n=100 bits=256 max time sage/mine=2.91527295113/2.11966109276
+
+24 Mar 2014 Sage matrix_integer_dense_hnf.solve_system_with_difficult_last_row
+             goes to infinite loop if lhs[0]=0
