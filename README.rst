@@ -26,7 +26,7 @@ Only FLINT functions will be used for solving hard sub-problems, unless a functi
 
 Bug?
 ^^^^
-If you find out that some subroutine of Razin produces bad result or crashes, your bug-report is welcome. If it includes the following data: sample code including input data, description of what happens, expected data (in case you think output is wrong). For instance, if you think that fmpz_mat_hermite_form() works incorrectly, provide
+If you find out that some subroutine of Razin produces bad result or crashes, your bug-report is welcome. If it includes the following data: sample code including input data, description of what happens, expected result (in case you think output is wrong). For instance, if you think that fmpz_mat_hermite_form() works incorrectly, provide
   a) your code forming input matrice,
   b) output matrice,
   c) the correct output.
