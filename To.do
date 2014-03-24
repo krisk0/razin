@@ -73,3 +73,7 @@
             is very fast compared to other matrice operation. For instance
             computing det U is terribly slow. Wrong way, go back.
 
+24 Mar 2014 Profile the double-det algorithm: find out time spent by Dixon linear
+            solver, by solve_system_with_difficult_last_row(), add_col(), 1st
+            add_row(), 2nd add_row(). Also record h.b.(A)/h.b.(U) where A and U
+            are as above and h.b.() is Hadamard bound on determinant and g values
