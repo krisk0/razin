@@ -63,7 +63,7 @@
             https://github.com/matveinazaruk/Strassen/commit/
              ef4eda1de8ce193a47204fa67ec42862f579b54e
 
-            if the code compiles, maybe include it in Razin?
+            if the code compiles, maybe include it in Razin? --- delayed
 
             After finding H = HNF(A) I need to find transformation matrice U such
              that U * H = A.
@@ -80,6 +80,8 @@
              1st add_row(),
              2nd add_row(),
              double_det(),
-             det_given_divisor()
-            Also record g values and h.b.(A)/h.b.(U) where A and U
-            are as above and h.b.() is Hadamard bound on determinant
+             det_given_divisor() --- profiling done
+
+            record g values and h.b.(A)/h.b.(U) where A and U
+            are as above and h.b.() is Hadamard bound on determinant;
+            record count of tries in solve_system_with_difficult_last_row()
