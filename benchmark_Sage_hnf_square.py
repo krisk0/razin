@@ -107,6 +107,24 @@ def reimplemented_double_det(A, b, c):
 def reimplemented_solve_system_with_difficult_last_row(B, a):
  ' return result as fmpq_mat '
  C = sage.all.copy(B)
+ D = B.matrix_from_rows(range(C.nrows()-1))
+ N = D._rational_kernel_iml()
+ # original solve_system_with_difficult_last_row() goes into infinite
+ #  recursion loop if N.ncols() != 1
+ # if this equality ever happens, failed assert is a lot better than infinite
+ #  loop
+ assert N.ncols() == 1
+ k = N.matrix_from_columns([0])
+ w = B[-1]
+ a_prime = a[-1]
+ lhs = w*k
+ if lhs[0] == 0:
+  # this seldom happens
+  # if it happens, original Sage procedure goes into infinite loop
+  x=reimplemented_solve_right(B, a)
+  if debug_mode:
+   assert B*x == a
+  return x
  while 1:
   while 1:
    '''
@@ -121,22 +139,7 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
    # solve, export as m*1 matrice 
    x=reimplemented_solve_right( C, a ).export_column().column()
    break
-  D = B.matrix_from_rows(range(C.nrows()-1))
-  N = D._rational_kernel_iml()
-  # original solve_system_with_difficult_last_row() goes into infinite
-  #  recursion loop if N.ncols() != 1
-  # if this equality ever happens, failed assert is a lot better than infinite
-  #  loop
-  assert N.ncols() == 1
-  k = N.matrix_from_columns([0])
-  w = B[-1]
-  a_prime = a[-1]
-  lhs = w*k
   rhs = a_prime - w * x
-  if lhs[0] == 0:
-   if debug_mode:
-    print 'solve_system_with_difficult_last_row(): coin fell on the edge'
-   continue
   break
  alpha = rhs[0] / lhs[0]
  x=x + alpha*k

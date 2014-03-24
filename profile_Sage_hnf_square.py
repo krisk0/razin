@@ -132,6 +132,14 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
  k = N.matrix_from_columns([0])
  w = B[-1]
  a_prime = a[-1]
+ lhs = w*k
+ if lhs[0] == 0:
+  # this seldom happens
+  # if it happens, original Sage procedure goes into infinite loop
+  x=reimplemented_solve_right(B, a)
+  if debug_mode:
+   assert B*x == a
+  return x
  while 1:
   while 1:
    '''
@@ -148,7 +156,6 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
    x=reimplemented_solve_right( C, a ).export_column().column()
    profile( 'solve_right-last_row' , t1 )
    break
-  lhs = w*k
   rhs = a_prime - w * x
   if lhs[0] == 0:
    if debug_mode:
