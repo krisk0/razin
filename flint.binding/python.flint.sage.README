@@ -74,3 +74,5 @@ A5. Good question. I meant to say that
      4) I think that fmpq_mat_solve_dixon() is faster than Sage solve_right() on big random matrice in most cases.
 
  If you want to verify statements 1-4), go for it. Note that I failed to run benchmark for 4000x4000 matrice with entries in range -128..128 on 16G RAM (and succeeded for dim=3000).
+
+ And yes, I am 100% sure that words re-implement and bug-report contain hyphen
