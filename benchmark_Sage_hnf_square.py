@@ -118,7 +118,7 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
    C[C.nrows()-1] = random_matrix( ZZ, 1, C.ncols() ).row(0)
    if not quick_nonsigular_test( C ):
     continue
-   # solve, export, make matrice row, transpose
+   # solve, export as m*1 matrice 
    x=reimplemented_solve_right( C, a ).export_column().column()
    break
   D = B.matrix_from_rows(range(C.nrows()-1))
