@@ -141,27 +141,20 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
    assert B*x == a
   return x
  while 1:
-  while 1:
-   '''
-   replace last row of C with random small numbers
-   make sure the new matrice is non-singular
-   '''
-   if debug_mode:
-    print 'solve_system_with_difficult_last_row() makin matrice'
-   C[C.nrows()-1] = random_matrix( ZZ, 1, C.ncols() ).row(0)
-   if not quick_nonsigular_test( C ):
-    continue
-   # solve, export as m*1 matrice
-   t1=time.time()
-   x=reimplemented_solve_right( C, a ).export_column().column()
-   profile( 'solve_right-last_row' , t1 )
+  '''
+  replace last row of C with random small numbers
+  make sure the new matrice is non-singular
+  '''
+  if debug_mode:
+   print 'solve_system_with_difficult_last_row() makin matrice'
+  C[C.nrows()-1] = random_matrix( ZZ, 1, C.ncols() ).row(0)
+  if quick_nonsigular_test( C ):
    break
-  rhs = a_prime - w * x
-  if lhs[0] == 0:
-   if debug_mode:
-    print 'solve_system_with_difficult_last_row(): coin fell on the edge'
-   continue
-  break
+ # solve, export as m*1 matrice
+ t1=time.time()
+ x=reimplemented_solve_right( C, a ).export_column().column()
+ profile( 'solve_right-last_row' , t1 )
+ rhs = a_prime - w * x
  alpha = rhs[0] / lhs[0]
  x=x + alpha*k
  if debug_mode:
