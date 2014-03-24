@@ -38,7 +38,7 @@ Glossary
     C numerical/matrice library with save-every-penny approach to arithmetic. `Here <http://www.flintlib.org/>`_
 
 :krisk0/razin:
-    a project containing mostly Python/Cython code for integer linear algebra attempting to use the fastest available algorithms and save every penny
+    a research log and software package with quickest subroutines for integer linear algebra 
 
 :NTL:
     C++ numerical/matrice library with gluttonous bigint constructor. `Here <http://shoup.net/ntl/>`_
