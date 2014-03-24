@@ -69,7 +69,7 @@
              that U * H = A.
             Obviously no FLINT function exists that does it efficiently. Should I
              write my own?
-            Ups, I can find that U, but it won't do any good because HNF computatio
+            Ups, I can find that U, but it won't do any good because HNF computation
             is very fast compared to other matrice operation. For instance
             computing det U is terribly slow. Wrong way, go back.
 
@@ -81,5 +81,5 @@
              2nd add_row(),
              double_det(),
              det_given_divisor()
-            Also record h.b.(A)/h.b.(U) where A and U
-            are as above and h.b.() is Hadamard bound on determinant and g values
+            Also record g values and h.b.(A)/h.b.(U) where A and U
+            are as above and h.b.() is Hadamard bound on determinant
