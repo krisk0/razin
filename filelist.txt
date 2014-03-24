@@ -2,27 +2,29 @@
 *.py                  .py in root directory: Python script, usually benchmark
                        or test, usually requires flint_sage
 
-flint.binding/        Python binding for small piece of FLINT library, requires
-                       sage. Installs as flint_sage. Tests in separate files test* 
+flint.binding/         Python binding for small piece of FLINT library, requires
+                        sage. Installs as flint_sage. Tests in separate files test* 
 
-unimodular.5way.py    Benchmark 5 ways of checking a 100x100 matrice for 
-                       unimodularity
-unimodular.4way.py    unimodular.5way.py reduced to not use FLINT
-unimodular.5way.cout  Benchmark results for my desksop, with CPU specs as known 
-                       to uname. Re-running the program gives slightly different
-                       result.
+flint.binding/*.README  kinda documentation with installation instruction and
+                         FAQ
+
+unimodular.5way.py      Benchmark 5 ways of checking a 100x100 matrice for 
+                         unimodularity
+unimodular.5way.cout    Benchmark results for my desksop, with CPU specs as known 
+                         to uname. Re-running the program gives slightly different
+                         result.
                        
-                      Benchmark data explained.
+                        Benchmark data explained.
 
-A_by_B_mod_P.hacks/   Secret voodoo to calculate a*b mod p for small p on amd64 
-                        and GPU, public domain
+A_by_B_mod_P.hacks/     Secret voodoo to calculate a*b mod p for small p on amd64 
+                         and GPU, public domain
 
 Changelog               History of bugs fixes and additions
 To.do                     Plan of changes
 
-ebuild/                   Useful ebuild scripts
+ebuild/                  Useful ebuild scripts
 
-benchmark_*             benchmark script and result
+benchmark_*                benchmark script and result
 
 **************************
 ATTENTION! new file prefix   test_benchmark
