@@ -1,6 +1,6 @@
-*.cout                Output of python script (usually benchmark or test result)
-*.py                  .py in root directory: Python script, usually benchmark
-                       or test, usually requires flint_sage
+cout/*.cout           Output of python script (usually benchmark or test result)
+*.py                  Python script, usually benchmark or test, usually requires
+                       flint_sage
 
 flint.binding/         Python binding for small piece of FLINT library, requires
                         sage. Installs as flint_sage. Tests in separate files test* 
@@ -8,32 +8,14 @@ flint.binding/         Python binding for small piece of FLINT library, requires
 flint.binding/*.README  kinda documentation with installation instruction and
                          FAQ
 
-unimodular.5way.py      Benchmark 5 ways of checking a 100x100 matrice for 
-                         unimodularity
-unimodular.5way.cout    Benchmark results for my desksop, with CPU specs as known 
-                         to uname. Re-running the program gives slightly different
-                         result.
-                       
-                        Benchmark data explained.
+benchmark.script/      benchmark, test-benchmark and profile scripts
+
 
 A_by_B_mod_P.hacks/     Secret voodoo to calculate a*b mod p for small p on amd64 
                          and GPU, public domain
 
 Changelog               History of bugs fixes and additions
-To.do                     Plan of changes
+To.do                    Plan of changes
 
 ebuild/                  Useful ebuild scripts
 
-benchmark_*                benchmark script and result
-
-**************************
-ATTENTION! new file prefix   test_benchmark
-**************************
-                             shall contain test and benchmark script and result
-                             
-The files shall reside in flint.binding/
-
-                             For example
-
-test_benchmark_nmod_mat_HNF-ntl.py   check if NTL HNF() function works, benchmark
-test_benchmark_nmod_mat_HNF-ntl.cout benchmark result. Time ratio NTL/mine
