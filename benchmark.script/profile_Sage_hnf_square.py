@@ -117,7 +117,6 @@ def reimplemented_double_det(A, b, c):
  return db, dc
 
 def reimplemented_solve_system_with_difficult_last_row(B, a):
- ' return result as fmpq_mat '
  t0=time.time()
  C = sage.all.copy(B)
  D = B.matrix_from_rows(range(C.nrows()-1))
@@ -131,12 +130,12 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
  assert N.ncols() == 1
  k = N.matrix_from_columns([0])
  w = B[-1]
- a_prime = a[-1]
- lhs = w*k
- if lhs[0] == 0:
+ a_prime = a[-1][0]
+ lhs = (w*k)[0]
+ if lhs == 0:
   # this seldom happens
   # if it happens, original Sage procedure goes into infinite loop
-  x=reimplemented_solve_right(B, a)
+  x=reimplemented_solve_right(B, a).export_column().column()
   if debug_mode:
    assert B*x == a
   return x
@@ -154,8 +153,8 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
  t1=time.time()
  x=reimplemented_solve_right( C, a ).export_column().column()
  profile( 'solve_right-last_row' , t1 )
- rhs = a_prime - w * x
- alpha = rhs[0] / lhs[0]
+ rhs = a_prime - (w * x)[0]
+ alpha = rhs / lhs
  x=x + alpha*k
  if debug_mode:
   assert B*x == a
