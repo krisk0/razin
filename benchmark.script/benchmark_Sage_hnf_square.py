@@ -29,7 +29,7 @@ except:
  print 'you forgot to install flint_sage Python wrapper'
  sys.exit(1)
 
-debug_mode=0
+debug_mode=1
 
 write=sys.stdout.write
 
@@ -105,7 +105,6 @@ def reimplemented_double_det(A, b, c):
  return db, dc
 
 def reimplemented_solve_system_with_difficult_last_row(B, a):
- ' return result as fmpq_mat '
  C = sage.all.copy(B)
  D = B.matrix_from_rows(range(C.nrows()-1))
  N = D._rational_kernel_iml()
@@ -116,32 +115,29 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
  assert N.ncols() == 1
  k = N.matrix_from_columns([0])
  w = B[-1]
- a_prime = a[-1]
- lhs = w*k
- if lhs[0] == 0:
+ a_prime = a[-1][0]
+ lhs = (w*k)[0]
+ if lhs == 0:
   # this seldom happens
   # if it happens, original Sage procedure goes into infinite loop
-  x=reimplemented_solve_right(B, a)
+  x=reimplemented_solve_right(B, a).export_column().column()
   if debug_mode:
    assert B*x == a
   return x
  while 1:
-  while 1:
-   '''
-   replace last row of C with random small numbers
-   make sure the new matrice is non-singular
-   '''
-   if debug_mode:
-    print 'solve_system_with_difficult_last_row() makin matrice'
-   C[C.nrows()-1] = random_matrix( ZZ, 1, C.ncols() ).row(0)
-   if not quick_nonsigular_test( C ):
-    continue
-   # solve, export as m*1 matrice 
-   x=reimplemented_solve_right( C, a ).export_column().column()
+  '''
+  replace last row of C with random small numbers
+  make sure the new matrice is non-singular
+  '''
+  if debug_mode:
+   print 'solve_system_with_difficult_last_row() makin matrice'
+  C[C.nrows()-1] = random_matrix( ZZ, 1, C.ncols() ).row(0)
+  if quick_nonsigular_test( C ):
    break
-  rhs = a_prime - w * x
-  break
- alpha = rhs[0] / lhs[0]
+ # solve, export as m*1 matrice
+ x=reimplemented_solve_right( C, a ).export_column().column()
+ rhs = a_prime - (w * x)[0]
+ alpha = rhs / lhs
  x=x + alpha*k
  if debug_mode:
   assert B*x == a
@@ -203,13 +199,13 @@ def reimplemented_hnf_square( A ):
  # if H is fmpz_mat, save a penny and let it be
  x = reimplemented_add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] + 
   l*A[mn-1,mn-1]])))
+ # if H is fmpz_mat, convert it to Sage
+ if not hasattr(H,'nrows'):
+  H = H.export_sage()
  if debug_mode:
   xsage=add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] + l*A[mn-1,mn-1]])),
    True)
   assert xsage == x
- # if H is fmpz_mat, convert it to Sage
- if not hasattr(H,'nrows'):
-  H = H.export_sage()
  Hprime = H.augment(x)
  pivots = range(mn-1)
  if debug_mode:
