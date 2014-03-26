@@ -117,13 +117,7 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
  w = B[-1]
  a_prime = a[-1][0]
  lhs = (w*k)[0]
- if lhs == 0:
-  # this seldom happens
-  # if it happens, original Sage procedure goes into infinite loop
-  x=reimplemented_solve_right(B, a).export_column().column()
-  if debug_mode:
-   assert B*x == a
-  return x
+ assert lhs # .pdf explains that lhs != 0
  while 1:
   '''
   replace last row of C with random small numbers
@@ -263,7 +257,7 @@ def random_data(dim,bits):
    return a
   # with non-zero probability matrice a is non-singular, so we do extra
   #  check
-  if flint.det(b):
+  if flint.det( fmpz_mat(a) ):
    return a
 
 def quick_nonsigular_test( m ):

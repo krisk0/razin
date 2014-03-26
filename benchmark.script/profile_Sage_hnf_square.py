@@ -10,6 +10,8 @@ This program is a fork of benchmark_Sage_hnf_square.py
 
 Records time spent by some stages of Stein double-det algorithm as documented
  in To.do
+
+Optionally runs sage .solve_right alongside with Dixon, compares result 
 '''
 
 import sage.all
@@ -21,6 +23,8 @@ except:
  sys.exit(1)
 
 debug_mode=0
+check_dixon_time=1
+benchmark_early_aborts=0
 
 write=sys.stdout.write
 
@@ -36,18 +40,25 @@ add_column=sage.matrix.matrix_integer_dense_hnf.add_column
 pivots_of_hnf_matrix=sage.matrix.matrix_integer_dense_hnf.pivots_of_hnf_matrix
 matrix=sage.all.matrix
 random_matrix=sage.all.random_matrix
+randint=sage.all.randint
 
 t_sage_min=t_sage_max=0
 t_mine_min=t_mine_max=0
-bits_choice=[8,32,128,256,512]
+handicap=0
+bits_choice=range(15,26)
+#400,500,512,524,550,600,650,700,800]
 #           dim  min_bits max_bits
-dim_data=[
-          ( 100,     8,     512   ),
-          ( 250,     8,     512   ),
-          ( 500,     8,     256   ),
-          (1000,     8,     128   ),
-          (2000,     8,       8   ), # with dim=4000 program got killed
-          (3000,     8,       8   )] #  ?out of memory?
+dim_data=\
+ [ 
+  (  50, 8, 512  ),
+  ( 100, 8, 512  ),
+  ( 250, 8, 512  ),
+  ( 500, 8, 256  ),
+  (1000, 8, 128  ),
+  (2000, 8, 32   ),
+  (3000, 8, 8    )
+ ]
+dim_data=[(1000, 15, 25 )]
 five=5
 if debug_mode:
  dim_data=[(   4,     8,     512   ),
@@ -68,10 +79,44 @@ def profile( e, t ):
   profile_data[e] = t
  return r
 
+def IML_solve_right( a, b ):
+ # this code only runs for big and fat matrice
+ return a._solve_right_nonsingular_square(b,check_rank=False)
+
+def IML_or_FLINT( a ):
+ '''
+ returns one iff IML solve_right is expected to be faster than FLINT
+  solve_dixon()
+  
+ Point of balance ought to be found via a polynom or smth else more beautiful 
+  than un-contiguos function used below
+ '''
+ if check_dixon_time:
+  return 0
+ n=a.nrows()-1
+ if n < 289:     # for dim<290 only Dixon plays
+  return 0
+ avg_log2=0
+ for i in range(10):
+  j,k=randint(0,n-1),randint(0,n)
+  avg_log2 += int( a[j,k] ).bit_length()
+ if check_dixon_time:
+  avg_log2 = avg_log2/10.
+  global profile_data
+  try:
+   profile_data[ 'log2_aIJ' ] += avg_log2
+  except:
+   profile_data[ 'log2_aIJ' ] = avg_log2
+ if n <= 401:
+  return avg_log2 >= 800    # use Dixon for 80 or less bits
+ if n <= 500:
+  return avg_log2 >= 400    # use Dixon for 40 or less bits
+ # really don't know for n>1000. However it seems
+ return avg_log2 >= 300     # for 500-1000 equilibium is somewhere near 32-35
+
 def reimplemented_solve_right( A, b ):
  if debug_mode:
   sage_r=A.solve_right(b)
- t0=time.time()
  Af=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(A)) )
  bf=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(b)) )
  mine_r=Af.solve_dixon(bf)
@@ -79,8 +124,32 @@ def reimplemented_solve_right( A, b ):
   e=mine_r.export_column().column()
   assert e == sage_r
   print 'solve_right(): check positive'
- profile( 'Dixon solver' , t0 )
  return mine_r
+
+def IML_solve_right_or_FLINT_dixon( A, b ):
+ ' returns result as sage matrice and time wasted which should be handicaped '
+ if check_dixon_time:
+  global handicap
+  tD = time.time()
+  x = IML_solve_right( A, b )
+  tE=profile( 'IML solver', tD )-tD
+  handicap += tE
+  print 'increased handicap by %.2f, new value %.2f' % (tE,handicap)
+ t0=time.time()
+ if IML_or_FLINT( A ):
+  # no double accounting!
+  assert not check_dixon_time
+  mine_r=IML_solve_right( A, b )
+  profile( 'IML solver' , t0 )
+ else:
+  Af=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(A)) )
+  bf=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(b)) )
+  mine_r=Af.solve_dixon(bf).export_column().column()
+  profile( 'dixon-last_row' , t0 )
+ if check_dixon_time:
+  assert mine_r == x
+  return mine_r,tE
+ return mine_r,0
 
 def reimplemented_double_det(A, b, c):
  '''
@@ -132,13 +201,7 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
  w = B[-1]
  a_prime = a[-1][0]
  lhs = (w*k)[0]
- if lhs == 0:
-  # this seldom happens
-  # if it happens, original Sage procedure goes into infinite loop
-  x=reimplemented_solve_right(B, a).export_column().column()
-  if debug_mode:
-   assert B*x == a
-  return x
+ assert lhs # .pdf explains that lhs != 0
  while 1:
   '''
   replace last row of C with random small numbers
@@ -150,28 +213,26 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
   if quick_nonsigular_test( C ):
    break
  # solve, export as m*1 matrice
- t1=time.time()
- x=reimplemented_solve_right( C, a ).export_column().column()
- profile( 'solve_right-last_row' , t1 )
+ x,tE=IML_solve_right_or_FLINT_dixon( C, a )
  rhs = a_prime - (w * x)[0]
  alpha = rhs / lhs
  x=x + alpha*k
  if debug_mode:
   assert B*x == a
   print 'solve_system_with_difficult_last_row(): salvation correct'
+ if check_dixon_time:
+  t0 += tE
  profile( 'system_with_difficult_last_row' , t0 )
  return x
 
 def reimplemented_add_column( B, H_B, a ):
  ' H_B is Sage matrice or fmpz_mat '
- t0=time.time()
  z = reimplemented_solve_system_with_difficult_last_row(B, a)
  if hasattr(H_B,'nrows'):
   H_B = fmpz_mat( H_B )
  H_Bf=fmpq_mat( (Integer(1), H_B) )
  H_Bf.mul( column_to_fmpq_mat(z.column(0)) )
  r=H_Bf.export_fmpz_mat().export_sage()
- profile( 'add_column' , t0 )
  return r
 
 def reimplement_small_det_HNF(W, g):
@@ -257,6 +318,7 @@ def do_benchmark( m ):
  t0=time.time()
  sage_r=sage.matrix.matrix_integer_dense_hnf.hnf_square(m,True)
  t1=time.time()
+ m._clear_cache()
  mine_r=reimplemented_hnf_square(m)
  t2=time.time()
  if mine_r != sage_r:
@@ -292,7 +354,7 @@ def random_data(dim,bits):
    return a
   # with non-zero probability matrice a is non-singular, so we do extra
   #  check
-  if flint.det(b):
+  if flint.det( fmpz_mat(a) ):
    return a
 
 def quick_nonsigular_test( m ):
@@ -307,24 +369,33 @@ def quick_nonsigular_test( m ):
    return 1
  return 0
 
-def benchmark( dim, bits, tries, experiment_no, col_no ):
+def find_col( x ):
+ for i in range(len(bits_choice)):
+  if bits_choice[i] == x:
+   return 2+i
+
+def benchmark( dim, bits, tries, experiment_no ):
  '''
  run 2 algorithms multiple times (not more than tries time), store time
 
  early-abort after 2 or more tries if t_mine_max>60
  '''
- global t_sage_min,t_sage_max,t_mine_min,t_mine_max,profile_data
+ global t_sage_min,t_sage_max,t_mine_min,t_mine_max,profile_data,handicap
+ handicap=0
  t_sage_max=t_mine_max=-1
  t_sage_min=t_mine_min=1e77
  profile_data=dict()
+ col_no=find_col(bits)
  for i in range( tries ):
   m=random_data( dim, bits )
   do_benchmark( m )
-  if t_mine_max > 60 and i:
+  if benchmark_early_aborts and t_mine_max > 60 and i:
    tries=i+1
    print 'n=%s bits=%s time=%.1f  benchmarks done=%s, skipping further tries' \
     % (dim,bits,t_mine_max,tries)
    break
+ t_mine_min -= handicap/tries  # this is slightly incorrect
+ t_mine_max -= handicap/tries  # profile_data['total']-handicap is correct
  profile_output( dim, bits, tries )
  save_time( dim, bits, experiment_no, col_no )
 
@@ -343,6 +414,11 @@ def detect_profile_format( d ):
  return '%'+str(k)+'s %.4f'
 
 def profile_output( dim, bits, tries ):
+ global profile_data
+ if handicap:
+  print 'subtracting from total time %.2f handicap %.2f' % \
+   (profile_data['total'],handicap)
+  profile_data['total'] -= handicap
  fmt=detect_profile_format( profile_data )
  li=sort_in_increasin_order( profile_data )
  he='********* profile for n=%s bits=%s tries=%s *********' % (dim,bits,tries)
@@ -350,23 +426,20 @@ def profile_output( dim, bits, tries ):
  for i in li:
   print fmt % (i[0],i[1])
  print ('*' * len(he))+'\n'
+ sys.stdout.flush()
 
 def create_table_to_print( d ):
  ' Initialize table to hold benchmark result '
  i=d[0]
  rows=1+2*len(d)
- cols=2
- for j in bits_choice:
-  if j >= i[1] and j <= i[2]:
-   cols += 1
+ cols=2+len(bits_choice)
  t=numpy.resize( numpy.array( [], dtype=object ), (rows,cols) )
  r0=t[0]
  r0[0],r0[1]='','n'
  col=2
  for j in bits_choice:
-  if j >= i[1] and j <= i[2]:
-   r0[col]='%s bits' % j
-   col += 1
+  r0[col]='%s bits' % j
+  col += 1
  t[1][0]='Sage'
  t[1+len(d)][0]='re-impl'
  for i in range(rows):
@@ -400,11 +473,9 @@ result_row=0
 for i in dim_data:
  table_to_print[ 1+              result_row ][ 1 ] = str( i[0] )
  table_to_print[ 1+len(dim_data)+result_row ][ 1 ] = str( i[0] )
- col = 2
  for j in bits_choice:
   if j >= i[1] and j <= i[2]:
-   benchmark( i[0], j, five, result_row, col )
-   col += 1
+   benchmark( i[0], j, five, result_row )
    if not debug_mode:
     print 'n=%s bits=%s max time sage/mine=%s/%s' % (i[0],j,t_sage_max,\
      t_mine_max)
