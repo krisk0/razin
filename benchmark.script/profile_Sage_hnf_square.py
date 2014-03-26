@@ -45,7 +45,7 @@ randint=sage.all.randint
 t_sage_min=t_sage_max=0
 t_mine_min=t_mine_max=0
 handicap=0
-bits_choice=range(15,26)
+bits_choice=range(15,46,5)
 #400,500,512,524,550,600,650,700,800]
 #           dim  min_bits max_bits
 dim_data=\
@@ -58,7 +58,7 @@ dim_data=\
   (2000, 8, 32   ),
   (3000, 8, 8    )
  ]
-dim_data=[(1000, 15, 25 )]
+dim_data=[(500, 15, 45 )]
 five=5
 if debug_mode:
  dim_data=[(   4,     8,     512   ),
@@ -90,12 +90,16 @@ def IML_or_FLINT( a ):
   
  Point of balance ought to be found via a polynom or smth else more beautiful 
   than un-contiguos function used below
+  
+ 1000 19->17
+  500 20-35 -> 19-33
  '''
  if check_dixon_time:
   return 0
  n=a.nrows()-1
- if n < 289:     # for dim<290 only Dixon plays
-  return 0
+ if n < 289:     # for dim<290 
+  return 0       #  only Dixon plays
+ # for bigger dim, call IML if entries of a are big enough
  avg_log2=0
  for i in range(10):
   j,k=randint(0,n-1),randint(0,n)
@@ -111,8 +115,12 @@ def IML_or_FLINT( a ):
   return avg_log2 >= 800    # use Dixon for 80 or less bits
  if n <= 500:
   return avg_log2 >= 400    # use Dixon for 40 or less bits
- # really don't know for n>1000. However it seems
- return avg_log2 >= 300     # for 500-1000 equilibium is somewhere near 32-35
+ if n < 1000:
+  # use straight line passing thru points 500,19 and 1000,17
+  return avg_log2 >= (5250-x)/25.
+ return avg_log2 >= 300     # for 500-1000 equilibrium is somewhere near 32-35
+ # really don't know for n>1000. Let it be 10. Suggestions welcome
+ return avg_log2 >= 100
 
 def reimplemented_solve_right( A, b ):
  if debug_mode:
