@@ -86,5 +86,6 @@
             are as above and h.b.() is Hadamard bound on determinant;
             record count of tries in solve_system_with_difficult_last_row()
 
-            give example of infinite loop in solve_system_with_difficult_last_row
-            bug-report Sage team
+26 Mar 2014 arrr, Dixon / IML efficiency in solve_system_with_difficult_last_row()
+             floats from test to test. Must do more tests, this takes time, 
+             especially for n=1000
