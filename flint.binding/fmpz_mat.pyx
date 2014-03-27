@@ -15,6 +15,7 @@ cdef extern from 'flint/fmpz_mat.h':
  long fmpz_mat_fflu(fmpz_mat_t B, fmpz_t den, long* perm, const fmpz_mat_t A,
   int rank_check)
  void fmpz_mat_det_bound(fmpz_t bound, const fmpz_mat_t A)
+ void fmpz_mat_det_divisor(fmpz_t d, const fmpz_mat_t A)
  
 cdef class fmpz_mat:
 
@@ -158,6 +159,15 @@ cdef class fmpz_mat:
   cdef Integer r=Integer(0)
   fmpz_init( d )
   fmpz_mat_det( d, self.matr )
+  fmpz_get_mpz( r.value, d )
+  fmpz_clear( d )
+  return r
+
+ def det_divisor( self ):
+  cdef fmpz_t d
+  cdef Integer r=Integer(0)
+  fmpz_init( d )
+  fmpz_mat_det_divisor( d, self.matr )
   fmpz_get_mpz( r.value, d )
   fmpz_clear( d )
   return r
