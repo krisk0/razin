@@ -17,6 +17,7 @@ cdef extern from 'flint/fmpq_mat.h':
   const fmpz_t x)
  void fmpq_mat_set(fmpq_mat_t tgt, const fmpq_mat_t sou)
  void fmpq_mat_mul(fmpq_mat_t tgt, const fmpq_mat_t A, const fmpq_mat_t B )
+ void fmpq_mat_get_fmpz_mat_matwise(fmpz_mat_t n, fmpz_t d, const fmpq_mat_t s)
 
 def raw_entry( n, d ):
  if d==1:
@@ -95,6 +96,20 @@ cdef class fmpq_mat:
   if ok:
    return i
   print 'non-integral matrice:',self
+
+ def integrify( self ):
+  '''
+  export self=A as pair (M,d) where M=A*d is fmpz_matrix and d is minimal 
+   integer such that M is integer
+  '''
+  cdef fmpz_mat M=fmpz_mat.__new__(fmpz_mat)  
+  fmpz_mat_init( M.matr, self.matQQ[0].r, self.matQQ[0].c )
+  cdef fmpz_t den
+  fmpz_init( den )
+  fmpq_mat_get_fmpz_mat_matwise( M.matr, den, self.matQQ )
+  cdef Integer d=Integer(0)
+  fmpz_get_mpz( d.value, den )
+  return M,d
 
  def export_column( self ):
   ' export left-most column of self as Sage Vector_rational_dense '

@@ -45,6 +45,12 @@ cdef class fmpz_mat:
    return "fmpz_mat(%i, %i, [%s])" % (self.matr[0].r, self.matr[0].c,
             (", ".join(map(str, self.entries()))))
 
+ def nrows(self):
+  return self.matr[0].r
+
+ def ncols(self):
+  return self.matr[0].c
+
  def export_sage(self):
   ' export self as sage Matrix_integer_dense '
   cdef Matrix_integer_dense r=Matrix( self.matr[0].r, self.matr[0].c )
@@ -180,6 +186,22 @@ cdef class fmpz_mat:
   fmpz_get_mpz( r.value, d )
   fmpz_clear( d )
   return r
+  
+ def solve_dixon( self, fmpz_mat rght ):
+  '''
+  run Dixon solver to get A**-1 * rght where A=self --- non-singular square
+
+  return result as fmpq_matrice
+  '''
+  cdef fmpq_mat A=fmpq_mat.__new__( fmpq_mat )
+  fmpq_mat_init(A.matQQ, self.matr[0].r, self.matr[0].r )
+  fmpq_mat_set_fmpz_mat( A.matQQ, self.matr )
+  # should fail before this point if is self is not square
+  cdef fmpq_mat B=fmpq_mat.__new__( fmpq_mat )
+  fmpq_mat_init( B.matQQ, rght.matr[0].r, rght.matr[0].c )
+  fmpq_mat_set_fmpz_mat( B.matQQ, rght.matr )
+  # line below should return None if A is singular
+  return A.solve_dixon( B )
 
 def det(fmpz_mat i):
  cdef fmpz_t d
