@@ -65,3 +65,6 @@
 
 24 Mar 2014 Dixon is sometimes faster and sometimes slower, only in add_column().
             In double_det() it is faster always. Profiling takes time... 
+
+27 Mar 2014 Equilibrium found, final version of profile_Sage_hnf_square.py is
+             running

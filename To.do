@@ -89,3 +89,7 @@
 26 Mar 2014 arrr, Dixon / IML efficiency in solve_system_with_difficult_last_row()
              floats from test to test. Must do more tests, this takes time, 
              especially for n=1000
+
+27 Mar 2014 To speed up solve_system_with_difficult_last_row(), need a 
+             subroutine to quickly put unimodular matrice to row-echelon form
+             and find transformation
