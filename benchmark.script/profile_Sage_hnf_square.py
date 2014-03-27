@@ -11,8 +11,10 @@ This program is a fork of benchmark_Sage_hnf_square.py
 Records time spent by some stages of Stein double-det algorithm as documented
  in To.do
 
-Optionally runs sage .solve_right alongside with Dixon, compares result 
+Optionally runs sage .solve_right alongside with Dixon, compares result
 '''
+
+#todo: output partially filled table after dim=x is finished
 
 import sage.all
 import sys,time,numpy
@@ -48,7 +50,7 @@ handicap=0
 bits_choice=[8,32,64,96,128,196,256,384,512]
 #           dim  min_bits max_bits
 dim_data=\
-         [ 
+         [
           (  50, 8,         512  ),
           ( 100, 8,         512  ),
           ( 250, 8,         512  ),
@@ -85,10 +87,10 @@ def IML_or_FLINT( a ):
  '''
  returns one iff IML solve_right is expected to be faster than FLINT
   solve_dixon()
-  
- Point of balance ought to be found via a polynom or smth else more beautiful 
+ 
+ Point of balance ought to be found via a polynom or smth else more beautiful
   than un-contiguos function used below
-  
+ 
  2000 20->19
  1000 19->17
   500 20-35 -> 19-33
@@ -96,7 +98,7 @@ def IML_or_FLINT( a ):
  if check_dixon_time:
   return 0
  n=a.nrows()-1
- if n < 289:     # for dim<290 
+ if n < 289:     # for dim<290
   return 0       #  only Dixon plays
  # for bigger dim, call IML if entries of a are big enough
  avg_log2=0
@@ -158,7 +160,7 @@ def IML_solve_right_or_FLINT_dixon( A, b ):
 
 def reimplemented_double_det(A, b, c):
  '''
- nearly identical to double_det(...,proof=True), only uses a faster FLINT 
+ nearly identical to double_det(...,proof=True), only uses a faster FLINT
   method instead of sage solve_right()
  '''
  t0=time.time()
@@ -288,7 +290,7 @@ def reimplemented_hnf_square( A ):
   else:
    H = reimplement_small_det_HNF(W, g)
  # if H is fmpz_mat, save a penny and let it be
- x = reimplemented_add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] + 
+ x = reimplemented_add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] +
   l*A[mn-1,mn-1]])))
  if debug_mode:
   xsage=add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] + l*A[mn-1,mn-1]])),
@@ -351,7 +353,7 @@ def do_benchmark( m ):
 
 def random_data(dim,bits):
  '''
- returns random square non-singular matrice with entries  
+ returns random square non-singular matrice with entries
  uniformly distributed in the interval −2**bits .. 2**bits
  '''
  while 1:
