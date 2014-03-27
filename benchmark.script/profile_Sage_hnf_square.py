@@ -91,6 +91,7 @@ def IML_or_FLINT( a ):
  Point of balance ought to be found via a polynom or smth else more beautiful 
   than un-contiguos function used below
   
+ 2000 20->19
  1000 19->17
   500 20-35 -> 19-33
  '''
@@ -118,9 +119,7 @@ def IML_or_FLINT( a ):
  if n < 1000:
   # use straight line passing thru points 500,19 and 1000,17
   return avg_log2 >= (5250-x)/25.
- return avg_log2 >= 300     # for 500-1000 equilibrium is somewhere near 32-35
- # really don't know for n>1000. Let it be 10. Suggestions welcome
- return avg_log2 >= 100
+ return avg_log2 >= 190     # for 2000 equilibrium is at 20
 
 def reimplemented_solve_right( A, b ):
  if debug_mode:
@@ -505,7 +504,7 @@ def decide_format( t, col, f ):
  return '%'+str(req)+f,req
 
 if __name__ == "__main__":
- sage.all.set_random_seed('20140320')
+ sage.all.set_random_seed('20140327')
  table_to_print=create_table_to_print( dim_data )
  result_row=0
  for i in dim_data:
