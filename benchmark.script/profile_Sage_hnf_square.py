@@ -45,7 +45,7 @@ randint=sage.all.randint
 t_sage_min=t_sage_max=0
 t_mine_min=t_mine_max=0
 handicap=0
-bits_choice=range(15,46,5)
+bits_choice=[17,18,20,23,26]
 #400,500,512,524,550,600,650,700,800]
 #           dim  min_bits max_bits
 dim_data=\
@@ -58,7 +58,7 @@ dim_data=\
   (2000, 8, 32   ),
   (3000, 8, 8    )
  ]
-dim_data=[(500, 15, 45 )]
+dim_data=[(2000, 17, 26 )]
 five=5
 if debug_mode:
  dim_data=[(   4,     8,     512   ),
@@ -187,8 +187,8 @@ def reimplemented_double_det(A, b, c):
  dc = det_given_divisor(A.augment(c), w.denominator(), proof=True)
  profile( 'det_given_divisor' , t1 )
  if debug_mode:
-  assert db==flint.det ( fmpz_mat( B ) )
-  assert dc==flint.det ( fmpz_mat( A.augment(c) ) )
+  assert db==fmpz_mat( B ).determinant()
+  assert dc==fmpz_mat( A.augment(c) ).determinant()
   print 'double_det() check positive'
  profile( 'double_det' , t0 )
  return db, dc
@@ -269,8 +269,8 @@ def reimplemented_hnf_square( A ):
  try:
   d1,d2 = reimplemented_double_det( B, c, d )
  except (ValueError, ZeroDivisionError), msg:
-  d1 = flint.det ( fmpz_mat_t( B.stack(c) ) )
-  d2 = flint.det ( fmpz_mat_t( B.stack(d) ) )
+  d1 = fmpz_mat_t( B.stack(c) ).determinant()
+  d2 = fmpz_mat_t( B.stack(d) ).determinant()
  g,k,l = d1._xgcd (d2, minimal=True)
  W = B.stack (k*c + l*d)
  if g == 0:
@@ -362,7 +362,7 @@ def random_data(dim,bits):
    return a
   # with non-zero probability matrice a is non-singular, so we do extra
   #  check
-  if flint.det( fmpz_mat(a) ):
+  if fmpz_mat(a).determinant():
    return a
 
 def quick_nonsigular_test( m ):
@@ -475,21 +475,6 @@ def save_time_subr( mIn, mAx, row, col ):
    e=e+'-'+e1
  table_to_print[ row, col ] = e
 
-sage.all.set_random_seed('20140320')
-table_to_print=create_table_to_print( dim_data )
-result_row=0
-for i in dim_data:
- table_to_print[ 1+              result_row ][ 1 ] = str( i[0] )
- table_to_print[ 1+len(dim_data)+result_row ][ 1 ] = str( i[0] )
- for j in bits_choice:
-  if j >= i[1] and j <= i[2]:
-   benchmark( i[0], j, five, result_row )
-   if not debug_mode:
-    print 'n=%s bits=%s max time sage/mine=%s/%s' % (i[0],j,t_sage_max,\
-     t_mine_max)
-    sys.stdout.flush()
- result_row += 1
-
 def pretty_print_result( t, f0 ):
  c=t.shape[1]
  f=numpy.resize( numpy.array( [], dtype=object ), c )
@@ -519,6 +504,22 @@ def decide_format( t, col, f ):
    req=cur
  return '%'+str(req)+f,req
 
-if not debug_mode:
- pretty_print_result( table_to_print, 's' )
-print '\n\nTest passed'
+if __name__ == "__main__":
+ sage.all.set_random_seed('20140320')
+ table_to_print=create_table_to_print( dim_data )
+ result_row=0
+ for i in dim_data:
+  table_to_print[ 1+              result_row ][ 1 ] = str( i[0] )
+  table_to_print[ 1+len(dim_data)+result_row ][ 1 ] = str( i[0] )
+  for j in bits_choice:
+   if j >= i[1] and j <= i[2]:
+    benchmark( i[0], j, five, result_row )
+    if not debug_mode:
+     print 'n=%s bits=%s max time sage/mine=%s/%s' % (i[0],j,t_sage_max,\
+      t_mine_max)
+     sys.stdout.flush()
+  result_row += 1
+ 
+ if not debug_mode:
+  pretty_print_result( table_to_print, 's' )
+ print '\n\nTest passed'
