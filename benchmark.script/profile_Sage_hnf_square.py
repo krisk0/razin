@@ -23,7 +23,7 @@ except:
  sys.exit(1)
 
 debug_mode=0
-check_dixon_time=1
+check_dixon_time=0
 benchmark_early_aborts=0
 
 write=sys.stdout.write
@@ -45,20 +45,19 @@ randint=sage.all.randint
 t_sage_min=t_sage_max=0
 t_mine_min=t_mine_max=0
 handicap=0
-bits_choice=[17,18,20,23,26]
-#400,500,512,524,550,600,650,700,800]
+bits_choice=[
+bits_choice=[8,32,64,96,128,196,256,384,512]
 #           dim  min_bits max_bits
 dim_data=\
- [ 
-  (  50, 8, 512  ),
-  ( 100, 8, 512  ),
-  ( 250, 8, 512  ),
-  ( 500, 8, 256  ),
-  (1000, 8, 128  ),
-  (2000, 8, 32   ),
-  (3000, 8, 8    )
- ]
-dim_data=[(2000, 17, 26 )]
+         [ 
+          (  50, 8,         512  ),
+          ( 100, 8,         512  ),
+          ( 250, 8,         512  ),
+          ( 500, 8,         256  ),
+          (1000, 8,         196  ),
+          (2000, 8,          32  ),
+          (3000, 8,           8  )
+         ]
 five=5
 if debug_mode:
  dim_data=[(   4,     8,     512   ),
