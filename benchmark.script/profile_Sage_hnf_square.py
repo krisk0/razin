@@ -118,7 +118,7 @@ def IML_or_FLINT( a ):
   return avg_log2 >= 400    # use Dixon for 40 or less bits
  if n < 1000:
   # use straight line passing thru points 500,19 and 1000,17
-  return avg_log2 >= (5250-x)/25.
+  return avg_log2 >= (5250-n)/25.
  return avg_log2 >= 190     # for 2000 equilibrium is at 20
 
 def reimplemented_solve_right( A, b ):
