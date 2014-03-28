@@ -68,3 +68,6 @@
 
 27 Mar 2014 Equilibrium found, final version of profile_Sage_hnf_square.py is
              running
+
+28 Mar 2014 Profile/Benchmark failed due to bug (exception at line 'x[i,0] = x[i,0]/d')
+            Will record the matrice that causes the bug and report it to Sage devs
