@@ -118,8 +118,9 @@ def IML_or_FLINT( a ):
   return avg_log2 >= 400    # use Dixon for 40 or less bits
  if n < 1000:
   # use straight line passing thru points 500,19 and 1000,17
-  return avg_log2 >= (5250-n)/25.
- return avg_log2 >= 190     # for 2000 equilibrium is at 20
+  return avg_log2 >= (5249-n)/25.
+ return avg_log2 >= 190     # for 2000 equilibrium is at 20. So fix it here
+                            #  for all n>1000
 
 def reimplemented_solve_right( A, b ):
  if debug_mode:
@@ -316,15 +317,37 @@ def reimplemented_hnf_square( A ):
  profile( 'total', ts )
  return Hprime
 
+def record_bug( o, d ):
+ import tempfile
+ r=tempfile.NamedTemporaryFile( prefix='/tmp/'+d, delete=0 )
+ r.write( '%s' % o.list() )
+ close(r)
+
 def do_benchmark( m ):
  '''
  if result mismatches, abort
+
+ return 1 iff benchmark happened, return 0 is Sage hnf_square() square
  
  if time is new record, update t_****_***
  '''
  global t_sage_min,t_sage_max,t_mine_min,t_mine_max
  t0=time.time()
- sage_r=sage.matrix.matrix_integer_dense_hnf.hnf_square(m,True)
+ try:
+  sage_r=sage.matrix.matrix_integer_dense_hnf.hnf_square(m,True)
+ except:
+  '''
+  Sage was seen failing on line 'x[i,0] = x[i,0]/d' with message
+  
+  TypeError: no conversion of this rational to integer
+  
+  Bad result from a subroutine? Maybe H_B is incorrect?
+  
+  We just get away and create another random matrice
+  '''
+  print 'Feature in Sage hnf_square(), recording matrice'
+  record_bug( m, 'hnf_square-failed-' )
+  return 0
  t1=time.time()
  m._clear_cache()
  mine_r=reimplemented_hnf_square(m)
@@ -350,6 +373,7 @@ def do_benchmark( m ):
  else:
   if t1>t_mine_max:
    t_mine_max=t1
+ return 1
 
 def random_data(dim,bits):
  '''
@@ -395,8 +419,10 @@ def benchmark( dim, bits, tries, experiment_no ):
  profile_data=dict()
  col_no=find_col(bits)
  for i in range( tries ):
-  m=random_data( dim, bits )
-  do_benchmark( m )
+  while 1:
+   m=random_data( dim, bits )
+   if do_benchmark( m ):
+    break
   if benchmark_early_aborts and t_mine_max > 60 and i:
    tries=i+1
    print 'n=%s bits=%s time=%.1f  benchmarks done=%s, skipping further tries' \
