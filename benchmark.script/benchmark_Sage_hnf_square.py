@@ -141,7 +141,7 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
 def reimplemented_add_column( B, H_B, a ):
  ' H_B is Sage matrice or fmpz_mat '
  z = reimplemented_solve_system_with_difficult_last_row(B, a)
- if hasattr(H_B,'nrows'):
+ if isinstance(H_B,sage.matrix.matrix_integer_dense.Matrix_integer_dense):
   H_B = fmpz_mat( H_B )
  H_Bf=fmpq_mat( (Integer(1), H_B) )
  H_Bf.mul( column_to_fmpq_mat(z.column(0)) )
@@ -194,7 +194,7 @@ def reimplemented_hnf_square( A ):
  x = reimplemented_add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] + 
   l*A[mn-1,mn-1]])))
  # if H is fmpz_mat, convert it to Sage
- if not hasattr(H,'nrows'):
+ if not isinstance(H,sage.matrix.matrix_integer_dense.Matrix_integer_dense):
   H = H.export_sage()
  if debug_mode:
   xsage=add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] + l*A[mn-1,mn-1]])),
