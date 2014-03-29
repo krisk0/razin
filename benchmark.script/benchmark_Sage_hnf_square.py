@@ -6,20 +6,18 @@
 # Licence: GNU General Public License (GPL)
 
 '''
-This program re-implements Sage hnf_square() subroutine for the case when
- input matrice is non-singular, keeping all logic and all features, only
- replacing calls to few low-level subroutines and operations:
-   a) S.det() replaced with flint.det( ... )
-   b) S.solve_right() replaced with F.solve_dixon()
-   c) W._hnf_mod(2*g) replaced with fmpz_mat_hermite_form(W,g)
-   d) Some * and / operations on matrice are replaced with fmpq_mat
-       multiplivation
-   e) Extra test for non-singularity is perfomed in
-    solve_system_with_difficult_last_row(), so as not to call solve_dixon() on
-    singular matrice
-This program also benchmarks the new subroutine against hnf_square(), checks
- that results coincide
+This program runs original and specialized version of hnf_square()
+
+If results mismatch, aborts
+If results match, prints benchmarks table in the end
+
+This program slightly differs from profile_Sage_hnf_square.py. Most notable
+ difference is
+ 1) Profiling code is removed --- no benchmarks for individual procedures
+ 2) Random seed is different: 20140327 -> 20140329
 '''
+
+#todo: output partially filled table after dim=x is finished
 
 import sage.all
 import sys,time,numpy
@@ -29,7 +27,8 @@ except:
  print 'you forgot to install flint_sage Python wrapper'
  sys.exit(1)
 
-debug_mode=1
+debug_mode=0
+benchmark_early_aborts=0
 
 write=sys.stdout.write
 
@@ -45,18 +44,22 @@ add_column=sage.matrix.matrix_integer_dense_hnf.add_column
 pivots_of_hnf_matrix=sage.matrix.matrix_integer_dense_hnf.pivots_of_hnf_matrix
 matrix=sage.all.matrix
 random_matrix=sage.all.random_matrix
+randint=sage.all.randint
 
 t_sage_min=t_sage_max=0
 t_mine_min=t_mine_max=0
-bits_choice=[8,32,128,256,512]
+bits_choice=[8,32,64,96,128,196,256,384,512]
 #           dim  min_bits max_bits
-dim_data=[(  50,     8,     512   ),
-          ( 100,     8,     512   ),
-          ( 250,     8,     512   ),
-          ( 500,     8,     256   ),
-          (1000,     8,     128   ),
-          (2000,     8,       8   ), # with dim=4000 program got killed
-          (3000,     8,       8   )] #  ?out of memory?
+dim_data=\
+         [
+          (  50, 8,         512  ),
+          ( 100, 8,         512  ),
+          ( 250, 8,         512  ),
+          ( 500, 8,         256  ),
+          (1000, 8,         196  ),
+          (2000, 8,          32  ),
+          (3000, 8,           8  )
+         ]
 five=5
 if debug_mode:
  dim_data=[(   4,     8,     512   ),
@@ -66,21 +69,61 @@ if debug_mode:
 
 table_to_print=None
 
+def IML_solve_right( a, b ):
+ # this code only runs for big and fat matrice
+ return a._solve_right_nonsingular_square(b,check_rank=False)
+
+def IML_or_FLINT( a ):
+ '''
+ returns one iff IML solve_right is expected to be faster than FLINT
+  solve_dixon()
+ 
+ Point of balance ought to be found via a polynom or smth else more beautiful
+  than un-contiguos function used below
+ 
+ 2000 20->19
+ 1000 19->17
+  500 20-35 -> 19-33
+ '''
+ n=a.nrows()-1
+ if n < 289:     # for dim<290
+  return 0       #  only Dixon plays
+ # for bigger dim, call IML if entries of a are big enough
+ avg_log2=0
+ for i in range(10):
+  j,k=randint(0,n-1),randint(0,n)
+  avg_log2 += int( a[j,k] ).bit_length()
+ if n <= 401:
+  return avg_log2 >= 800    # use Dixon for 80 or less bits
+ if n <= 500:
+  return avg_log2 >= 400    # use Dixon for 40 or less bits
+ if n < 1000:
+  # use straight line passing thru points 500,19 and 1000,17
+  return avg_log2 >= (5249-n)/25.
+ return avg_log2 >= 190     # for 2000 equilibrium is at 20. So fix it here
+                            #  for all n>1000
+
 def reimplemented_solve_right( A, b ):
  if debug_mode:
   sage_r=A.solve_right(b)
- Af=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(A)) )
- bf=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(b)) )
- mine_r=Af.solve_dixon(bf)
+ mine_r=fmpz_mat(A).solve_dixon( fmpz_mat(b) )
  if debug_mode:
-  e=mine_r.export_column().column()
-  assert e == sage_r
+  assert mine_r.export_column().column() == sage_r
   print 'solve_right(): check positive'
  return mine_r
 
+def IML_solve_right_or_FLINT_dixon( A, b ):
+ ' returns result as sage matrice and time wasted which should be handicaped '
+ t0=time.time()
+ if IML_or_FLINT( A ):
+  r=IML_solve_right( A, b )
+ else:
+  r=fmpz_mat(A).solve_dixon(fmpz_mat(b)).export_column().column()
+ return r,0
+
 def reimplemented_double_det(A, b, c):
  '''
- nearly identical to double_det(...,proof=True), only uses a faster FLINT 
+ nearly identical to double_det(...,proof=True), only uses a faster FLINT
   method instead of sage solve_right()
  '''
  A = A.transpose()
@@ -99,8 +142,8 @@ def reimplemented_double_det(A, b, c):
  w.entry_mul_Rational( n, vn )  # w[n-1] = w[n-1]/vn
  dc = det_given_divisor(A.augment(c), w.denominator(), proof=True)
  if debug_mode:
-  assert db==flint.det ( fmpz_mat( B ) )
-  assert dc==flint.det ( fmpz_mat( A.augment(c) ) )
+  assert db==fmpz_mat( B ).determinant()
+  assert dc==fmpz_mat( A.augment(c) ).determinant()
   print 'double_det() check positive'
  return db, dc
 
@@ -108,16 +151,11 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
  C = sage.all.copy(B)
  D = B.matrix_from_rows(range(C.nrows()-1))
  N = D._rational_kernel_iml()
- # original solve_system_with_difficult_last_row() goes into infinite
- #  recursion loop if N.ncols() != 1
- # if this equality ever happens, failed assert is a lot better than infinite
- #  loop
- assert N.ncols() == 1
  k = N.matrix_from_columns([0])
  w = B[-1]
  a_prime = a[-1][0]
  lhs = (w*k)[0]
- assert lhs # .pdf explains that lhs != 0
+ # .pdf explains that lhs != 0, no need to check
  while 1:
   '''
   replace last row of C with random small numbers
@@ -129,7 +167,7 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
   if quick_nonsigular_test( C ):
    break
  # solve, export as m*1 matrice
- x=reimplemented_solve_right( C, a ).export_column().column()
+ x,tE=IML_solve_right_or_FLINT_dixon( C, a )
  rhs = a_prime - (w * x)[0]
  alpha = rhs / lhs
  x=x + alpha*k
@@ -151,8 +189,10 @@ def reimplemented_add_column( B, H_B, a ):
 def reimplement_small_det_HNF(W, g):
  # instead of W._hnf_mod(2*g)
  if g==1:
-  return sage.all.identity_matrix(ZZ, W.nrows())
- return flint.fmpz_mat_hermite_form( fmpz_mat( W ), Integer(g) )
+  r=sage.all.identity_matrix(ZZ, W.nrows())
+ else:
+  r=flint.fmpz_mat_hermite_form( fmpz_mat( W ), Integer(g) )
+ return r
  
 def reimplemented_hnf_square( A ):
  '''
@@ -165,12 +205,11 @@ def reimplemented_hnf_square( A ):
  c = A.matrix_from_rows([mn-2]).matrix_from_columns (range(mn-1))
  d = A.matrix_from_rows([mn-1]).matrix_from_columns (range(mn-1))
  b = A.matrix_from_columns([mn-1]).matrix_from_rows(range(mn-2))
- # done slicing
  try:
   d1,d2 = reimplemented_double_det( B, c, d )
  except (ValueError, ZeroDivisionError), msg:
-  d1 = flint.det ( fmpz_mat_t( B.stack(c) ) )
-  d2 = flint.det ( fmpz_mat_t( B.stack(d) ) )
+  d1 = fmpz_mat_t( B.stack(c) ).determinant()
+  d2 = fmpz_mat_t( B.stack(d) ).determinant()
  g,k,l = d1._xgcd (d2, minimal=True)
  W = B.stack (k*c + l*d)
  if g == 0:
@@ -191,19 +230,21 @@ def reimplemented_hnf_square( A ):
   else:
    H = reimplement_small_det_HNF(W, g)
  # if H is fmpz_mat, save a penny and let it be
- x = reimplemented_add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] + 
+ x = reimplemented_add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] +
   l*A[mn-1,mn-1]])))
- # if H is fmpz_mat, convert it to Sage
- if not isinstance(H,sage.matrix.matrix_integer_dense.Matrix_integer_dense):
-  H = H.export_sage()
  if debug_mode:
   xsage=add_column(W, H, b.stack(matrix(1,1,[k*A[mn-2,mn-1] + l*A[mn-1,mn-1]])),
    True)
   assert xsage == x
+ # if H is fmpz_mat, convert it to Sage
+ if not isinstance(H,\
+         sage.matrix.matrix_integer_dense.Matrix_integer_dense):
+  H = H.export_sage()
  Hprime = H.augment(x)
  pivots = range(mn-1)
  if debug_mode:
   assert pivots == pivots_of_hnf_matrix(Hprime)
+ t0=time.time()
  Hprime, pivots = add_row(Hprime, A.matrix_from_rows([mn-2]), pivots,
   include_zero_rows=False)
  Hprime, pivots = add_row(Hprime, A.matrix_from_rows([mn-1]), pivots,
@@ -212,16 +253,40 @@ def reimplemented_hnf_square( A ):
   assert Hprime == Hprime.matrix_from_rows(range(mn))
  return Hprime
 
+def record_bug( o, d ):
+ import tempfile
+ r=tempfile.NamedTemporaryFile( prefix='/tmp/'+d, delete=0 )
+ r.write( '%s' % o.list() )
+ close(r)
+
 def do_benchmark( m ):
  '''
  if result mismatches, abort
+
+ return 1+Sage time iff benchmark happened, return 0 if Sage hnf_square() 
+  failed
  
  if time is new record, update t_****_***
  '''
  global t_sage_min,t_sage_max,t_mine_min,t_mine_max
  t0=time.time()
- sage_r=sage.matrix.matrix_integer_dense_hnf.hnf_square(m,True)
+ try:
+  sage_r=sage.matrix.matrix_integer_dense_hnf.hnf_square(m,True)
+ except:
+  '''
+  Sage was seen failing on line 'x[i,0] = x[i,0]/d' with message
+  
+  TypeError: no conversion of this rational to integer
+  
+  Bad result from a subroutine? Maybe H_B is incorrect?
+  
+  We just get away and create another random matrice
+  '''
+  print 'Feature in Sage hnf_square(), recording matrice'
+  record_bug( m, 'hnf_square-failed-' )
+  return 0
  t1=time.time()
+ m._clear_cache()
  mine_r=reimplemented_hnf_square(m)
  t2=time.time()
  if mine_r != sage_r:
@@ -245,11 +310,12 @@ def do_benchmark( m ):
  else:
   if t1>t_mine_max:
    t_mine_max=t1
+ return 1+t0
 
 def random_data(dim,bits):
  '''
- returns random square non-singular matrice with entries  
- uniformly distributed in the interval −2**bits .. 2**bits
+ returns random square non-singular matrice with entries
+  uniformly distributed in the interval −2**bits .. 2**bits
  '''
  while 1:
   a=sage.all.random_matrix( ZZ, dim, x=-1<<bits, y=1<<bits )
@@ -257,7 +323,7 @@ def random_data(dim,bits):
    return a
   # with non-zero probability matrice a is non-singular, so we do extra
   #  check
-  if flint.det( fmpz_mat(a) ):
+  if fmpz_mat(a).determinant():
    return a
 
 def quick_nonsigular_test( m ):
@@ -272,7 +338,12 @@ def quick_nonsigular_test( m ):
    return 1
  return 0
 
-def benchmark( dim, bits, tries, experiment_no, col_no ):
+def find_col( x ):
+ for i in range(len(bits_choice)):
+  if bits_choice[i] == x:
+   return 2+i
+
+def benchmark( dim, bits, tries, experiment_no ):
  '''
  run 2 algorithms multiple times (not more than tries time), store time
 
@@ -281,31 +352,41 @@ def benchmark( dim, bits, tries, experiment_no, col_no ):
  global t_sage_min,t_sage_max,t_mine_min,t_mine_max
  t_sage_max=t_mine_max=-1
  t_sage_min=t_mine_min=1e77
+ avg_sage_time=0
+ col_no=find_col(bits)
  for i in range( tries ):
-  m=random_data( dim, bits )
-  do_benchmark( m )
-  if t_mine_max > 60 and i:
+  while 1:
+   m=random_data( dim, bits )
+   t_sage=do_benchmark( m )
+   if t_sage:
+    avg_sage_time += t_sage-1
+    break
+  if benchmark_early_aborts and t_mine_max > 60 and i:
+   tries=i+1
    print 'n=%s bits=%s time=%.1f  benchmarks done=%s, skipping further tries' \
-    % (dim,bits,t_mine_max,i+1)
+    % (dim,bits,t_mine_max,tries)
    break
  save_time( dim, bits, experiment_no, col_no )
+ print 'n=%s bits=%s Sage time=%.2f' % (dim,bits,avg_sage_time)
+
+def sort_in_increasin_order( p ):
+ cmp_2nd=lambda x,y: cmp(x[1], y[1])
+ l=p.items()
+ l.sort( cmp_2nd )
+ return l
 
 def create_table_to_print( d ):
  ' Initialize table to hold benchmark result '
  i=d[0]
  rows=1+2*len(d)
- cols=2
- for j in bits_choice:
-  if j >= i[1] and j <= i[2]:
-   cols += 1
+ cols=2+len(bits_choice)
  t=numpy.resize( numpy.array( [], dtype=object ), (rows,cols) )
  r0=t[0]
  r0[0],r0[1]='','n'
  col=2
  for j in bits_choice:
-  if j >= i[1] and j <= i[2]:
-   r0[col]='%s bits' % j
-   col += 1
+  r0[col]='%s bits' % j
+  col += 1
  t[1][0]='Sage'
  t[1+len(d)][0]='re-impl'
  for i in range(rows):
@@ -332,23 +413,6 @@ def save_time_subr( mIn, mAx, row, col ):
   if e != e1:
    e=e+'-'+e1
  table_to_print[ row, col ] = e
-
-sage.all.set_random_seed('20140320')
-table_to_print=create_table_to_print( dim_data )
-result_row=0
-for i in dim_data:
- table_to_print[ 1+              result_row ][ 1 ] = str( i[0] )
- table_to_print[ 1+len(dim_data)+result_row ][ 1 ] = str( i[0] )
- col = 2
- for j in bits_choice:
-  if j >= i[1] and j <= i[2]:
-   benchmark( i[0], j, five, result_row, col )
-   col += 1
-   if not debug_mode:
-    print 'n=%s bits=%s max time sage/mine=%s/%s' % (i[0],j,t_sage_max,\
-     t_mine_max)
-    sys.stdout.flush()
- result_row += 1
 
 def pretty_print_result( t, f0 ):
  c=t.shape[1]
@@ -379,6 +443,22 @@ def decide_format( t, col, f ):
    req=cur
  return '%'+str(req)+f,req
 
-if not debug_mode:
- pretty_print_result( table_to_print, 's' )
-print '\n\nTest passed'
+if __name__ == "__main__":
+ sage.all.set_random_seed('20140329')
+ table_to_print=create_table_to_print( dim_data )
+ result_row=0
+ for i in dim_data:
+  table_to_print[ 1+              result_row ][ 1 ] = str( i[0] )
+  table_to_print[ 1+len(dim_data)+result_row ][ 1 ] = str( i[0] )
+  for j in bits_choice:
+   if j >= i[1] and j <= i[2]:
+    benchmark( i[0], j, five, result_row )
+    if not debug_mode:
+     print 'n=%s bits=%s max time sage/mine=%s/%s' % (i[0],j,t_sage_max,\
+      t_mine_max)
+     sys.stdout.flush()
+  result_row += 1
+ 
+ if not debug_mode:
+  pretty_print_result( table_to_print, 's' )
+ print '\n\nTest passed'
