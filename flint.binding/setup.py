@@ -104,7 +104,8 @@ def sed_and_perl__goodbye( oN, iN ):
     continue
    r += s.replace('\n','λ')
   r = re_sub ( r, ' *#' ,'#' )
-  r = re_sub ( r, '#if .*?#endifλ' ,'' )
+  r = re_sub ( r, '#define BUG.*?λ', '' )
+  r = re_sub ( r, '#if .*?#endifλ' , '' )
   r = re_sub ( r, 'λλλstatic', 'λλstatic' )
   for s in 'nmod_mat_print','vec_print','DKryskov_nmod_easy_zl':
    r = zap_subr( r, s )

@@ -8,7 +8,8 @@
 #include <flint/nmod_vec.h>
 #include <flint/nmod_mat.h>
 
-#define BUG0_nmod_mat_HNF 1
+// No, code below is not obfuscated.
+// When I write a program that needs to run fast, it comes this way
 
 static __inline__ long 
 DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
