@@ -5,7 +5,7 @@ For now, I offer
   a) Two subroutines to quickly calculate HNF of an integer matrice in two practically important cases:
          a) it is non-singular 
          b) its determinant is known and lies in range 2..2^64-1 where 2^64-1 is maximal native unsigned integer;
-  b) Python binding to some methods of FLINT;
+  b) Python binding to some methods of FLINT, called flint_sage;
   c) some algorithms benchmarks (such as determinant, linear equations solver)
  
 Where are the files?
@@ -14,7 +14,7 @@ See *filelist.txt*.
 
 The fastest in open-source world subroutine to compute HNF of a matrice with small in absolute value determinant is in *flint.binding/nmod_mat_HNF.c*
 
-W.Stein double-deteminant algorithm to compute HNF specialized for non-singular matrice and instructed to sometimes use faster low-level routines like FLINT Dixon lifting instead of Sage method is in *benchmark.script/profile_Sage_hnf_square.py*
+W.Stein double-deteminant algorithm to compute HNF specialized for non-singular matrice and instructed to sometimes use faster low-level routines like FLINT Dixon lifting instead of Sage method is in *benchmark.script/profile_Sage_hnf_square.py*. The modified procedure is faster than original, see bottom of *profile-dd_algorithm.cout* for details.
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^
