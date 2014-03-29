@@ -192,6 +192,11 @@ cdef class fmpz_mat:
   run Dixon solver to get A**-1 * rght where A=self --- non-singular square
 
   return result as fmpq_matrice
+  
+  this subroutine forms fmpq_matrice, later fmpq_mat_solve_dixon() goes
+   back to fmpz_matrice
+  
+  TODO: use fmpz_mat_solve_dixon() directly
   '''
   cdef fmpq_mat A=fmpq_mat.__new__( fmpq_mat )
   fmpq_mat_init(A.matQQ, self.matr[0].r, self.matr[0].r )
