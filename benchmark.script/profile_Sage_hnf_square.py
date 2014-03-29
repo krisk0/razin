@@ -327,7 +327,8 @@ def do_benchmark( m ):
  '''
  if result mismatches, abort
 
- return 1 iff benchmark happened, return 0 is Sage hnf_square() square
+ return 1+Sage time iff benchmark happened, return 0 if Sage hnf_square() 
+  failed
  
  if time is new record, update t_****_***
  '''
@@ -373,7 +374,7 @@ def do_benchmark( m ):
  else:
   if t1>t_mine_max:
    t_mine_max=t1
- return 1
+ return 1+t0
 
 def random_data(dim,bits):
  '''
