@@ -227,3 +227,12 @@ def det_modular(fmpz_mat i):
  fmpz_get_mpz( r.value, d )
  fmpz_clear( d )
  return r
+
+cdef wrap_fmpz_mat(fmpz_mat_t a):
+ ' shallow constructor '
+ cdef fmpz_mat A=fmpz_mat.__new__( fmpz_mat )
+ A.matr.entries=a.entries
+ A.matr.r=a.r
+ A.matr.c=a.c
+ A.matr.rows=a.rows
+ return A
