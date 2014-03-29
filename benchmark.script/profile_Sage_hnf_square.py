@@ -6,12 +6,12 @@
 # Licence: GNU General Public License (GPL)
 
 '''
-This program is a fork of benchmark_Sage_hnf_square.py
+This program runs original and specialized version of hnf_square()
 
-Records time spent by some stages of Stein double-det algorithm as documented
- in To.do
+Records time spent by some stages of Stein double-det algorithm
 
-Optionally runs sage .solve_right alongside with Dixon, compares result
+Optionally runs sage .solve_right() alongside with .solve_dixon(), compares 
+ result
 '''
 
 #todo: output partially filled table after dim=x is finished
@@ -125,9 +125,7 @@ def IML_or_FLINT( a ):
 def reimplemented_solve_right( A, b ):
  if debug_mode:
   sage_r=A.solve_right(b)
- Af=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(A)) )
- bf=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(b)) )
- mine_r=Af.solve_dixon(bf)
+ mine_r=fmpz_mat(A).solve_dixon( fmpz_mat(b) )
  if debug_mode:
   e=mine_r.export_column().column()
   assert e == sage_r
@@ -150,9 +148,7 @@ def IML_solve_right_or_FLINT_dixon( A, b ):
   mine_r=IML_solve_right( A, b )
   profile( 'IML solver' , t0 )
  else:
-  Af=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(A)) )
-  bf=flint.fmpq_mat( (Integer(1), flint.fmpz_mat(b)) )
-  mine_r=Af.solve_dixon(bf).export_column().column()
+  mine_r=fmpz_mat(A).solve_dixon(fmpz_mat(b)).export_column().column()
   profile( 'dixon-last_row' , t0 )
  if check_dixon_time:
   assert mine_r == x
@@ -417,12 +413,15 @@ def benchmark( dim, bits, tries, experiment_no ):
  handicap=0
  t_sage_max=t_mine_max=-1
  t_sage_min=t_mine_min=1e77
+ avg_sage_time=0
  profile_data=dict()
  col_no=find_col(bits)
  for i in range( tries ):
   while 1:
    m=random_data( dim, bits )
-   if do_benchmark( m ):
+   t_sage=do_benchmark( m )
+   if t_sage:
+    avg_sage_time += t_sage-1
     break
   if benchmark_early_aborts and t_mine_max > 60 and i:
    tries=i+1
@@ -433,6 +432,7 @@ def benchmark( dim, bits, tries, experiment_no ):
  t_mine_max -= handicap/tries  # profile_data['total']-handicap is correct
  profile_output( dim, bits, tries )
  save_time( dim, bits, experiment_no, col_no )
+ print 'n=%s bits=%s Sage time=%.2f' % (dim,bits,avg_sage_time)
 
 def sort_in_increasin_order( p ):
  cmp_2nd=lambda x,y: cmp(x[1], y[1])
