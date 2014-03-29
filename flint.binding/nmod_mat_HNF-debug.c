@@ -1,12 +1,12 @@
+// This program is part of RAZIN
+// Copyright Денис Крыськов 2014
+// Licence: GNU General Public License (GPL)
+
 #include <stdlib.h>
 #include <gmp.h>
 #include <flint/flint.h>
 #include <flint/nmod_vec.h>
 #include <flint/nmod_mat.h>
-
-// This program is part of RAZIN
-// Copyright Денис Крыськов 2014
-// Licence: GNU General Public License (GPL)
 
 #define BUG0_nmod_mat_HNF 1
 

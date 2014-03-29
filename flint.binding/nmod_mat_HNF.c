@@ -1,12 +1,12 @@
+// This program is part of RAZIN
+// Copyright Денис Крыськов 2014
+// Licence: GNU General Public License (GPL)
+
 #include <stdlib.h>
 #include <gmp.h>
 #include <flint/flint.h>
 #include <flint/nmod_vec.h>
 #include <flint/nmod_mat.h>
-
-// This program is part of RAZIN
-// Copyright Денис Крыськов 2014
-// Licence: GNU General Public License (GPL)
 
 #define BUG0_nmod_mat_HNF 1
 
@@ -17,6 +17,7 @@ DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
  -2 if all is zero
  -1 if single non-zero
  line>0 if A[line,i] is non-zero
+TODO: multiply by -1 to get smaller element
 */
  {
   long i0=-1,i1=-1,k=col;
@@ -134,6 +135,7 @@ DKryskov_nmod_zero_line(nmod_mat_t A,long i,long j,mp_limb_t n,mp_limb_t* scrth)
   mp_limb_t y=betta[-1];
   assert(x>1);
   assert(y>1);
+  // TODO: multiply 2nd line by -1 so gcd runs faster
   mp_limb_t u,v,g;
   g=DKryskov_gcd_ui(&u,&v,x,y,n);
   assert(g);
