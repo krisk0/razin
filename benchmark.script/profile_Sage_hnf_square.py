@@ -15,7 +15,8 @@ Optionally runs sage .solve_right() alongside with .solve_dixon(), compares
  result, shows time
  
 Final result is reported in single table resembling Table 9.1 in "Fast 
- computation of Hermite Normal Forms of Random Integer Matrices"
+ computation of Hermite Normal Forms of Random Integer Matrices", preprint
+ dated January 7, 2009
 '''
 
 #todo: output partially filled table after dim=x is finished
