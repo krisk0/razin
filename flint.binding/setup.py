@@ -93,8 +93,8 @@ def sed_and_perl__goodbye( oN, iN ):
  This subroutine filters C file, removing what is not needed in production
   code
  
- sed and perl on my computer fail to properly substitute regular expessions 
- so I re-implement the functionality of delete_debug_C_code.sh in Python
+ I fought sed and perl. I lost the fight and say goodbye to them. Let us say
+  RAZIN no longer depends on sed or perl caprice
  '''
  unwanted=re.compile( 'MPLUS|MMUL' )
  with open( oN, 'wb' ) as o, open( iN, 'rb' ) as i:
