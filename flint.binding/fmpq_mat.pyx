@@ -240,6 +240,10 @@ cdef class fmpq_mat:
    if self is singular, returns None
 
    else returns X such that self * X = B
+   
+   this subroutine translates matrice to fmpz_mat, before doing actual 
+    calculation
+   So it is a bad idea to call this on big integral matrice
   '''
   cdef fmpq_mat r=fmpq_mat.__new__(fmpq_mat)
   fmpq_mat_init( r.matQQ, B.matQQ[0].r, B.matQQ[0].c )
