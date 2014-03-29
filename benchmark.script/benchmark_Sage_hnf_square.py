@@ -17,7 +17,8 @@ This program slightly differs from profile_Sage_hnf_square.py. Most notable
  2) Random seed is different: 20140327 -> 20140329
 '''
 
-#todo: output partially filled table after dim=x is finished
+#TODO: output partially filled table after dim=x is finished
+#TODO: report raw time of reimplemented_hnf_square() along with Sage time
 
 import sage.all
 import sys,time,numpy
