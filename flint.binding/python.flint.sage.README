@@ -38,9 +38,11 @@ FAQ
 ===
 
 Q0. What are the technical requirements of the package?
-A0. GMP, Sage, 64-bit platform, Python ver.2.x; GMP should define mp_limb_t to be unsigned long.
+A0. GMP, Sage, 64-bit platform, Python ver.2.x; Flint 2.4.1; GMP should define mp_limb_t to be unsigned long.
 
     Use of MPIR instead of GMP might be possible, try this at your own risk.
+    
+    Versions of FLINT other than 2.4.1 and Sage other than sci-mathematics/sage-6.1.1-r2 untested, try them at your own risk
     
     Why 64-bit? Because I did not test 32-bit installation of Sage or GMP, and have no plans to do so.
 
