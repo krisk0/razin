@@ -84,7 +84,8 @@
 
             record g values and h.b.(A)/h.b.(U) where A and U
             are as above and h.b.() is Hadamard bound on determinant;
-            record count of tries in solve_system_with_difficult_last_row()
+            record count of tries in solve_system_with_difficult_last_row() 
+             --- delayed, got better idea
 
 26 Mar 2014 arrr, Dixon / IML efficiency in solve_system_with_difficult_last_row()
              floats from test to test. Must do more tests, this takes time, 
@@ -92,4 +93,4 @@
 
 27 Mar 2014 To speed up solve_system_with_difficult_last_row(), need a 
              subroutine to quickly put unimodular matrice to row-echelon form
-             and find transformation
+             and find transformation that does it
