@@ -69,5 +69,14 @@
 27 Mar 2014 Equilibrium found, final version of profile_Sage_hnf_square.py is
              running
 
-28 Mar 2014 Profile/Benchmark failed due to bug (exception at line 'x[i,0] = x[i,0]/d')
-            Will record the matrice that causes the bug and report it to Sage devs
+28 Mar 2014 Profile/Benchmark failed due to bug (exception at line 
+             'x[i,0] = x[i,0]/d')            
+            Will record the matrice that causes the bug and report it to Sage 
+             devs
+
+28 Mar 2014 Sage is playing tricks on me. The exception only occured once, and 
+             I did not record the matrice. I restared my program with same
+             random generator seed, but the exception did not show up.
+             
+            Specialized re-implemented hnf_square() runs faster than original, 
+             30% faster for n=500, bits=512, 13% faster for n=3000, bits=8
