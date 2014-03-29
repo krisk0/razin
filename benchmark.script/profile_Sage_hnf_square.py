@@ -8,10 +8,14 @@
 '''
 This program runs original and specialized version of hnf_square()
 
-Records time spent by some stages of Stein double-det algorithm
+Records time spent by some stages of modified algorithm, and total time spent
+ by original
 
 Optionally runs sage .solve_right() alongside with .solve_dixon(), compares 
- result
+ result, shows time
+ 
+Final result is reported in single table resembling Table 9.1 in "Fast 
+ computation of Hermite Normal Forms of Random Integer Matrices"
 '''
 
 #todo: output partially filled table after dim=x is finished
