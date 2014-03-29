@@ -64,15 +64,12 @@ A3. Ha, you just answered your question yourself. .py files (such as test_*.py a
 
 Q4. Your Python interface is disorganized and inconsistent. Your files are a mess.
 A4. However, I am coming near to my mid-range target of modding W.Stein double-det algorithm. My implementation outruns
-his.
+his
 
-Q5. What is the meaning of words `... and instructed to use faster low-level routines like FLINT Dixon lifting instead of ?slower? Sage method'?
-A5. Good question. I meant to say that 
-     1) I re-implemented the Stein algorithm;
-     2) in my implemetation, the biggest change is using subroutines thought to be  faster, one of replacements: .solve_right() -> FLINT Dixon linear solver fmpq_mat_solve_dixon();
-     3) I think the speed difference between Stein's and my implementation (as published 22-23 Mar 2014) mostly depends on FLINT fmpq_mat_solve_dixon() being faster or slower than Sage subroutine;
-     4) I think that fmpq_mat_solve_dixon() is faster than Sage solve_right() on big random matrice in most cases.
+Q5. What is the meaning of phrase "W.Stein double-deteminant algorithm to compute HNF specialized for non-singular matrice and instructed to sometimes use faster low-level routines like FLINT Dixon lifting instead of Sage method is in ..."
+A5. I meant to say that 
+     1) I re-implemented the Stein algorithm, restricting input matrice to be square non-singular;
+     2) in my implemetation, the biggest change is using subroutines that are usually faster, for instance Sage .solve_right() is replaced by FLINT Dixon linear solver fmpq_mat_solve_dixon(), and Sage ._hnf_mod(2*g) by my more-than-twice faster subroutine fmpz_mat_hermite_form(W, g);
+     3) since FLINT Dixon solver is not always faster than IML solver, my code SOMETIMES uses IML solver.
 
- If you want to verify statements 1-4), go for it. Note that I failed to run benchmark for 4000x4000 matrice with entries in range -128..128 on 16G RAM (and succeeded for dim=3000).
-
- And yes, I am 100% sure that words re-implement and bug-report contain hyphen
+    And yes, I am 100% sure that words re-implement and bug-report contain hyphen
