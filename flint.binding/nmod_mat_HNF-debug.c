@@ -543,7 +543,7 @@ aka DomichKannanTrotter87.pdf
       // no need to fix diagonal or change det_tgt
       continue;
      }
-    if(j>=0)
+    if(j>=0) // TODO: this if can be removed?
      {
       // some rows operations required, general case
       if(DKryskov_nmod_zero_line(A,i,j,det_tgt,scratch))
