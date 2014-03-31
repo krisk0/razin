@@ -152,11 +152,15 @@ def reimplemented_solve_system_with_difficult_last_row(B, a):
  C = sage.all.copy(B)
  D = B.matrix_from_rows(range(C.nrows()-1))
  N = D._rational_kernel_iml()
+ # original solve_system_with_difficult_last_row() goes into infinite
+ #  recursion loop if N.ncols() != 1
+ # however N.ncols() always equals 1 unless IML counts kernel incorrectly
+ # We don't check kernel size
  k = N.matrix_from_columns([0])
  w = B[-1]
  a_prime = a[-1][0]
  lhs = (w*k)[0]
- # .pdf explains that lhs != 0, no need to check
+ #assert lhs # .pdf explains that lhs != 0, no need to check
  while 1:
   '''
   replace last row of C with random small numbers
