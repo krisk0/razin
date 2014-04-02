@@ -1,5 +1,7 @@
+# -*- coding: utf-8
 # This program is part of RAZIN
 # Licence: GNU General Public License (GPL)
+# Copyright Денис Крыськов 2014
 
 cdef extern from 'flint/nmod_vec.h':
  ctypedef struct nmod_t:

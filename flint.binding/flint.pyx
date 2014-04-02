@@ -34,6 +34,8 @@ cdef extern from 'gmp.h':
  ctypedef unsigned long mp_limb_t
  ctypedef unsigned long mp_bitcnt_t
 
+ctypedef __mpz_struct* mpz_ptr
+
 cdef extern from 'flint/fmpz.h':
  ctypedef long fmpz_t[1]
  void fmpz_set_mpz(fmpz_t tgt, mpz_t sou)
@@ -81,3 +83,4 @@ cdef extern from 'flint/fmpq_mat.h':
 include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
 include "nmod_mat.pyx"
+include "tmod_mat.pyx"

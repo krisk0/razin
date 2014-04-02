@@ -1,9 +1,9 @@
-# Copyright 2014 Крыськов Денис
+# Copyright 2014 Денис Крыськов
 # License: GNU General Public License (GPL)
 
 EAPI=4
 
-PYTHON_COMPAT=( python{2_7,3_1,3_2} ) # I only tested 2.7
+PYTHON_COMPAT=( python2_7 ) # I only tested 2.7
 
 inherit distutils-r1
 
