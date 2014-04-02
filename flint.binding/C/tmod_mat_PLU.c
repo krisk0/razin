@@ -45,11 +45,11 @@ on failure return 0
         min_s=c; min_i=i;
        }
      }
-    if(min_i != col)
-     {
-      MP_PTR_SWAP( a[min_i], a[col] );
-      i=P[min_i]; P[min_i]=P[col]; P[col]=i;
-     }
+   }
+  if(min_i != col)
+   {
+    MP_PTR_SWAP( a[min_i], a[col] );
+    i=P[min_i]; P[min_i]=P[col]; P[col]=i;
    }
   if(min_s == a[col][col])
    return t_invmod(min_s);
@@ -60,14 +60,8 @@ static __inline__ void
 tmod_vec_scalar_addmul( mp_limb_t* tgt, mp_limb_t* sou, long L, 
  mp_limb_t Q )
  {
-  #if 0
-   while(L--)
-    tgt[L] += sou[L]*Q;
-  #else
-   long i;
-   for(i=0;i<L;i++)
-    *tgt++ += (*sou++) * Q;
-  #endif
+  while(L--)
+   *tgt++ += (*sou++) * Q;
  }
 
 long 
@@ -115,8 +109,8 @@ This subroutine is machine-dependent. Known to work on amd64, don't know what
         e = S_i_row * d;
         if(length != 0)
          tmod_vec_scalar_addmul( betta, alpha, length, -e );
+        betta[-1] = e;
        }
-      betta[-1] = e;
      }
    }
   return 1;
