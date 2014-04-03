@@ -94,3 +94,13 @@
 27 Mar 2014 To speed up solve_system_with_difficult_last_row(), need a 
              subroutine to quickly put unimodular matrice to row-echelon form
              and find transformation that does it
+
+03 Apr 2014 tmod_mat_PLU_mod_machine_word() too slow, need to write recursive
+             version
+             
+            I wonder why time of solve_system_with_difficult_last_row() does 
+             not equal sum of times: for n=3000, bits=8 
+             
+            752.7781+792.1059 = 1544.8 < 1671.9109     that's 8% losses 
+
+            Will investigate this
