@@ -64,6 +64,7 @@ tmod_vec_scalar_addmul( mp_limb_t* tgt, mp_limb_t* sou, long L,
    *tgt++ += (*sou++) * Q;
  }
 
+// TODO: use block recursion for big m
 long 
 tmod_mat_PLU_mod_machine_word(long* PR, tmod_mat_t S)
 /*
@@ -85,7 +86,7 @@ This subroutine is machine-dependent. Known to work on amd64, don't know what
  will happen on other arch
 */
  {
-  long m=S->r, n=S->c,i,row,row_plus_1,length;
+  long m=S->r, n=S->c, i,row,row_plus_1,length;
   for(i=m;i--;)
    PR[i]=i;                // initialize permutation P
   mp_limb_t** a=S->rows;

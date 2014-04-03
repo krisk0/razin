@@ -2,7 +2,6 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-//#include <stdlib.h>
 #include <gmp.h>
 #include <flint/flint.h>
 #include "flint/ulong_extras.h"
@@ -13,10 +12,10 @@
 
 typedef struct
  {
-  mp_limb_t* entries;
   slong r;
   slong c;
-  mp_limb_t ** rows;
+  mp_limb_t**   rows;
+  mp_limb_t*  entries;
  }
 tmod_mat_struct;
 typedef tmod_mat_struct tmod_mat_t[1];
@@ -29,7 +28,7 @@ tmod_mat_init(tmod_mat_t mat, long rows, long cols)
  {
   if(rows && cols)
    {
-    long i;
+    slong i;
     mp_limb_t* e;
     mat->entries = flint_calloc(rows * cols, sizeof(mp_limb_t));
     mat->rows = flint_malloc(rows * sizeof(mp_limb_t *));
@@ -39,6 +38,23 @@ tmod_mat_init(tmod_mat_t mat, long rows, long cols)
    }
   else
    mat->entries = NULL;
+  mat->r = rows;
+  mat->c = cols;
+ }
+
+void 
+tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols)
+// same result as tmod_mat_init, only matrice is somewhat random rather than 
+//  zero
+// I am not a maniac, I am optimizer
+ {
+  slong i;
+  mp_limb_t* e;
+  mat->entries = flint_malloc(rows * cols * sizeof(mp_limb_t));
+  mat->rows = flint_malloc(rows * sizeof(mp_limb_t *));
+  e = mat->entries;
+  for (i = 0; i < rows; i++, e += cols)
+    mat->rows[i] = e;
   mat->r = rows;
   mat->c = cols;
  }
@@ -104,3 +120,4 @@ mp_limb_t t_invmod(mp_limb_t a)
  }
 
 #include "tmod_mat_PLU.c"
+#include "tmod_mat_invert_LU.c"
