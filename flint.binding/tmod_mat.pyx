@@ -156,22 +156,23 @@ cdef class tmod_mat_single:
  
  def export_L_sage(self):
   '''
-  un-compress L part of matrice, return result as Sage Matrix_integer_dense
+  un-compress L part of matrice, return result as Sage Matrix_integer_dense,
+   square
   
   count of rows should be equal or 1 more than count of columns
   '''
-  cdef Py_ssize_t i,j,c=self.matT[0].c
-  cdef Matrix_integer_dense r=Matrix( self.matT[0].r, c )
+  cdef Py_ssize_t i,j, c=self.matT[0].c, r=self.matT[0].r
+  cdef Matrix_integer_dense L=Matrix( r, r )
   cdef mp_limb_t* on_s_row
   cdef mpz_t*     on_t_row
-  mpz_set_ui( <mpz_ptr>(r._entries+0), 1 )
-  for i in range( 1, self.matT[0].r ):
+  mpz_set_ui( <mpz_ptr>(L._entries+0), 1 )
+  for i in range( 1, r ):
    on_s_row = self.matT[0].rows[i]
-   on_t_row = r._entries + i * c
-   mpz_set_ui( <mpz_ptr>(on_t_row+i), 1 )
+   on_t_row = L._entries + i * r
+   mpz_set_ui( <mpz_ptr>on_t_row[i], 1 )
    for j in range(i):
-    mpz_set_ui( <mpz_ptr>(on_t_row+j), on_s_row[j] )
-  return r
+    mpz_set_ui( <mpz_ptr>on_t_row[j], on_s_row[j] )
+  return L
   
  def export_U_sage(self):
   '''
@@ -218,7 +219,7 @@ cdef wrap_agnostic_array(void* p):
  r.array=p
  return r
 
-cdef tmod_mat_PLU(fmpz_mat s):
+def tmod_mat_PLU(fmpz_mat s):
  '''
  s:matrice of dim n*(n-1), n-1 >= 1, whose HNF is diagonal of ones
   and one zero line
@@ -238,7 +239,6 @@ cdef tmod_mat_PLU(fmpz_mat s):
  # delay Python object creation for m
  tmod_mat_set_fmpz_mat( m, s.matr )
  cdef void* PR=malloc( (m.r+m.c) * sizeof(long) )
- tmod_mat_PLU_mod_machine_word(<long*>PR,m)
  if( tmod_mat_PLU_mod_machine_word( <long*>PR, m ) ):
   return wrap_agnostic_array( PR ),wrap_tmod_mat( m )
  # not unimodular matrice. Cleanup and return None
