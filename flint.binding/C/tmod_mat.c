@@ -8,6 +8,9 @@
 #include "flint/ulong_extras.h"
 #include "flint/fmpz.h"
 
+// Subroutines in this file are machine-dependent and known to work on amd64
+//  with GMP and FLINT ver 2.4.1
+
 typedef struct
  {
   mp_limb_t* entries;
@@ -52,8 +55,10 @@ tmod_mat_clear(tmod_mat_t mat)
 
 mp_limb_t
 fmpz_to_t(const fmpz_t f)
-// This function calculates f modulo 2**64 on amd64. Don't know what it does on
-//  other arch
+/*
+ This function calculates f modulo 2**64 on amd64, at least for FLINT ver 
+  2.4.1. Don't know what it does on other arch
+*/
  {
   register long n=(long)(*f);
   register mp_limb_t m;
@@ -67,14 +72,35 @@ fmpz_to_t(const fmpz_t f)
   return m;
  }
 
-mp_limb_t
-t_invmod(mp_limb_t x)
- // returns x inverted modulo 2**64. x must be less than 2**63 and odd
+static mp_limb_t inv_mod__2_64__tab[13]={
+ 1,0xAAAAAAAAAAAAAAAB,0xCCCCCCCCCCCCCCCD,0x6DB6DB6DB6DB6DB7,0x8E38E38E38E38E39
+ ,0x2E8BA2E8BA2E8BA3,0x4EC4EC4EC4EC4EC5,0xEEEEEEEEEEEEEEEF,0xF0F0F0F0F0F0F0F1,
+ 0x86BCA1AF286BCA1B,0xCF3CF3CF3CF3CF3D,0xD37A6F4DE9BD37A7,0x8F5C28F5C28F5C29};
+
+static __inline__ 
+mp_limb_t t_invmod(mp_limb_t a)
  {
-  mp_limb_t r=n_invmod(x,0x8000000000000000);
-  if(r*x == 1)
-   return r;
-  return r*0x8000000000000001;
+  #define m 64
+  mp_limb_t s;
+  mp_limb_t t=a-1;
+  if(t<26)
+   return inv_mod__2_64__tab[ t>>1 ];
+  // inspired by public domain code created by Jean-Guillaume Dumas
+  count_trailing_zeros(s,t);
+  t >>= s; 
+  //assert( a == (1<<s)*t + 1 );
+  //assert( t&1 );
+  mp_limb_t U=2-a;
+  mp_limb_t amone=a-1;
+  long i,i_max;
+  i_max=m/s;
+  for(i=1;i<i_max;i <<= 1)
+   {
+    amone *= amone;
+    U *= amone+1;
+   }
+  #undef m
+  return U;
  }
 
 #include "tmod_mat_PLU.c"
