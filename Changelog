@@ -80,3 +80,11 @@
              
             Specialized re-implemented hnf_square() runs faster than original, 
              30% faster for n=500, bits=512, 13% faster for n=3000, bits=8
+
+03 Apr 2014 riddle `what is this code doing' partially solved
+            3 lines 
+             rhs = a_prime - (w * x)[0]    # row-by-col multiplication
+             alpha = rhs / lhs             # integer division
+             x=x + alpha*k                 # vector add-mul
+            take more than 4 seconds on average when source matrice (on input 
+             to HNF_square()) is random with n=2000, bits=8
