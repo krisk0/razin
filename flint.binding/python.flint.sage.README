@@ -38,20 +38,20 @@ FAQ
 ===
 
 Q0. What are the technical requirements of the package?
-A0. GMP, Sage, 64-bit platform, Python ver.2.x; Flint 2.4.1; GMP should define mp_limb_t to be unsigned long.
+A0. GMP, Sage, AMD/Intel 64-bit platform called amd64 in Linux world, Python ver.2.x; Flint 2.4.1.
 
     Use of MPIR instead of GMP might be possible, try this at your own risk.
     
     Versions of FLINT other than 2.4.1 and Sage other than sci-mathematics/sage-6.1.1-r2 untested, try them at your own risk
     
-    Why 64-bit? Because I did not test 32-bit installation of Sage or GMP, and have no plans to do so.
+    Why amd64? Because I want to reach my goal sooner and sometimes write un-portable code. Besides I only have one desktop computer used for all purposes. 
 
     Why Python2? Because I have not tested flint_sage on Python3. I doubt that it will work faster under Python3.
     
     flint_sage is about speed, rather than complete support for everything or your convenience
 
 Q1. Why Sage library is required?
-A1. Because mpz_t number need to be converted to/from a Python int, and plain Python does not support this. Therefore some Python wrapper for GMP library like gmpy, pycddlib or Sage required
+A1. Because mpz_t number need to be converted to/from a Python int, and plain Python does not support this. Therefore some Python wrapper for GMP library like gmpy, pycddlib or Sage required. Besides some fast algorithms doing certain tasks are part of Sage, which makes direct comparison possible.
 
 Q2. Your binding to fmpq_mat is ugly
      f=flint_sage.fmpq_mat( (Integer(1), flint_sage.fmpz_mat(s)) )
@@ -65,8 +65,7 @@ Q3. The .zip file contains whole lot of everything, but no documentation for you
 A3. Ha, you just answered your question yourself. .py files (such as test_*.py and benchmark*.py) are samples/demo/test and .cout are captured output of relevant .py files (for instance benchmark_solve_right.cout is what benchmark_solve_right.py output on my desktop)
 
 Q4. Your Python interface is disorganized and inconsistent. Your files are a mess.
-A4. However, I am coming near to my mid-range target of modding W.Stein double-det algorithm. My implementation outruns
-his
+A4. However, I am coming near to my mid-range target of modding W.Stein double-det algorithm. My implementation outruns his
 
 Q5. What is the meaning of phrase "W.Stein double-deteminant algorithm to compute HNF specialized for non-singular matrice and instructed to sometimes use faster low-level routines like FLINT Dixon lifting instead of Sage method is in ..."
 A5. I meant to say that 
