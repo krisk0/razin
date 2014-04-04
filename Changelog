@@ -88,3 +88,6 @@
              x=x + alpha*k                 # vector add-mul
             take more than 4 seconds on average when source matrice (on input 
              to HNF_square()) is random with n=2000, bits=8
+
+04 Apr 2014 tmod_mat now not only finds LU decomposition (if it exists), but
+             also is capable of inverting the two matrix L,U
