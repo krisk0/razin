@@ -49,14 +49,12 @@ tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols)
 // I am not a maniac, I am optimizer
  {
   slong i;
-  mp_limb_t* e;
-  mat->entries = flint_malloc(rows * cols * sizeof(mp_limb_t));
-  mat->rows = flint_malloc(rows * sizeof(mp_limb_t *));
-  e = mat->entries;
-  for (i = 0; i < rows; i++, e += cols)
-    mat->rows[i] = e;
+  mp_limb_t* e = mat->entries = flint_malloc(rows * cols * sizeof(mp_limb_t));
+  mat->rows = flint_malloc( rows * sizeof(mp_limb_t*) );
   mat->r = rows;
   mat->c = cols;
+  for (i = 0; i < rows; i++, e += cols)
+    mat->rows[i] = e;
  }
 
 void 

@@ -123,7 +123,7 @@ print tmod_pretty_m( flint.export_Wti(LU_inv) )
 print tmod_pretty_m( flint.export_Lti(LU_inv) )
 
 sage.all.set_random_seed('20140402')
-for dim in (3,):
+for dim in range(4,11):
  for i in range(20):
   aS=random_matrice(dim,12)
   if i==1:
