@@ -107,6 +107,8 @@
 
 04 Apr 2014 Need to
              1. Improve check of tmod_mat_solver() in test_tmod_mat.py
-             2. Implement recursive algorithm for inversion of lower-tria matrix
+              --- done
+             2. Implement recursive algorithm for inversion of lower-tria matrix 
+              --- done
              3. Benchmark the algorithm including LU decomposition and inverse 
                  for big and fat matrices, see how big diagonal entries are
