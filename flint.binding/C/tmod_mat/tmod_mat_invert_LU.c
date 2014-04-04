@@ -111,12 +111,13 @@ input S = 4  ~  L = 4  1     L.I= -4  1          output R =  ?  2
   tmod_mat_t E;
   tmod_mat_init( E, m, m );
   mp_limb_t* Erow=E->entries;
-  mp_limb_t* Lrow=S->rows[1]; // top-left entry of L is at row 1
+  mp_limb_t* Lrow; 
   // un-compress L to E
   Erow[0] = 1;
   Erow += m;
-  for (i=1; i<m; i++, Erow += m, Lrow += cc)
+  for (i=1; i<m; i++, Erow += m)
    {
+    Lrow=S->rows[i];       // top-left entry of L is at row 1
     for (j=0;j<i;j++)     // row no. i wants i general elements, 
      Erow[j] = Lrow[j];
     Erow[i] = 1;         //                                     followed by 1

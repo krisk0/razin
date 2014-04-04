@@ -34,24 +34,31 @@ def test_matrice(S):
  if PR == None:
   print_tmod_mat_PLU_error( S, None, 'empty result' )
   sys.exit(1)
- L_again,U_again=flint.export_L_sage(LU),flint.export_U_sage(LU)
+ L_sage,U_sage=flint.export_L_sage(LU),flint.export_U_sage(LU)
  tmod_mat_PLU_error=0
  aS_again = flint.tmod_mat_permute_fmpz_mat( PR, fmpz_mat(S) ).export_sage()
- if not ((aS_again - L_again * U_again) % w_modulo).is_zero():
+ if not ((aS_again - L_sage * U_sage) % w_modulo).is_zero():
   tmod_mat_PLU_error=1
   print_tmod_mat_PLU_error( S, LU, 'P*S != L*U' )
   print ' left part:\n',tmod_pretty_m(aS_again)
-  print 'right part:\n',tmod_pretty_m(L_again * U_again)
+  print 'right part:\n',tmod_pretty_m(L_sage * U_sage)
  WL_inv=flint.tmod_mat_solver( PR, LU )
- Wti=flint.export_Wti( WL_inv )
- W=U_again.matrix_from_rows( range(m-1) )
- if not (Wti*W.T) % w_modulo == identity_matrix(ZZ,m-1):
+ Wti,Lti=flint.export_Wti( WL_inv ),flint.export_Lti( WL_inv )
+ W=U_sage.matrix_from_rows( range(m-1) )
+ if (Wti*W.T) % w_modulo != identity_matrix(ZZ,m-1):
   if not tmod_mat_PLU_error:
    tmod_mat_PLU_error=1
    print_tmod_mat_PLU_error( S, LU, 'Wti check failed' )
   print 'Wti=\n',tmod_pretty_m(Wti)
-  print 'U=\n',tmod_pretty_m(U_again)
+  print 'U=\n',tmod_pretty_m(U_sage)
   print 'W=\n',tmod_pretty_m(W)
+ if (Lti*L_sage.T) % w_modulo != identity_matrix(ZZ,m):
+  if not tmod_mat_PLU_error:
+   tmod_mat_PLU_error=1
+   print_tmod_mat_PLU_error( S, LU, 'Lti check failed' )
+  print 'solver out=\n',tmod_pretty_m( WL_inv.export_sage() )
+  print 'Lti=\n',tmod_pretty_m(Lti)
+  print 'L.T=\n',tmod_pretty_m(L_sage.T)
  if tmod_mat_PLU_error:
   sys.exit(1)
 
@@ -113,6 +120,7 @@ print 'tmod_mat_solver() returned'
 print tmod_pretty_m( LU.export_sage() ),'\n'
 print tmod_pretty_m( LU_inv.export_sage() ),'\n'
 print tmod_pretty_m( flint.export_Wti(LU_inv) )
+print tmod_pretty_m( flint.export_Lti(LU_inv) )
 
 sage.all.set_random_seed('20140402')
 for dim in (3,):

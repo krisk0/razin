@@ -282,3 +282,27 @@ def export_Wti( tmod_mat_single WL_ti ):
   for j in range(i_plus):
    mpz_set_ui( <mpz_ptr>on_t_row[j], on_s_row[j] )
  return Uap
+
+def export_Lti( tmod_mat_single WL_ti ):
+ '''
+ extract L'=L.T.I from tmod_mat_solver() result
+ 
+ WL_ti is virgin
+ 
+ return L' as sage Matrix_integer_dense
+ '''
+ cdef Py_ssize_t i,j, m=WL_ti.matT[0].r
+ cdef Py_ssize_t cc=m-1
+ cdef Matrix_integer_dense Lap=Matrix( m, m )
+ cdef Py_ssize_t delta_t=m+1
+ cdef mp_limb_t* on_s_row=WL_ti.matT[0].entries
+ cdef mpz_t*     on_t_row=Lap._entries
+ for i in range( cc ):
+  mpz_set_ui( <mpz_ptr>on_t_row[0], 1 )
+  on_t_row += 1
+  for j in range(cc-i):
+   mpz_set_ui( <mpz_ptr>on_t_row[j], on_s_row[j] )
+  on_s_row += m    # shift one row and one entry
+  on_t_row += m    # shift one row
+ mpz_set_ui( <mpz_ptr>on_t_row[0], 1 ) # last row has only 1
+ return Lap

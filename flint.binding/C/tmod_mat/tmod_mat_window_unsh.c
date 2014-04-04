@@ -23,7 +23,7 @@ typedef tmod_mat_window_unsh_struct tmod_mat_window_unsh_t[1];
  assert( p[0] == tmod_mat_window_entry(mat,1,col) );
 #endif
 
-void
+static void
 tmod_mat_to_window_unsh(tmod_mat_window_unsh_t W, const tmod_mat_t A,
  slong r1, slong c1, slong r2, slong c2)
  {
@@ -36,13 +36,13 @@ tmod_mat_to_window_unsh(tmod_mat_window_unsh_t W, const tmod_mat_t A,
   W->c = c2 - c1;
  }
 
-void 
+static void 
 tmod_mat_window_unsh_clear( tmod_mat_window_unsh_t W )
  {
   flint_free( W->rows );
  }
 
-void 
+static __inline__ void 
 tmod_mat_invert_tril_dim3( tmod_mat_window_unsh_t W )
 /*
             1                                      1
@@ -58,7 +58,7 @@ inverse of w0  1     according to sympy equals   -w0       1
   e2[0] = w0*w2-w1;  e2[1] = -w2;
  }
 
-void
+static void
 tmod_mat_invert_tril( tmod_mat_window_unsh_t alpha )
 /*
 on entry alpha: square, lower-triangular, diagonal 1
@@ -68,10 +68,9 @@ on exit  alpha: old alpha inverted
   long m=alpha->r;
   if(m==1)
    return;
-  mp_limb_t* e;
   if(m==2)
    {
-    e=alpha->rows[1];
+    mp_limb_t* e=alpha->rows[1];
     *e = -*e;
     return;
    }
