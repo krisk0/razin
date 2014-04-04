@@ -19,7 +19,7 @@ w_modulo=2**64
 '''
 Test tmod_mat object
 
-Create unimodular matrice, lose 1 column, compute its P-L-U-Q decomposition 
+Create unimodular matrice, lose 1 column, compute its P-L-U decomposition 
  modulo 2**64, check that it is correct
 '''
 
@@ -27,14 +27,14 @@ def random_matrice(dim,bits):
  m=sage.all.random_matrix(ZZ, dim, dim, algorithm='unimodular')
  return m.matrix_from_columns( range(dim-1) )
 
-def test_matrice(aS):
- S=sage.all.copy(aS)
+def test_matrice(S):
+ m=S.nrows()
  aF_again=fmpz_mat( S )
  PR,LU=flint.tmod_mat_PLU( aF_again )
  if PR == None:
   print_tmod_mat_PLU_error( S, None, 'empty result' )
   sys.exit(1)
- L_again,U_again=LU.export_L_sage(),LU.export_U_sage()
+ L_again,U_again=flint.export_L_sage(LU),flint.export_U_sage(LU)
  tmod_mat_PLU_error=0
  aS_again = flint.tmod_mat_permute_fmpz_mat( PR, fmpz_mat(S) ).export_sage()
  if not ((aS_again - L_again * U_again) % w_modulo).is_zero():
@@ -42,6 +42,16 @@ def test_matrice(aS):
   print_tmod_mat_PLU_error( S, LU, 'P*S != L*U' )
   print ' left part:\n',tmod_pretty_m(aS_again)
   print 'right part:\n',tmod_pretty_m(L_again * U_again)
+ WL_inv=flint.tmod_mat_solver( PR, LU )
+ Wti=flint.export_Wti( WL_inv )
+ W=U_again.matrix_from_rows( range(m-1) )
+ if not (Wti*W.T) % w_modulo == identity_matrix(ZZ,m-1):
+  if not tmod_mat_PLU_error:
+   tmod_mat_PLU_error=1
+   print_tmod_mat_PLU_error( S, LU, 'Wti check failed' )
+  print 'Wti=\n',tmod_pretty_m(Wti)
+  print 'U=\n',tmod_pretty_m(U_again)
+  print 'W=\n',tmod_pretty_m(W)
  if tmod_mat_PLU_error:
   sys.exit(1)
 
@@ -95,10 +105,19 @@ def tmod_symm_abs(x):
  return x
 
 print 'startin test'
+
+a32=matrix(ZZ,3,[1,-6,4,-21,7,-48])
+PR,LU=flint.tmod_mat_PLU( fmpz_mat(a32) )
+LU_inv=flint.tmod_mat_solver(PR, LU)
+print 'tmod_mat_solver() returned'
+print tmod_pretty_m( LU.export_sage() ),'\n'
+print tmod_pretty_m( LU_inv.export_sage() ),'\n'
+print tmod_pretty_m( flint.export_Wti(LU_inv) )
+
 sage.all.set_random_seed('20140402')
-for dim in range(12,40):
+for dim in (3,):
  for i in range(20):
-  aS=random_matrice(dim,64)
+  aS=random_matrice(dim,12)
   if i==1:
    # warp matrice so at least one element is big enough
    if aS[1,0] >= 0:

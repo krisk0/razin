@@ -10,6 +10,8 @@
 // Subroutines in this file are machine-dependent and known to work on amd64
 //  with GMP and FLINT ver 2.4.1
 
+// Some code borrowed from flint nmod_mat/*.c, data layout is different
+
 typedef struct
  {
   slong r;
@@ -20,8 +22,6 @@ typedef struct
 tmod_mat_struct;
 typedef tmod_mat_struct tmod_mat_t[1];
 #define tmod_mat_entry(mat,i,j) ((mat)->rows[(i)][(j)])
-
-// Some code borrowed from flint-2.4.1/nmod_mat/
 
 void 
 tmod_mat_init(tmod_mat_t mat, long rows, long cols)
@@ -44,7 +44,7 @@ tmod_mat_init(tmod_mat_t mat, long rows, long cols)
 
 void 
 tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols)
-// same result as tmod_mat_init, only matrice is somewhat random rather than 
+// same result as tmod_mat_init(), only matrice is somewhat random rather than 
 //  zero
 // I am not a maniac, I am optimizer
  {
@@ -120,4 +120,5 @@ mp_limb_t t_invmod(mp_limb_t a)
  }
 
 #include "tmod_mat_PLU.c"
+#include "tmod_mat_window_unsh.c"
 #include "tmod_mat_invert_LU.c"

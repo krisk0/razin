@@ -16,17 +16,19 @@ cdef extern from 'flint/flint.h':
  void fmpz_randbits(fmpz_t tgt, flint_rand_t state, mp_bitcnt_t bits)
  void fmpz_randtest(fmpz_t tgt, flint_rand_t state, mp_bitcnt_t bits)
 
-cdef extern from './C/tmod_mat.c':
+cdef extern from './C/tmod_mat/tmod_mat.c':
  ctypedef struct tmod_mat_struct:
-  mp_limb_t* entries
   long r
   long c
   mp_limb_t** rows
+  mp_limb_t* entries
  ctypedef tmod_mat_struct tmod_mat_t[1]
  mp_limb_t fmpz_to_t(const fmpz_t f)
  void tmod_mat_init(tmod_mat_t m, long rows, long cols)
+ void tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols)
  void tmod_mat_clear(tmod_mat_t m)
  long tmod_mat_PLU_mod_machine_word(long* PR, tmod_mat_t S)
+ void tmod_mat_solver_3arg( tmod_mat_t R, long* PD, const tmod_mat_t LU )
 
 cdef mp_limb_t test_fmpz_to_t(fmpz_t n,flint_rand_t S,mp_bitcnt_t bits,
   long upto):
@@ -154,42 +156,42 @@ cdef class tmod_mat_single:
     k += 1
   return r
  
- def export_L_sage(self):
-  '''
-  un-compress L part of matrice, return result as Sage Matrix_integer_dense,
-   square
+def export_L_sage( tmod_mat_single me ):
+ '''
+ un-compress L part of matrice, return result as Sage Matrix_integer_dense,
+  square
+ 
+ count of rows of me should be equal or 1 more than count of columns
+ '''
+ cdef Py_ssize_t i,j, r=me.matT[0].r
+ cdef Matrix_integer_dense L=Matrix( r, r )
+ cdef mp_limb_t* on_s_row
+ cdef mpz_t*     on_t_row
+ mpz_set_ui( <mpz_ptr>(L._entries+0), 1 )
+ for i in range( 1, r ):
+  on_s_row = me.matT[0].rows[i]
+  on_t_row = L._entries + i * r
+  mpz_set_ui( <mpz_ptr>on_t_row[i], 1 )
+  for j in range(i):
+   mpz_set_ui( <mpz_ptr>on_t_row[j], on_s_row[j] )
+ return L
   
-  count of rows should be equal or 1 more than count of columns
-  '''
-  cdef Py_ssize_t i,j, c=self.matT[0].c, r=self.matT[0].r
-  cdef Matrix_integer_dense L=Matrix( r, r )
-  cdef mp_limb_t* on_s_row
-  cdef mpz_t*     on_t_row
-  mpz_set_ui( <mpz_ptr>(L._entries+0), 1 )
-  for i in range( 1, r ):
-   on_s_row = self.matT[0].rows[i]
-   on_t_row = L._entries + i * r
-   mpz_set_ui( <mpz_ptr>on_t_row[i], 1 )
-   for j in range(i):
-    mpz_set_ui( <mpz_ptr>on_t_row[j], on_s_row[j] )
-  return L
-  
- def export_U_sage(self):
-  '''
-  un-compress U part of matrice, return result as Sage Matrix_integer_dense
+def export_U_sage( tmod_mat_single me ):
+ '''
+ un-compress U part of matrice, return result as Sage Matrix_integer_dense
 
-  count of rows should be not less than count of columns
-  '''
-  cdef Py_ssize_t i,j,c=self.matT[0].c
-  cdef Matrix_integer_dense r=Matrix( self.matT[0].r, c )
-  cdef mp_limb_t* on_s_row
-  cdef mpz_t*     on_t_row
-  for i in range( c ):
-   on_s_row=self.matT[0].rows[i]
-   on_t_row=r._entries+i*c
-   for j in range( i, c):
-    mpz_set_ui( <mpz_ptr>(on_t_row+j), on_s_row[j] )
-  return r
+ count of rows or me should be not less than count of columns
+ '''
+ cdef Py_ssize_t i,j,c=me.matT[0].c
+ cdef Matrix_integer_dense r=Matrix( me.matT[0].r, c )
+ cdef mp_limb_t* on_s_row
+ cdef mpz_t*     on_t_row
+ for i in range( c ):
+  on_s_row=me.matT[0].rows[i]
+  on_t_row=r._entries+i*c
+  for j in range( i, c):
+   mpz_set_ui( <mpz_ptr>(on_t_row+j), on_s_row[j] )
+ return r
 
 cdef wrap_tmod_mat(tmod_mat_t a):
  '''
@@ -244,3 +246,39 @@ def tmod_mat_PLU(fmpz_mat s):
  # not unimodular matrice. Cleanup and return None
  tmod_mat_clear(m)
  return None,None
+
+def tmod_mat_solver(agnostic_array PD, tmod_mat_single LU):
+ '''
+ PD, LU: jammed PR, jammed LU as returned by tmod_mat_PLU(), with m rows
+  and m-1 columns
+ 
+ invert transposed L and transposed Uu where Uu = U without zero row
+ 
+ return result R as tmod_mat_single
+ 
+ see comment on tmod_mat_solver_3arg for exact data layout
+ '''
+ cdef tmod_mat_t R
+ cdef Py_ssize_t m=LU.matT[0].r
+ tmod_mat_init_fast( R, m, m-1 )
+ tmod_mat_solver_3arg( R, <long*>PD.array, LU.matT )
+ return wrap_tmod_mat( R )
+
+def export_Wti( tmod_mat_single WL_ti ):
+ '''
+ extract U'=Uu.T.I from tmod_mat_solver() result
+ 
+ return U' as sage Matrix_integer_dense
+ '''
+ cdef Py_ssize_t i,j,i_plus, m=WL_ti.matT[0].r
+ cdef Py_ssize_t cc=m-1
+ cdef Matrix_integer_dense Uap=Matrix( cc, cc )
+ cdef mp_limb_t* on_s_row
+ cdef mpz_t*     on_t_row
+ for i in range( cc ):
+  i_plus=i+1
+  on_s_row = WL_ti.matT[0].rows[i_plus]
+  on_t_row = Uap._entries + i * cc
+  for j in range(i_plus):
+   mpz_set_ui( <mpz_ptr>on_t_row[j], on_s_row[j] )
+ return Uap
