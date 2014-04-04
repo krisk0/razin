@@ -104,3 +104,9 @@
             752.7781+792.1059 = 1544.8 < 1671.9109     that's 8% losses 
 
             Will investigate this
+
+04 Apr 2014 Need to
+             1. Improve check of tmod_mat_solver() in test_tmod_mat.py
+             2. Implement recursive algorithm for inversion of lower-tria matrix
+             3. Benchmark the algorithm including LU decomposition and inverse 
+                 for big and fat matrices, see how big diagonal entries are
