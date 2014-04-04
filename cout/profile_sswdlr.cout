@@ -1,0 +1,68 @@
+
+
+********* profile for n=2000 bits=8 tries=5 *********
+                      sswdlr 0 1.7900
+                     add_row-1 13.2713
+                     add_row-0 14.6201
+                      sswdlr 1 17.3336
+                      sswdlr 2 23.5580
+                 small_det_HNF 57.5643
+                solve_right-dd 147.3211
+                        kernel 222.4701
+                dixon-last_row 239.6945
+system_with_difficult_last_row 504.8464
+             det_given_divisor 1897.1195
+                    double_det 2051.9150
+                         total 2652.4926
+*****************************************************
+
+n=2000 bits=8 Sage time=3064.60
+n=2000 bits=8 max time sage/mine=621.365051031/540.993634939
+
+
+********* profile for n=2000 bits=32 tries=5 *********
+                      sswdlr 0 1.8093
+                     add_row-0 18.8780
+                      sswdlr 1 18.9247
+                     add_row-1 19.2776
+                 small_det_HNF 79.8355
+                      sswdlr 2 122.2534
+                solve_right-dd 370.1852
+                        kernel 518.7663
+                    IML solver 688.0196
+system_with_difficult_last_row 1349.7734
+             det_given_divisor 1949.7389
+                    double_det 2350.3034
+                         total 3829.0400
+******************************************************
+
+n=2000 bits=32 Sage time=4242.06
+n=2000 bits=32 max time sage/mine=850.9795959/773.350151062
+
+
+********* profile for n=3000 bits=8 tries=5 *********
+                      sswdlr 0 4.0349
+                     add_row-0 29.4419
+                     add_row-1 31.4523
+                      sswdlr 1 52.4534
+                      sswdlr 2 69.6590
+                 small_det_HNF 227.5046
+                solve_right-dd 479.8304
+                        kernel 748.6633
+                dixon-last_row 796.3609
+system_with_difficult_last_row 1671.1716
+             det_given_divisor 8411.6430
+                    double_det 8912.4939
+                         total 10896.1205
+*****************************************************
+
+n=3000 bits=8 Sage time=12259.07
+n=3000 bits=8 max time sage/mine=2482.69813395/2207.01869106
+          n      8 bits      32 bits   64 bits 96 bits 128 bits 196 bits 256 bits 384 bits 512 bits
+  Sage  2000  606.3-621.4  845.6-851.0                                                             
+        3000 2396.4-2482.7                                                                         
+re-impl 2000  515.7-541.0  757.9-773.4                                                             
+        3000 2109.2-2207.0                                                                         
+
+
+Test passed
