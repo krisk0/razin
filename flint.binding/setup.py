@@ -114,7 +114,7 @@ def sed_and_perl__goodbye( oN, iN ):
   o.write( r.replace('λ','\n') )
   o.write( '/*'+tail_warning+'\n*/' )
 
-sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'nmod_mat_HNF-debug.c' )
+sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat_HNF-debug.c' )
 
 setup\
  (
