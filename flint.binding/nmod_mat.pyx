@@ -161,9 +161,11 @@ def fmpz_mat_hermite_form(fmpz_mat A, Integer M):
 
 def plu_modulo_prime(fmpz_mat A,Integer M):
  '''
- call nmod_mat_lu on A taken modulo M
+ call nmod_mat_lu on A taken modulo M, get P and jammed LU 
  
- forget p and return modified matrice
+ set B=P*A
+ 
+ return B,LU as fmpz_mat
  '''
  a=nmod_mat(A,M)
  cdef long* p=<long*>malloc(a.matZn[0].r * sizeof(long))
@@ -181,6 +183,7 @@ def plu_modulo_prime(fmpz_mat A,Integer M):
  5 5   1 0   5  5
  6 5 = 9 1 * 0 12
  '''
- cdef fmpz_mat b=a.export_nonnegative_fmpz_mat()
+ cdef fmpz_mat LU=a.export_nonnegative_fmpz_mat()
+ cdef fmpz_mat B=fmpz_mat_permute( p, A )
  free(p)
- return b
+ return B,LU

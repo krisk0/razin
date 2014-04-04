@@ -238,3 +238,21 @@ cdef wrap_fmpz_mat(fmpz_mat_t a):
  A.matr.c=a.c
  A.matr.rows=a.rows
  return A
+
+cdef fmpz_mat_permute( long* P, fmpz_mat src ):
+ '''
+ r=copy of src
+ apply P to rows of r
+ return r
+ '''
+ cdef fmpz_mat_t tgt
+ fmpz_mat_init( tgt, src.matr[0].r, src.matr[0].c )
+ cdef long i,j,c=tgt.c
+ cdef long* on_src_row
+ cdef long* on_tgt_row
+ for i in range( tgt.r ):
+  on_src_row = src.matr[0].rows[ P[i] ]
+  on_tgt_row =         tgt.rows[   i  ]
+  for j in range(c):
+   fmpz_set( on_tgt_row+j, on_src_row+j )
+ return wrap_fmpz_mat( tgt )

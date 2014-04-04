@@ -38,10 +38,11 @@ ctypedef __mpz_struct* mpz_ptr
 
 cdef extern from 'flint/fmpz.h':
  ctypedef long fmpz_t[1]
- void fmpz_set_mpz(fmpz_t tgt, mpz_t sou)
  void fmpz_init(fmpz_t x)
- void fmpz_get_mpz(mpz_t tgt, fmpz_t sou)
  void fmpz_clear(fmpz_t f)
+ void fmpz_set_mpz(fmpz_t tgt, mpz_t sou)
+ void fmpz_set(fmpz_t tgt, const fmpz_t sou)
+ void fmpz_get_mpz(mpz_t tgt, fmpz_t sou)
  mp_limb_t fmpz_mod_ui(fmpz_t f, const fmpz_t g, mp_limb_t x)
  void fmpz_set_ui(fmpz_t tgt, mp_limb_t val)
  void fmpz_lcm(fmpz_t f , const fmpz_t g , const fmpz_t h)
@@ -79,7 +80,23 @@ cdef extern from 'flint/fmpq_mat.h':
   fmpq** rows
  ctypedef fmpq_mat_struct fmpq_mat_t[1]
 
-# Python-visible types and methods
+# What other software library contains so tiny and useful object?
+cdef class agnostic_array:
+
+ cdef void* array
+
+ def __init__(self):
+  self.array=NULL
+
+ def __dealloc__(self):
+  free(self.array)
+
+cdef wrap_agnostic_array(void* p):
+ cdef agnostic_array r=agnostic_array.__new__( agnostic_array )
+ r.array=p
+ return r
+
+# Python-visible matrice types and methods 
 include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
 include "nmod_mat.pyx"

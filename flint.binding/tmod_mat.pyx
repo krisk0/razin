@@ -205,22 +205,6 @@ cdef wrap_tmod_mat(tmod_mat_t a):
  A.matT.rows=a.rows
  return A
 
-# What other software library contains so tiny and useful object?
-cdef class agnostic_array:
-
- cdef void* array
-
- def __init__(self):
-  self.array=NULL
-
- def __dealloc__(self):
-  free(self.array)
-
-cdef wrap_agnostic_array(void* p):
- cdef agnostic_array r=agnostic_array.__new__( agnostic_array )
- r.array=p
- return r
-
 def tmod_mat_PLU(fmpz_mat s):
  '''
  s:matrice of dim n*(n-1), n-1 >= 1, whose HNF is diagonal of ones
