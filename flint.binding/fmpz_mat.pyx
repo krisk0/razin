@@ -246,7 +246,7 @@ cdef fmpz_mat_permute( long* P, fmpz_mat src ):
  return r
  '''
  cdef fmpz_mat_t tgt
- cdef long i,j,c=rc.matr[0].c
+ cdef long i,j,c=src.matr[0].c
  fmpz_mat_init( tgt, src.matr[0].r, c )
  cdef long* on_src_row
  cdef long* on_tgt_row
