@@ -3,7 +3,7 @@ RAZIN - Rigorous algebraic zero impeding numeration
 
 For now, I offer
   a) Two subroutines to quickly calculate HNF of an integer matrice in two practically important cases:
-         a) it is non-singular 
+         a) it is non-singular;
          b) its determinant is known and lies in range 2..2^64-1 where 2^64-1 is maximal native unsigned integer;
   b) Python binding to some methods of FLINT, called flint_sage;
   c) some algorithms benchmarks (such as determinant, linear equations solver)
