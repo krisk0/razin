@@ -23,8 +23,30 @@ Create unimodular matrice, lose 1 column, compute its P-L-U decomposition
  modulo 2**64, check that it is correct
 '''
 
+def random_Utria(dim,bits):
+ U=sage.all.random_matrix(ZZ,dim,x=-bits,y=bits)
+ for i in range(dim):
+  if sage.all.randint(0,1):
+   U[i,i]=1
+  else:
+   U[i,i]=-1
+  for j in range(i):
+   U[i,j]=0
+ return U
+
+def random_Ltria(dim,bits):
+ return random_Utria(dim,bits).transpose()
+
 def random_matrice(dim,bits):
- m=sage.all.random_matrix(ZZ, dim, dim, algorithm='unimodular')
+ m=identity_matrix(ZZ,dim)
+ for i in range(dim):
+  if sage.all.randint(0,1):
+   m[i,i]=-1
+ bits = 1<<bits
+ m *= random_Ltria(dim,bits)
+ m *= random_Utria(dim,bits)
+ m *= random_Ltria(dim,bits)
+ m *= random_Utria(dim,bits)
  return m.matrix_from_columns( range(dim-1) )
 
 def test_matrice(S):
