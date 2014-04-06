@@ -112,3 +112,5 @@
               --- done
              3. Benchmark the algorithm including LU decomposition and inverse 
                  for big and fat matrices, see how big diagonal entries are
+              --- done, tmod_mat is fast enough, so I delay implementing 
+              recursive version of tmod_mat_PLU_mod_machine_word()

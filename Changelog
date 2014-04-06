@@ -91,3 +91,9 @@
 
 04 Apr 2014 tmod_mat now not only finds LU decomposition (if it exists), but
              also is capable of inverting the two matrix L,U
+
+06 Apr 2014 while random_matrix(ZZ, dim, dim, algorithm='unimodular') takes 
+             nearly forever for dim=100, my computation of PLU modulo 2**64 
+             and subsequent inversion of it is so fast that it does not make 
+             sense to make it faster (gains in speed of HNF computation will 
+             be unnoticed).
