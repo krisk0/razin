@@ -18,7 +18,6 @@ This program slightly differs from profile_Sage_hnf_square.py. Most notable
 '''
 
 #TODO: output partially filled table after dim=x is finished
-#TODO: report raw time of reimplemented_hnf_square() along with Sage time
 
 import sage.all
 import sys,time,numpy
@@ -289,7 +288,7 @@ def do_benchmark( m ):
   '''
   print 'Feature in Sage hnf_square(), recording matrice'
   record_bug( m, 'hnf_square-failed-' )
-  return 0
+  return 0,0
  t1=time.time()
  m._clear_cache()
  mine_r=reimplemented_hnf_square(m)
@@ -315,7 +314,7 @@ def do_benchmark( m ):
  else:
   if t1>t_mine_max:
    t_mine_max=t1
- return 1+t0
+ return 1+t0,t1
 
 def random_data(dim,bits):
  '''
@@ -357,14 +356,15 @@ def benchmark( dim, bits, tries, experiment_no ):
  global t_sage_min,t_sage_max,t_mine_min,t_mine_max
  t_sage_max=t_mine_max=-1
  t_sage_min=t_mine_min=1e77
- avg_sage_time=0
+ avg_sage_time=avg_mine_time=0
  col_no=find_col(bits)
  for i in range( tries ):
   while 1:
    m=random_data( dim, bits )
-   t_sage=do_benchmark( m )
+   t_sage,t_mine=do_benchmark( m )
    if t_sage:
     avg_sage_time += t_sage-1
+    avg_mine_time += t_mine
     break
   if benchmark_early_aborts and t_mine_max > 60 and i:
    tries=i+1
@@ -372,7 +372,7 @@ def benchmark( dim, bits, tries, experiment_no ):
     % (dim,bits,t_mine_max,tries)
    break
  save_time( dim, bits, experiment_no, col_no )
- print 'n=%s bits=%s Sage time=%.2f' % (dim,bits,avg_sage_time)
+ print 'n=%s bits=%s Sage/my time=%.2f/%.2f' % (dim,bits,avg_sage_time,avg_mine_time)
 
 def sort_in_increasin_order( p ):
  cmp_2nd=lambda x,y: cmp(x[1], y[1])
