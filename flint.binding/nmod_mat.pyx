@@ -148,10 +148,10 @@ def fmpz_mat_hermite_form(fmpz_mat A, Integer M):
  Before asking me questions, count HNF of 
   [  5  5 ]
   [ -7 -8 ]
- and 
+ modulo 5 and 
   [   66551115 -1211111295]
   [  -92996400  1692368196] 
- using modular technique
+ modulo 540
  '''
  a=nmod_mat(A,M)
  #sig_on() # added temporarily to shorten assert failed dump
