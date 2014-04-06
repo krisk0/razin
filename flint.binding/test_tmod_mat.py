@@ -116,14 +116,13 @@ print 'startin test'
 a32=matrix(ZZ,3,[1,-6,4,-21,7,-48])
 PR,LU=flint.tmod_mat_PLU( fmpz_mat(a32) )
 LU_inv=flint.tmod_mat_solver(PR, LU)
-print 'tmod_mat_solver() returned'
 print tmod_pretty_m( LU.export_sage() ),'\n'
 print tmod_pretty_m( LU_inv.export_sage() ),'\n'
 print tmod_pretty_m( flint.export_Wti(LU_inv) )
 print tmod_pretty_m( flint.export_Lti(LU_inv) )
 
 sage.all.set_random_seed('20140402')
-for dim in range(4,11):
+for dim in (20,):
  for i in range(20):
   aS=random_matrice(dim,12)
   if i==1:
