@@ -1,7 +1,7 @@
 # Copyright 2014 Денис Крыськов
 # License: GNU General Public License (GPL)
 
-EAPI=4
+EAPI=5
 
 PYTHON_COMPAT=( python2_7 ) # I only tested 2.7
 
