@@ -21,7 +21,7 @@ Result:
  fflu() correctly counts determinant and prints smth related to source
   matrice, not clear what
   
- fmpz_mat_fflu is documented incorrectly in 4.2.1 pdf: wrong parameter type
+ fmpz_mat_fflu is documented incorrectly in 4.2.3 pdf: wrong parameter type
 '''
 
 def random_matrice():
