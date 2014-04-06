@@ -290,3 +290,47 @@ def export_Lti( tmod_mat_single WL_ti ):
   on_t_row += m    # shift one row
  mpz_set_ui( <mpz_ptr>on_t_row[0], 1 ) # last row has only 1
  return Lap
+
+def clean_dict( d, s ):
+ j=len(d)-s
+ if j>0:
+  kk,to_del=d.iterkeys(),[]
+  for k in kk:
+   to_del.append( k )
+   j -= 1
+   if not j:
+    break 
+  for k in to_del:
+   del d[k]
+
+def agnostic_array_export_big( agnostic_array A, long x, long y, mp_limb_t z ):
+ '''
+ treat A.array as array of mp_limb_t
+ skip 1st x entries
+ put other y entries into symmetric range, then take absolute value, call it u
+ ignore all u < z
+ return all bigger u as Python dict: u->count of occurencies, but make
+  sure it contains not more than 100 keys (drop smaller u)
+ if result is empty, return None
+ '''
+ cdef mp_limb_t* a=<mp_limb_t*>A.array
+ a += x
+ cdef long i
+ cdef mp_limb_t u
+ r=dict()
+ for i in range(y):
+  u=a[i]
+  if u & 0x8000000000000000:
+   u = -u
+  if u<z:
+   continue
+  try:
+   r[u] += 1
+  except:
+   r[u] = 1
+   if len(r) > 100+10:
+    clean_dict(r, 100 )
+ if len(r) > 100:
+  clean_dict(r, 100 )
+ if len(r):
+  return r
