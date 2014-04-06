@@ -7,7 +7,7 @@ For now, I offer
          b) its determinant is known and lies in range 2..2^64-1 where 2^64-1 is maximal native unsigned integer;
   b) PLU decomposition of a square or nearly-square matrice modulo 2**64;
   c) Python binding to some methods of FLINT, called flint_sage;
-  c) some algorithms benchmarks (such as determinant, linear equations solver)
+  d) some algorithms benchmarks (such as determinant, linear equations solver)
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
