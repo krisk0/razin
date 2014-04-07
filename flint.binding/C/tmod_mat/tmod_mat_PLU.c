@@ -68,7 +68,7 @@ tmod_vec_scalar_addmul( mp_limb_t* tgt, mp_limb_t* sou, long L,
 long 
 tmod_mat_PLU_mod_machine_word(long* PR, tmod_mat_t S)
 /*
-S: matrice with m rows and m-1 columns over residue ring modulo 2**64
+S: matrice with m rows and n columns over residue ring modulo 2**64, m >= n
 
 attempt to find PLU factorisation of S, such that
 
