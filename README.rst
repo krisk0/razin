@@ -8,7 +8,7 @@ For now, I offer
   b) PLU decomposition of a matrice modulo 2^64;
   c) inversion of square lower-triangular matrice modulo 2^64;
   d) Python binding to some methods of FLINT, called flint_sage;
-  c) some algorithms benchmarks (such as determinant, linear equations solver)
+  e) some algorithms benchmarks (such as determinant, linear equations solver)
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
