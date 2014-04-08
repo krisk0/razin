@@ -83,6 +83,7 @@ src_install(){
 }
 
 src_test(){
-	# default doesn't run anything. Seem to be parallel safe
+	# build/interfaces/NTL-interface.o required for test
+ emake build/interfaces/NTL-interface.o
 	emake check AT="" QUIET_CC="" QUIET_CXX="" QUIET_AR=""
 }
