@@ -7,13 +7,11 @@
  #original code in .../sage/libs/flint
 #       Copyright (C) 2013 Fredrik Johansson <fredrik.johansson@gmail.com>
  #modified by Денис Крыськов to access some fmpX_mat_XXX() subroutines 
+ # and extra .C subroutines 
 
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
 ###########################################################################
-
-# I am adding new functions. Only functions I personally need to compute HNF
-# Maybe To.do file will give a clue, on what and why I am doing
 
 from sage.rings.integer cimport Integer
 #from sage.rings.integer_ring import ZZ
@@ -26,6 +24,7 @@ from sage.modules.vector_rational_dense cimport Vector_rational_dense
 from sage.modules.free_module_element import vector
 
 from libc.stdlib cimport malloc, free
+from libc.string cimport strcpy
 include "sage/libs/ntl/decl.pxi"
 include "sage/ext/interrupt.pxi"
 
@@ -79,6 +78,19 @@ cdef extern from 'flint/fmpq_mat.h':
   long c
   fmpq** rows
  ctypedef fmpq_mat_struct fmpq_mat_t[1]
+
+cdef extern from 'C/GMP_or_MPIR_version.c':
+ # where am I? is that sun or moon?
+ char* GMP_or_MPIR_version_c()
+ # setup.py links against libflint-*.so*, specific version of
+ #  GMP or MPIR is linked, it should be able to report its name
+
+def GMP_or_MPIR_version():
+ ' return version as Python unicode string '
+ cdef char* release_me=GMP_or_MPIR_version_c()
+ r=release_me.decode('UTF-8')
+ free(release_me)
+ return r
 
 # What other software library contains so tiny and useful object?
 cdef class agnostic_array:
