@@ -67,7 +67,7 @@ src_configure() {
  mv configure configure.wrapped || die
 	cat <<-\EOF > configure
 	#!/bin/sh
-	exec env ABI=$GMPABI "$0.wrapped" --with-system-yasm "$@"
+	exec env ABI=$GMPABI "$0.wrapped" --with-system-yasm  --enable-gmpcompat "$@"
 	EOF
 	chmod a+rx configure
  
