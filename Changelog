@@ -97,3 +97,22 @@
              and subsequent inversion of it is so fast that it does not make 
              sense to make it faster (gains in speed of HNF computation will 
              be unnoticed).
+
+08 Apr 2014 experimenting with different versions of MPIR/GMP, safely, in 
+             lmonade prefixed environment.
+             
+            My idea was to benchmark integer arithmetic. However, flint-2.4.3 
+             test failed under gmp 6.0.0. Need to further investigate this,
+             before doing benchmarks
+
+09 Apr 2014 The error is harmless --- I don't plan to check if smth is 
+             invertible modulo 1, so hopefully it should not be a problem if
+             I choose to switch to linking FLINT to GMP 6.0.0
+             
+            Linking flint_sage to MPIR turned to be harder than I thought 
+             before, due to bugs in gcc/ld behavior. gcc contrary to 
+             specification links to standard library rather than library in 
+             custom directory. After walking around the gcc bug my flint_sage 
+             links to two versions of gmp*.so (one from MPIR and one that is used 
+             by Sage), and I suspect that code from the 2nd library is used 
+             in calculation, which is not what I want.
