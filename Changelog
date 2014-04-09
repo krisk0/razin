@@ -113,6 +113,10 @@
              before, due to bugs in gcc/ld behavior. gcc contrary to 
              specification links to standard library rather than library in 
              custom directory. After walking around the gcc bug my flint_sage 
-             links to two versions of gmp*.so (one from MPIR and one that is used 
-             by Sage), and I suspect that code from the 2nd library is used 
+             links to two versions of gmp*.so (one from MPIR and one that is 
+             used by Sage), and I suspect that code from the 2nd library is used 
              in calculation, which is not what I want.
+
+            Tests show that replacing GMP implementation does not make 
+             determinant() or solve_right() faster on my computer (at least for 
+             matrice of size 90 with 100-bit entries)
