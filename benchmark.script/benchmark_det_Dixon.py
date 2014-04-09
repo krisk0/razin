@@ -23,7 +23,7 @@ fmpz_mat=flint.fmpz_mat
 Popen,PIPE=subprocess.Popen,subprocess.PIPE
 
 dim=90
-tries=10
+tries=20
 bits=100
 mpir_ver_length=15
 
