@@ -45,60 +45,6 @@ def find_sage_include_dir( prefix, suffix, user_set ):
  write('sage lives in '+r+'\n')
  return r
 
-'''
- sage-on-gentoo ebuilds put *.p* into $EPREFIX/usr/share/sage
-'''
-
-p0=osE('EPREFIX')
-p1='/usr/share/sage/src'
-p2=osE('MY_SAGE_IS_HERE')
-include_0=find_sage_include_dir( p0, p1, p2 )
-p4='/usr/include/csage/'
-include_1=find_sage_include_dir( p0, p4, None )
-
-# Link to flint dynamically or statically
-# I failed to link statically under Linux, however leave code here 
-# todo: arrange it so libflint.a and mpfr.a get statically linked
-libraries=['flint','csage']
-extra_objects,library_dirs,runtime_library_dirs=[],[],[]
-my_so=osE('MY_FLINT_IS_HERE')
-if my_so != None:
- bad_path=1
- if os.path.isfile(my_so):
-  bad_path=0
-  flint_so=my_so
-  if flint_so[-2:] == '.a':
-   extra_objects=[flint_so]
-   libraries=[flint_so,'csage']# todo: maybe append mpfr.a to libraries
-  else:
-   libraries=[flint_so,'csage']
-   # flint*.so will want to find mpfr*.so and gmp*.so shared libs,
-   #  assume they are all in same directory. Add it to runtime_library_dirs
-   runtime_library_dirs=[ os.path.dirname( flint_so ) ]
- if os.path.isdir(my_so):
-  library_dirs=[ my_so ]
-  runtime_library_dirs=[ my_so ]
-  bad_path=0
- if bad_path:
-  print 'no such file or directory',my_so
-  sys.exit(1)
-
-print 'shared libraries:',libraries
-print 'static libraries:',extra_objects
-
-ext_modules = \
- [
-  Extension
-   (
-    "flint_sage", ["flint.pyx"], 
-    include_dirs=[include_0,include_1],
-    libraries=libraries, 
-    extra_objects=extra_objects,
-    library_dirs=library_dirs,
-    runtime_library_dirs=runtime_library_dirs
-   )
- ]
-
 # perl/sed vile magic converted to Python
 def re_sub( d, sou, tgt ):
  e=re.compile(sou)
@@ -150,6 +96,60 @@ def sed_and_perl__goodbye( oN, iN ):
   o.write( '/*'+tail_warning+'\n*/' )
 
 sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat_HNF-debug.c' )
+
+'''
+ sage-on-gentoo ebuilds put *.p* into $EPREFIX/usr/share/sage
+'''
+
+p0=osE('EPREFIX')
+p1='/usr/share/sage/src'
+p2=osE('MY_SAGE_IS_HERE')
+include_0=find_sage_include_dir( p0, p1, p2 ) # under Gentoo they are at 
+p4='/usr/include/csage/' # Sage .h should be in $EPREFIX/usr/include/csage/
+include_1=find_sage_include_dir( p0, p4, None )
+
+# Link to flint dynamically or statically
+# I failed to link statically under Linux, however leave code here 
+# todo: arrange it so libflint.a and mpfr.a get statically linked
+libraries=['flint','csage']
+extra_objects,library_dirs,runtime_library_dirs=[],[],[]
+my_so=osE('MY_FLINT_IS_HERE')
+if my_so != None:
+ bad_path=1
+ if os.path.isfile(my_so):
+  bad_path=0
+  flint_so=my_so
+  if flint_so[-2:] == '.a':
+   extra_objects=[flint_so]
+   libraries=[flint_so,'csage']# todo: maybe append mpfr.a to libraries
+  else:
+   libraries=[flint_so,'csage']
+   # flint*.so will want to find mpfr*.so and gmp*.so shared libs,
+   #  assume they are all in same directory. Add it to runtime_library_dirs
+   runtime_library_dirs=[ os.path.dirname( flint_so ) ]
+ if os.path.isdir(my_so):
+  library_dirs=[ my_so ]
+  runtime_library_dirs=[ my_so ]
+  bad_path=0
+ if bad_path:
+  print 'no such file or directory',my_so
+  sys.exit(1)
+
+print 'shared libraries:',libraries
+print 'static libraries:',extra_objects
+
+ext_modules = \
+ [
+  Extension
+   (
+    "flint_sage", ["flint.pyx"], 
+    include_dirs=[include_0,include_1],
+    libraries=libraries, 
+    extra_objects=extra_objects,
+    library_dirs=library_dirs,
+    runtime_library_dirs=runtime_library_dirs
+   )
+ ]
 
 setup\
  (
