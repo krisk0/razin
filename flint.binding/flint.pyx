@@ -90,7 +90,8 @@ cdef extern from 'C/GMP_or_MPIR_version.c':
 
 def GMP_or_MPIR_version():
  ' return version as Python unicode string '
- cdef char* release_me=GMP_or_MPIR_version_c()
+ cdef char* release_me=GMP_or_MPIR_version_c() 
+ # GMP 5.1.3 is sometimes reported by MPIR-2.7.0. Don't ask me why
  r=release_me.decode('UTF-8')
  free(release_me)
  return r
