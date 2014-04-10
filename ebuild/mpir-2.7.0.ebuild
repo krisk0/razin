@@ -8,6 +8,9 @@
 
 # This ebuild appears to be working, and test passes
 
+# Known issues: for test to work, package need to be installed first:
+#  emerge =mpir-2.7.0 && FEATURES=test emerge =mpir-2.7.0
+
 EAPI=5
 
 inherit autotools-utils eutils toolchain-funcs
