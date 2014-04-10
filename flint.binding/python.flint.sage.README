@@ -43,15 +43,15 @@ FAQ
 ===
 
 Q0. What are the technical requirements of the package?
-A0. GMP, Sage, AMD/Intel 64-bit platform called amd64 in Linux world, Python ver.2.x; Flint 2.4.1 or 2.4.3.
+A0. GMP, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x. 
 
-    Use of MPIR instead of GMP might be possible, try this at your own risk.
-    
-    Versions of FLINT other than 2.4.1/2.4.3 and Sage other than sci-mathematics/sage-6.1.1-r2 untested, try them at your own risk.
-    
-    Why amd64? Because I want to reach my goal sooner and sometimes write un-portable code. Besides I only have one desktop computer used for all purposes. 
+    FLINT versions known to work: 2.4.1 and 2.4.3.
 
-    Why Python2? Because I have not tested flint_sage on Python3. I doubt that it will work faster under Python3.
+    GMP versions known to work: 5.0.2, 6.0.0a. Use of MPIR instead of GMP should be possible, try this at your own risk. FLINT documentaition requires that you install MPIR in so-called 'gmp compatiblity mode' (--enable-gmpcompat).
+    
+    Why amd64? Because I want to reach my goal sooner and sometimes write     un-portable code. Besides I only have one desktop computer used for all purposes. 
+
+    Why Python2? Because I usually use Python2 and doubt that my software will work faster under Python3.
     
     flint_sage is about speed, rather than complete support for everything or your convenience
 
