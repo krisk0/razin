@@ -18,11 +18,11 @@ IUSE="-static shared doc mpir ntl static-pic"
 # static and static-pic: make sure .a is position-independent
 
 DEPEND="dev-libs/mpfr
-	ntl? ( dev-libs/ntl )
+ ntl? ( dev-libs/ntl )
  mpir? ( sci-libs/mpir )
-	!mpir? ( dev-libs/gmp )
+ !mpir? ( dev-libs/gmp )
  doc? ( dev-texlive/texlive-latex )
-	"
+ "
 RDEPEND="${DEPEND}"
 
 src_prepare() {
@@ -33,22 +33,22 @@ src_prepare() {
    einfo 'Set shared USE flag if you want shared library'
    die 'Change USE flags'
   }
-	sed -e "s:\${GMP_DIR}/lib\":\${GMP_DIR}/$(get_libdir)\":" \
-		-e "s:\${MPFR_DIR}/lib\":\${MPFR_DIR}/$(get_libdir)\":" \
-		-e "s:\${NTL_DIR}/lib\":\${NTL_DIR}/$(get_libdir)\":" \
-		-i configure
-	sed -i "s:\$(DESTDIR)\$(PREFIX)/lib:\$(DESTDIR)\$(PREFIX)/$(get_libdir):g" \
-		Makefile.in
+ sed -e "s:\${GMP_DIR}/lib\":\${GMP_DIR}/$(get_libdir)\":" \
+  -e "s:\${MPFR_DIR}/lib\":\${MPFR_DIR}/$(get_libdir)\":" \
+  -e "s:\${NTL_DIR}/lib\":\${NTL_DIR}/$(get_libdir)\":" \
+  -i configure
+ sed -i "s:\$(DESTDIR)\$(PREFIX)/lib:\$(DESTDIR)\$(PREFIX)/$(get_libdir):g" \
+  Makefile.in
 }
 
 src_configure() {
-	# handwritten script, needs extra stabbing
-	export FLINT_LIB=lib"${PN}$(get_libname ${PV})"
-	if ! (use static) ; then
-		sed -i "s:STATIC=1:STATIC=0:" configure
-	fi
+ # handwritten script, needs extra stabbing
+ export FLINT_LIB=lib"${PN}$(get_libname ${PV})"
+ if ! (use static) ; then
+  sed -i "s:STATIC=1:STATIC=0:" configure
+ fi
 
-	# Fix QA notice about missing so name; add rpath so flint .so will find its 
+ # Fix QA notice about missing so name; add rpath so flint .so will find its 
  #  dependencies later
  export EXTRA_SHARED_FLAGS="-Wl,-soname,${FLINT_LIB} '-Wl,-rpath,"
  EXTRA_SHARED_FLAGS="$EXTRA_SHARED_FLAGS""$EPREFIX"/usr/lib"'"
@@ -70,13 +70,13 @@ src_configure() {
 
  # with empty $with_ntl in-between other parameters configure malfunctions,
  #  so $with_ntl moved to the bottom
-	./configure \
-		"$with_mpir" \
-		--with-mpfr="${EPREFIX}"/usr \
-		--prefix="${EPREFIX}"/usr \
-		CC=$(tc-getCC) \
-		CXX=$(tc-getCXX) \
-		AR=$(tc-getAR) \
+ ./configure \
+  "$with_mpir" \
+  --with-mpfr="${EPREFIX}"/usr \
+  --prefix="${EPREFIX}"/usr \
+  CC=$(tc-getCC) \
+  CXX=$(tc-getCXX) \
+  AR=$(tc-getAR) \
   "$with_ntl"    \
   || die "configure failed"
 }
@@ -105,15 +105,15 @@ src_compile(){
  sed -e s:-lgmp:`find_lib gmp`:g -i Makefile
  use ntl && sed -e s:-lntl:`find_lib ntl`:g -i Makefile
  
-	emake verbose
-	ln -s lib"${PN}$(get_libname ${PV})" lib"${PN}$(get_libname)"
-	use doc && emake -C doc/latex manual
+ emake verbose
+ ln -s lib"${PN}$(get_libname ${PV})" lib"${PN}$(get_libname)"
+ use doc && emake -C doc/latex manual
 }
 
 src_install(){
  ! use shared && rm libflint*.so*
  use static && dolib.a libflint*.a
-	default
+ default
  use shared && dosym ${FLINT_LIB} /usr/$(get_libdir)/lib${PN}$(get_libname)
  use doc &&
   {
@@ -123,7 +123,7 @@ src_install(){
 }
 
 src_test(){
-	# build/interfaces/NTL-interface.o required for test
+ # build/interfaces/NTL-interface.o required for test
  emake build/interfaces/NTL-interface.o
-	emake check AT="" QUIET_CC="" QUIET_CXX="" QUIET_AR=""
+ emake check AT="" QUIET_CC="" QUIET_CXX="" QUIET_AR=""
 }
