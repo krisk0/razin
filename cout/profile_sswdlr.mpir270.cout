@@ -1,0 +1,840 @@
+
+
+********* profile for n=50 bits=8 tries=5 *********
+                      sswdlr 0 0.0013
+                 small_det_HNF 0.0017
+                      sswdlr 1 0.0021
+                      sswdlr 2 0.0051
+                     add_row-0 0.0106
+                        kernel 0.0159
+                     add_row-1 0.0195
+                dixon-last_row 0.0254
+                solve_right-dd 0.0313
+system_with_difficult_last_row 0.0499
+             det_given_divisor 0.1291
+                    double_det 0.1631
+                         total 0.2556
+***************************************************
+
+n=50 bits=8 Sage time=0.48
+n=50 bits=8 max time sage/mine=0.25857591629/0.0822460651398
+
+
+********* profile for n=50 bits=32 tries=5 *********
+                      sswdlr 0 0.0013
+                 small_det_HNF 0.0014
+                      sswdlr 1 0.0026
+                     add_row-0 0.0102
+                     add_row-1 0.0167
+                      sswdlr 2 0.0181
+                solve_right-dd 0.0203
+                        kernel 0.0340
+                dixon-last_row 0.0343
+system_with_difficult_last_row 0.0903
+             det_given_divisor 0.1303
+                    double_det 0.1567
+                         total 0.2864
+****************************************************
+
+n=50 bits=32 Sage time=0.36
+n=50 bits=32 max time sage/mine=0.0764610767365/0.0614230632782
+
+
+********* profile for n=50 bits=64 tries=5 *********
+                      sswdlr 0 0.0013
+                 small_det_HNF 0.0022
+                      sswdlr 1 0.0037
+                     add_row-0 0.0082
+                     add_row-1 0.0330
+                      sswdlr 2 0.0414
+                solve_right-dd 0.0541
+                        kernel 0.0699
+                dixon-last_row 0.0968
+             det_given_divisor 0.1301
+                    double_det 0.1958
+system_with_difficult_last_row 0.2132
+                         total 0.4635
+****************************************************
+
+n=50 bits=64 Sage time=0.62
+n=50 bits=64 max time sage/mine=0.139868021011/0.109802007675
+
+
+********* profile for n=50 bits=96 tries=5 *********
+                 small_det_HNF 0.0015
+                      sswdlr 0 0.0016
+                      sswdlr 1 0.0053
+                     add_row-0 0.0101
+                     add_row-1 0.0182
+                      sswdlr 2 0.0713
+                solve_right-dd 0.0878
+                        kernel 0.1223
+             det_given_divisor 0.1334
+                dixon-last_row 0.1635
+                    double_det 0.2391
+system_with_difficult_last_row 0.3641
+                         total 0.6459
+****************************************************
+
+n=50 bits=96 Sage time=0.84
+n=50 bits=96 max time sage/mine=0.175800800323/0.131064176559
+
+
+********* profile for n=50 bits=128 tries=5 *********
+                      sswdlr 0 0.0017
+                 small_det_HNF 0.0028
+                      sswdlr 1 0.0075
+                     add_row-0 0.0112
+                     add_row-1 0.0279
+                      sswdlr 2 0.1069
+             det_given_divisor 0.1323
+                solve_right-dd 0.1422
+                        kernel 0.1949
+                dixon-last_row 0.2743
+                    double_det 0.3000
+system_with_difficult_last_row 0.5852
+                         total 0.9415
+*****************************************************
+
+n=50 bits=128 Sage time=1.31
+n=50 bits=128 max time sage/mine=0.31813287735/0.195922851562
+
+
+********* profile for n=50 bits=196 tries=5 *********
+                      sswdlr 0 0.0020
+                 small_det_HNF 0.0029
+                      sswdlr 1 0.0097
+                     add_row-0 0.0127
+                     add_row-1 0.0326
+             det_given_divisor 0.1356
+                      sswdlr 2 0.1990
+                solve_right-dd 0.2780
+                        kernel 0.4124
+                    double_det 0.4580
+                dixon-last_row 0.5539
+system_with_difficult_last_row 1.1771
+                         total 1.7023
+*****************************************************
+
+n=50 bits=196 Sage time=2.28
+n=50 bits=196 max time sage/mine=0.502012014389/0.359643936157
+
+
+********* profile for n=50 bits=256 tries=5 *********
+                      sswdlr 0 0.0021
+                 small_det_HNF 0.0033
+                      sswdlr 1 0.0127
+                     add_row-0 0.0140
+                     add_row-1 0.0520
+             det_given_divisor 0.1391
+                      sswdlr 2 0.2965
+                solve_right-dd 0.4385
+                        kernel 0.6395
+                    double_det 0.6425
+                dixon-last_row 0.8852
+system_with_difficult_last_row 1.8361
+                         total 2.5690
+*****************************************************
+
+n=50 bits=256 Sage time=3.61
+n=50 bits=256 max time sage/mine=0.832059860229/0.530212879181
+
+
+********* profile for n=50 bits=384 tries=5 *********
+                      sswdlr 0 0.0023
+                 small_det_HNF 0.0025
+                     add_row-0 0.0114
+                      sswdlr 1 0.0206
+                     add_row-1 0.0957
+             det_given_divisor 0.1391
+                      sswdlr 2 0.5568
+                solve_right-dd 0.8874
+                    double_det 1.1451
+                dixon-last_row 1.8387
+                        kernel 1.8512
+system_with_difficult_last_row 4.2697
+                         total 5.5500
+*****************************************************
+
+n=50 bits=384 Sage time=8.45
+n=50 bits=384 max time sage/mine=1.91040897369/1.25033307076
+
+
+********* profile for n=50 bits=512 tries=5 *********
+                      sswdlr 0 0.0024
+                 small_det_HNF 0.0031
+                     add_row-0 0.0245
+                      sswdlr 1 0.0332
+             det_given_divisor 0.1171
+                     add_row-1 0.2319
+                      sswdlr 2 0.8895
+                solve_right-dd 1.5092
+                    double_det 1.8149
+                        kernel 2.9497
+                dixon-last_row 3.1469
+system_with_difficult_last_row 7.0218
+                         total 9.1277
+*****************************************************
+
+n=50 bits=512 Sage time=14.16
+n=50 bits=512 max time sage/mine=3.19646191597/1.90148711205
+
+
+********* profile for n=100 bits=8 tries=5 *********
+                      sswdlr 0 0.0045
+                      sswdlr 1 0.0075
+                 small_det_HNF 0.0093
+                      sswdlr 2 0.0203
+                     add_row-0 0.0301
+                solve_right-dd 0.0382
+                     add_row-1 0.0461
+                        kernel 0.0540
+                dixon-last_row 0.0554
+system_with_difficult_last_row 0.1417
+             det_given_divisor 0.5294
+                    double_det 0.5768
+                         total 0.8300
+****************************************************
+
+n=100 bits=8 Sage time=1.04
+n=100 bits=8 max time sage/mine=0.213213920593/0.174736022949
+
+
+********* profile for n=100 bits=32 tries=5 *********
+                      sswdlr 0 0.0046
+                      sswdlr 1 0.0095
+                 small_det_HNF 0.0120
+                     add_row-0 0.0318
+                      sswdlr 2 0.0892
+                     add_row-1 0.1055
+                solve_right-dd 0.1070
+                        kernel 0.1487
+                dixon-last_row 0.1892
+system_with_difficult_last_row 0.4413
+             det_given_divisor 0.5444
+                    double_det 0.6764
+                         total 1.2956
+*****************************************************
+
+n=100 bits=32 Sage time=1.62
+n=100 bits=32 max time sage/mine=0.374648094177/0.313980817795
+
+
+********* profile for n=100 bits=64 tries=5 *********
+                      sswdlr 0 0.0048
+                      sswdlr 1 0.0167
+                 small_det_HNF 0.0203
+                     add_row-0 0.0355
+                     add_row-1 0.0673
+                      sswdlr 2 0.2267
+                solve_right-dd 0.2791
+                        kernel 0.3474
+                dixon-last_row 0.5294
+             det_given_divisor 0.5470
+                    double_det 0.8794
+system_with_difficult_last_row 1.1250
+                         total 2.1591
+*****************************************************
+
+n=100 bits=64 Sage time=2.70
+n=100 bits=64 max time sage/mine=0.560305118561/0.442401885986
+
+
+********* profile for n=100 bits=96 tries=5 *********
+                      sswdlr 0 0.0061
+                 small_det_HNF 0.0079
+                      sswdlr 1 0.0242
+                     add_row-0 0.0323
+                     add_row-1 0.0868
+                      sswdlr 2 0.4072
+                solve_right-dd 0.4585
+             det_given_divisor 0.5574
+                        kernel 0.6385
+                dixon-last_row 0.9176
+                    double_det 1.1064
+system_with_difficult_last_row 1.9938
+                         total 3.2646
+*****************************************************
+
+n=100 bits=96 Sage time=4.43
+n=100 bits=96 max time sage/mine=0.91943693161/0.685814142227
+
+
+********* profile for n=100 bits=128 tries=5 *********
+                      sswdlr 0 0.0070
+                 small_det_HNF 0.0182
+                      sswdlr 1 0.0300
+                     add_row-0 0.0458
+                     add_row-1 0.1094
+             det_given_divisor 0.5619
+                      sswdlr 2 0.6227
+                solve_right-dd 0.7498
+                        kernel 1.0342
+                    double_det 1.4468
+                dixon-last_row 1.5183
+system_with_difficult_last_row 3.2122
+                         total 4.8771
+******************************************************
+
+n=100 bits=128 Sage time=6.70
+n=100 bits=128 max time sage/mine=1.457269907/1.01043081284
+
+
+********* profile for n=100 bits=196 tries=5 *********
+                      sswdlr 0 0.0102
+                 small_det_HNF 0.0212
+                      sswdlr 1 0.0472
+                     add_row-0 0.0612
+                     add_row-1 0.1725
+             det_given_divisor 0.5852
+                      sswdlr 2 1.2053
+                solve_right-dd 1.4810
+                    double_det 2.3266
+                        kernel 2.6190
+                dixon-last_row 3.1009
+system_with_difficult_last_row 6.9827
+                         total 9.6285
+******************************************************
+
+n=100 bits=196 Sage time=14.26
+n=100 bits=196 max time sage/mine=3.72346115112/2.19808483124
+
+
+********* profile for n=100 bits=256 tries=5 *********
+                      sswdlr 0 0.0096
+                 small_det_HNF 0.0126
+                     add_row-0 0.0430
+                      sswdlr 1 0.0618
+                     add_row-1 0.2537
+             det_given_divisor 0.5790
+                      sswdlr 2 1.8569
+                solve_right-dd 2.3217
+                    double_det 3.2978
+                        kernel 3.7038
+                dixon-last_row 4.9707
+system_with_difficult_last_row 10.6028
+                         total 14.2779
+******************************************************
+
+n=100 bits=256 Sage time=23.26
+n=100 bits=256 max time sage/mine=5.63814496994/2.93874120712
+
+
+********* profile for n=100 bits=384 tries=5 *********
+                      sswdlr 0 0.0101
+                 small_det_HNF 0.0115
+                     add_row-0 0.0552
+                      sswdlr 1 0.1004
+                     add_row-1 0.3905
+             det_given_divisor 0.5939
+                      sswdlr 2 3.6532
+                solve_right-dd 4.7751
+                    double_det 6.1718
+                        kernel 9.3435
+                dixon-last_row 10.3699
+system_with_difficult_last_row 23.4771
+                         total 30.1899
+******************************************************
+
+n=100 bits=384 Sage time=45.84
+n=100 bits=384 max time sage/mine=9.75470495224/6.32148814201
+
+
+********* profile for n=100 bits=512 tries=5 *********
+                      sswdlr 0 0.0134
+                 small_det_HNF 0.0246
+                     add_row-0 0.0891
+                      sswdlr 1 0.1503
+             det_given_divisor 0.5235
+                     add_row-1 0.5259
+                      sswdlr 2 5.9630
+                solve_right-dd 7.9960
+                    double_det 9.8113
+                        kernel 16.1235
+                dixon-last_row 17.5772
+system_with_difficult_last_row 39.8275
+                         total 50.3897
+******************************************************
+
+n=100 bits=512 Sage time=81.64
+n=100 bits=512 max time sage/mine=20.2045099735/10.8369522095
+
+
+********* profile for n=250 bits=8 tries=5 *********
+                      sswdlr 0 0.0311
+                      sswdlr 1 0.0645
+                 small_det_HNF 0.0913
+                      sswdlr 2 0.1605
+                     add_row-0 0.1695
+                     add_row-1 0.2051
+                solve_right-dd 0.4005
+                        kernel 0.4963
+                dixon-last_row 0.6003
+system_with_difficult_last_row 1.3527
+             det_given_divisor 3.8801
+                    double_det 4.3440
+                         total 6.3153
+****************************************************
+
+n=250 bits=8 Sage time=7.84
+n=250 bits=8 max time sage/mine=1.62536597252/1.29846405983
+
+
+********* profile for n=250 bits=32 tries=5 *********
+                      sswdlr 0 0.0321
+                      sswdlr 1 0.0853
+                 small_det_HNF 0.1598
+                     add_row-0 0.2258
+                     add_row-1 0.3378
+                      sswdlr 2 0.8469
+                solve_right-dd 1.1015
+                        kernel 1.6189
+                dixon-last_row 2.0789
+             det_given_divisor 4.0356
+system_with_difficult_last_row 4.6622
+                    double_det 5.3432
+                         total 10.8964
+*****************************************************
+
+n=250 bits=32 Sage time=13.46
+n=250 bits=32 max time sage/mine=2.80958104134/2.27972507477
+
+
+********* profile for n=250 bits=64 tries=5 *********
+                      sswdlr 0 0.0327
+                      sswdlr 1 0.1491
+                 small_det_HNF 0.1750
+                     add_row-0 0.2302
+                     add_row-1 0.4001
+                      sswdlr 2 2.3176
+                solve_right-dd 2.8434
+                        kernel 3.8374
+             det_given_divisor 4.0575
+                dixon-last_row 5.8286
+                    double_det 7.4093
+system_with_difficult_last_row 12.1655
+                         total 20.5582
+*****************************************************
+
+n=250 bits=64 Sage time=25.60
+n=250 bits=64 max time sage/mine=5.52068901062/4.22109293938
+
+
+********* profile for n=250 bits=96 tries=5 *********
+                      sswdlr 0 0.0436
+                 small_det_HNF 0.1660
+                      sswdlr 1 0.2147
+                     add_row-0 0.2395
+                     add_row-1 0.5652
+             det_given_divisor 4.2595
+                      sswdlr 2 4.3354
+                solve_right-dd 4.7915
+                        kernel 6.6042
+                    double_det 10.0022
+                dixon-last_row 10.3742
+system_with_difficult_last_row 21.5723
+                         total 32.7724
+*****************************************************
+
+n=250 bits=96 Sage time=42.30
+n=250 bits=96 max time sage/mine=9.08980798721/6.65903401375
+
+
+********* profile for n=250 bits=128 tries=5 *********
+                      sswdlr 0 0.0577
+                 small_det_HNF 0.1739
+                     add_row-0 0.1962
+                      sswdlr 1 0.2708
+                     add_row-1 0.9854
+             det_given_divisor 4.3287
+                      sswdlr 2 7.0581
+                solve_right-dd 7.9962
+                        kernel 11.1934
+                    double_det 13.8623
+                dixon-last_row 17.8115
+system_with_difficult_last_row 36.3916
+                         total 51.8932
+******************************************************
+
+n=250 bits=128 Sage time=64.63
+n=250 bits=128 max time sage/mine=14.3856189251/10.8498530388
+
+
+********* profile for n=250 bits=196 tries=5 *********
+                      sswdlr 0 0.0920
+                 small_det_HNF 0.2607
+                     add_row-0 0.4060
+                      sswdlr 1 0.4136
+                     add_row-1 1.4115
+             det_given_divisor 4.6481
+                      sswdlr 2 13.9382
+                solve_right-dd 16.3887
+                    double_det 24.2083
+                        kernel 27.9849
+                dixon-last_row 37.5755
+system_with_difficult_last_row 80.0043
+                         total 106.8621
+******************************************************
+
+n=250 bits=196 Sage time=135.32
+n=250 bits=196 max time sage/mine=28.9795401096/22.5423820019
+
+
+********* profile for n=250 bits=256 tries=5 *********
+                      sswdlr 0 0.0983
+                 small_det_HNF 0.2479
+                     add_row-0 0.4212
+                      sswdlr 1 0.5431
+                     add_row-1 2.1115
+             det_given_divisor 4.5551
+                      sswdlr 2 21.7700
+                solve_right-dd 25.8614
+                    double_det 35.2400
+                        kernel 39.5752
+                dixon-last_row 59.7079
+system_with_difficult_last_row 121.6946
+                         total 160.3396
+******************************************************
+
+n=250 bits=256 Sage time=198.09
+n=250 bits=256 max time sage/mine=41.879873991/33.6085839272
+
+
+********* profile for n=250 bits=384 tries=5 *********
+                      sswdlr 0 0.1016
+                 small_det_HNF 0.1574
+                     add_row-0 0.2951
+                      sswdlr 1 0.8748
+                     add_row-1 3.1103
+             det_given_divisor 4.6273
+                      sswdlr 2 40.6247
+                solve_right-dd 52.9736
+                    double_det 66.7146
+                        kernel 73.7367
+                dixon-last_row 123.5431
+system_with_difficult_last_row 238.8810
+                         total 309.8717
+******************************************************
+
+n=250 bits=384 Sage time=411.13
+n=250 bits=384 max time sage/mine=86.2319760323/63.3688309193
+
+
+********* profile for n=250 bits=512 tries=5 *********
+                      sswdlr 0 0.1110
+                 small_det_HNF 0.1686
+                     add_row-0 0.3146
+                      sswdlr 1 1.3300
+                     add_row-1 5.5501
+             det_given_divisor 5.6111
+                      sswdlr 2 64.5443
+                solve_right-dd 90.0567
+                    double_det 110.1037
+                        kernel 170.1387
+                dixon-last_row 211.5771
+system_with_difficult_last_row 447.7012
+                         total 564.6586
+******************************************************
+
+n=250 bits=512 Sage time=730.17
+n=250 bits=512 max time sage/mine=173.65833807/117.047898054
+
+
+********* profile for n=500 bits=8 tries=5 *********
+                      sswdlr 0 0.1116
+                      sswdlr 1 0.4028
+                     add_row-1 0.8141
+                      sswdlr 2 0.8840
+                     add_row-0 0.9357
+                 small_det_HNF 1.1286
+                solve_right-dd 2.9239
+                        kernel 3.6634
+                dixon-last_row 4.6076
+system_with_difficult_last_row 9.6694
+             det_given_divisor 21.9950
+                    double_det 25.2177
+                         total 38.3915
+****************************************************
+
+n=500 bits=8 Sage time=45.72
+n=500 bits=8 max time sage/mine=9.53041100502/8.03828811646
+
+
+********* profile for n=500 bits=32 tries=5 *********
+                      sswdlr 0 0.1307
+                      sswdlr 1 0.5250
+                     add_row-0 0.7737
+                 small_det_HNF 0.8959
+                     add_row-1 1.1738
+                      sswdlr 2 5.0711
+                solve_right-dd 8.2599
+                        kernel 9.8021
+                dixon-last_row 16.2162
+             det_given_divisor 23.4600
+system_with_difficult_last_row 31.7452
+                    double_det 32.8774
+                         total 68.1928
+*****************************************************
+
+n=500 bits=32 Sage time=77.92
+n=500 bits=32 max time sage/mine=16.0838210583/13.9071581364
+
+
+********* profile for n=500 bits=64 tries=5 *********
+                      sswdlr 0 0.1304
+                 small_det_HNF 0.5917
+                     add_row-0 0.7005
+                      sswdlr 1 0.8083
+                     add_row-1 1.9201
+                      sswdlr 2 14.8926
+                solve_right-dd 20.3664
+                        kernel 22.2756
+             det_given_divisor 23.8029
+                    IML solver 45.7952
+                    double_det 47.4841
+system_with_difficult_last_row 83.9024
+                         total 135.3631
+*****************************************************
+
+n=500 bits=64 Sage time=143.95
+n=500 bits=64 max time sage/mine=29.8529338837/28.7437429428
+
+
+********* profile for n=500 bits=96 tries=5 *********
+                      sswdlr 0 0.1648
+                     add_row-0 1.1026
+                      sswdlr 1 1.1124
+                 small_det_HNF 1.7150
+                     add_row-1 3.1405
+             det_given_divisor 24.6775
+                      sswdlr 2 27.9286
+                solve_right-dd 34.0592
+                        kernel 41.7619
+                    double_det 65.0638
+                    IML solver 69.6659
+system_with_difficult_last_row 140.6338
+                         total 212.6334
+*****************************************************
+
+n=500 bits=96 Sage time=229.90
+n=500 bits=96 max time sage/mine=48.3737242222/43.2425627708
+
+
+********* profile for n=500 bits=128 tries=5 *********
+                      sswdlr 0 0.1950
+                 small_det_HNF 0.7242
+                     add_row-0 0.7582
+                      sswdlr 1 1.3885
+                     add_row-1 3.9000
+             det_given_divisor 24.6352
+                      sswdlr 2 44.5723
+                solve_right-dd 55.5846
+                        kernel 63.2110
+                    double_det 90.0962
+                    IML solver 116.6045
+system_with_difficult_last_row 225.9714
+                         total 322.5518
+******************************************************
+
+n=500 bits=128 Sage time=345.85
+n=500 bits=128 max time sage/mine=75.7300159931/70.6322588921
+
+
+********* profile for n=500 bits=196 tries=5 *********
+                      sswdlr 0 0.3638
+                     add_row-0 1.0022
+                 small_det_HNF 1.0660
+                      sswdlr 1 2.1072
+                     add_row-1 7.0675
+             det_given_divisor 27.5223
+                      sswdlr 2 85.4914
+                solve_right-dd 108.9724
+                        kernel 114.6478
+                    double_det 155.8497
+                    IML solver 237.2214
+system_with_difficult_last_row 439.8318
+                         total 607.2331
+******************************************************
+
+n=500 bits=196 Sage time=651.70
+n=500 bits=196 max time sage/mine=136.785998106/128.146857023
+
+
+********* profile for n=500 bits=256 tries=5 *********
+                      sswdlr 0 0.3993
+                     add_row-0 1.0985
+                 small_det_HNF 1.2826
+                      sswdlr 1 2.8933
+                     add_row-1 11.6832
+             det_given_divisor 29.9385
+                      sswdlr 2 134.6362
+                solve_right-dd 170.9634
+                        kernel 199.5467
+                    double_det 232.7174
+                    IML solver 361.0047
+system_with_difficult_last_row 698.4804
+                         total 947.9819
+******************************************************
+
+n=500 bits=256 Sage time=1045.33
+n=500 bits=256 max time sage/mine=220.929550886/199.909492016
+
+
+********* profile for n=1000 bits=8 tries=5 *********
+                      sswdlr 0 0.4262
+                      sswdlr 1 2.6262
+                     add_row-0 2.8718
+                     add_row-1 3.2967
+                      sswdlr 2 5.2943
+                 small_det_HNF 7.6284
+                solve_right-dd 20.2133
+                        kernel 26.7135
+                dixon-last_row 32.7890
+system_with_difficult_last_row 67.8493
+             det_given_divisor 172.2128
+                    double_det 193.9389
+                         total 278.1129
+*****************************************************
+
+n=1000 bits=8 Sage time=324.20
+n=1000 bits=8 max time sage/mine=65.8405709267/57.0748510361
+
+
+********* profile for n=1000 bits=32 tries=5 *********
+                      sswdlr 0 0.4299
+                     add_row-0 2.6317
+                      sswdlr 1 3.2145
+                     add_row-1 5.3343
+                 small_det_HNF 9.0658
+                      sswdlr 2 32.7374
+                solve_right-dd 56.2763
+                        kernel 63.3314
+                    IML solver 100.8690
+             det_given_divisor 182.7219
+system_with_difficult_last_row 200.5823
+                    double_det 246.4657
+                         total 466.7692
+******************************************************
+
+n=1000 bits=32 Sage time=519.42
+n=1000 bits=32 max time sage/mine=105.135575056/95.3724608421
+
+
+********* profile for n=1000 bits=64 tries=5 *********
+                      sswdlr 0 0.4371
+                     add_row-0 3.3978
+                      sswdlr 1 4.5286
+                 small_det_HNF 10.2510
+                     add_row-1 10.4303
+                      sswdlr 2 93.9169
+                solve_right-dd 138.3572
+                        kernel 143.0680
+             det_given_divisor 183.1512
+                    IML solver 234.4874
+                    double_det 342.4254
+system_with_difficult_last_row 476.4381
+                         total 845.8134
+******************************************************
+
+n=1000 bits=64 Sage time=910.17
+n=1000 bits=64 max time sage/mine=183.699446917/173.889111042
+
+
+********* profile for n=1000 bits=96 tries=5 *********
+                      sswdlr 0 0.5688
+                     add_row-0 2.8875
+                      sswdlr 1 5.9811
+                 small_det_HNF 9.9365
+                     add_row-1 14.3605
+                      sswdlr 2 171.5005
+             det_given_divisor 192.7734
+                        kernel 220.0345
+                solve_right-dd 230.0144
+                    IML solver 400.9222
+                    double_det 461.5433
+system_with_difficult_last_row 799.0071
+                         total 1291.2159
+******************************************************
+
+n=1000 bits=96 Sage time=1374.60
+n=1000 bits=96 max time sage/mine=277.99468708/262.547976017
+
+
+********* profile for n=1000 bits=128 tries=5 *********
+                      sswdlr 0 0.5991
+                     add_row-0 2.6243
+                      sswdlr 1 7.7045
+                 small_det_HNF 7.7151
+                     add_row-1 24.0878
+             det_given_divisor 196.1865
+                      sswdlr 2 278.1655
+                        kernel 363.0101
+                solve_right-dd 378.0786
+                    IML solver 621.5718
+                    double_det 636.1033
+system_with_difficult_last_row 1271.0512
+                         total 1945.3616
+*******************************************************
+
+n=1000 bits=128 Sage time=1988.39
+n=1000 bits=128 max time sage/mine=408.665492058/405.376949072
+
+
+********* profile for n=1000 bits=196 tries=5 *********
+                      sswdlr 0 1.4767
+                     add_row-0 4.6069
+                 small_det_HNF 10.4739
+                      sswdlr 1 11.1728
+                     add_row-1 42.9427
+             det_given_divisor 228.0614
+                      sswdlr 2 506.6991
+                        kernel 613.3790
+                solve_right-dd 742.5932
+                    double_det 1091.1583
+                    IML solver 1186.8140
+system_with_difficult_last_row 2319.5418
+                         total 3478.4153
+*******************************************************
+
+n=1000 bits=196 Sage time=3612.14
+n=1000 bits=196 max time sage/mine=780.104208946/716.842827082
+
+
+********* profile for n=2000 bits=8 tries=5 *********
+                      sswdlr 0 1.6784
+                     add_row-0 12.5954
+                      sswdlr 1 17.6624
+                     add_row-1 33.5063
+                      sswdlr 2 33.5250
+                 small_det_HNF 98.0070
+                solve_right-dd 155.1509
+                        kernel 226.9530
+                dixon-last_row 256.4432
+system_with_difficult_last_row 536.2622
+             det_given_divisor 1898.3637
+                    double_det 2062.4120
+                         total 2753.6538
+*****************************************************
+
+n=2000 bits=8 Sage time=3145.68
+n=2000 bits=8 max time sage/mine=636.349397898/567.481690168
+
+
+********* profile for n=2000 bits=32 tries=5 *********
+                      sswdlr 0 1.6838
+                     add_row-0 10.3930
+                      sswdlr 1 20.9542
+                     add_row-1 25.4624
+                 small_det_HNF 53.3063
+                      sswdlr 2 208.5374
+                solve_right-dd 421.6105
+                        kernel 557.3715
+                    IML solver 764.1995
+system_with_difficult_last_row 1552.7465
+             det_given_divisor 1963.2571
+                    double_det 2432.0433
+                         total 4084.9973
+******************************************************
+
+n=2000 bits=32 Sage time=4528.47
+n=2000 bits=32 max time sage/mine=915.549902916/825.768543005
