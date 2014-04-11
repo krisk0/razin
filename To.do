@@ -115,4 +115,8 @@
               --- done, tmod_mat is fast enough, so I delay implementing 
               recursive version of tmod_mat_PLU_mod_machine_word()
 
-06 Apr 2014 Test PLU decomposition for square input
+06 Apr 2014 Test PLU decomposition for square input ??? do I need it?
+
+11 Apr 2014 After MPIR-2.7.0 test terminates, install GMP properly and re-test.
+
+            Finally, write a code to replace Stein double-det.
