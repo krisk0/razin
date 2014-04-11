@@ -69,6 +69,9 @@ Report bugs via Github mechanism or e-mail
 My e-mail is in my blog, detailed information on how to get it is close to tail
  of setup.py'''
 
+head_warning='This code is auto-generated from C/nmod_mat_HNF-debug.c'
+head_trigger='ast, it comes this wayλ'
+
 def sed_and_perl__goodbye( oN, iN ):
  '''
  This subroutine filters C file, removing what is not needed in production
@@ -87,7 +90,8 @@ def sed_and_perl__goodbye( oN, iN ):
   r = re_sub ( r, ' *#' ,'#' )
   r = re_sub ( r, '#define BUG.*?λ', '' )
   r = re_sub ( r, '#if .*?#endifλ' , '' )
-  r = re_sub ( r, 'λλλstatic', 'λλstatic' )
+  r = r.replace( head_trigger, head_trigger+'λ// '+head_warning+'λ' )
+  #r = re_sub ( r, 'λλλstatic', 'λλstatic' )
   for s in 'nmod_mat_print','vec_print','DKryskov_nmod_easy_zl':
    r = zap_subr( r, s )
   for i in range(10):
