@@ -11,6 +11,8 @@
 // No, code below is not obfuscated.
 // When I write a program that needs to run fast, it comes this way
 
+//This code is auto-generated from C/nmod_mat_HNF-debug.c
+
 static __inline__ long 
 DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
 /*
