@@ -7,7 +7,7 @@
 
 '''
 This program benchmarks my C procedure nmod_mat_HNF() (wrapped as 
-fmpz_mat_hermite_form()) against NTL HNF method
+ fmpz_mat_hermite_form()) against NTL HNF method
 '''
 
 import sage.all
