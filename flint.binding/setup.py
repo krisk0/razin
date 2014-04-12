@@ -69,7 +69,7 @@ Report bugs via Github mechanism or e-mail
 My e-mail is in my blog, detailed information on how to get it is close to tail
  of setup.py'''
 
-head_warning='This code is auto-generated from C/nmod_mat_HNF-debug.c'+\
+head_warning='This file is auto-generated from C/nmod_mat_HNF-debug.c'+\
  'λλ#define NDEBUG 1'
 head_trigger='ast, it comes this wayλ'
 
