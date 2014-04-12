@@ -13,6 +13,8 @@
 
 // This code is auto-generated from C/nmod_mat_HNF-debug.c
 
+#define NDEBUG 1
+
 static __inline__ long 
 DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
 /*
