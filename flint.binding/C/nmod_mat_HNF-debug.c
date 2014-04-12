@@ -26,8 +26,8 @@
   ***************************************************************
 #endif
 
-static __inline__ long 
-DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
+static __inline__ slong 
+DKryskov_nmod_find_nonzero(nmod_mat_t A,slong col,mp_limb_t det_tgt)
 /*
  -3 if diagonal element is 1
  -2 if all is zero
@@ -36,12 +36,12 @@ DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
 TODO: multiply by -1 to get smaller element
 */
  {
-  long i0=-1,i1=-1,k=col;
+  slong i0=-1,i1=-1,k=col,max_k=A->r;
   mp_limb_t m0=det_tgt;
   mp_limb_t m1=m0;
   mp_limb_t* kP;
   mp_limb_t Ak;
-  while(k<A->c)
+  while(k<max_k)
    {
     kP = &nmod_mat_entry(A, k, col);
     Ak = *kP;
@@ -111,7 +111,7 @@ TODO: multiply by -1 to get smaller element
 static void nmod_mat_print(nmod_mat_t A)
 // nmod_mat_print_pretty was printing garbage like [%%2lu %%2lu]
  {
-  long i,j;
+  slong i,j;
   for(i=0;i<A->r;i++)
    {
     for(j=0;j<A->c;j++)
@@ -122,10 +122,10 @@ static void nmod_mat_print(nmod_mat_t A)
  }
 
 static __inline__ void 
-vec_print( const char* m, mp_limb_t* v, long s )
+vec_print( const char* m, mp_limb_t* v, slong s )
  {
   printf(m);
-  long i;
+  slong i;
   for(i=0;i<s;i++)
    printf("%lu ",v[i]);
  }
@@ -170,15 +170,15 @@ DKryskov_gcd_ui_2arg( mp_limb_t alpha, mp_limb_t betta )
 #define MPLUS( a, b, mod, n ) _nmod_add(a,b,mod)
 #define MMUL( a, b, mod, n ) nmod_mul(a,b,mod)
 
-static __inline__ long
-DKryskov_nmod_zero_line(nmod_mat_t A,long i,long j,mp_limb_t n,mp_limb_t* scrth)
+static __inline__ slong
+DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,mp_limb_t* scrth)
 //returns 1 iff new A[i,i] becomes 1
  {
   #if BUG0_nmod_mat_HNF
    printf("DKryskov_nmod_zero_line() i=%ld j=%ld\n",i,j);
   #endif
   assert(i != j);
-  long iPLUS=i+1;
+  slong iPLUS=i+1;
   mp_limb_t* alpha=A->rows[i]+iPLUS;
   mp_limb_t* betta=A->rows[j]+iPLUS;
   mp_limb_t x=alpha[-1];
@@ -233,7 +233,7 @@ DKryskov_nmod_zero_line(nmod_mat_t A,long i,long j,mp_limb_t n,mp_limb_t* scrth)
  }
 
 static __inline__ void
-DKryskov_nmod_easy_zl(nmod_mat_t A,long i,long j,mp_limb_t n)
+DKryskov_nmod_easy_zl(nmod_mat_t A,slong i,slong j,mp_limb_t n)
 //act like DKryskov_nmod_zero_line, but return nothing and use the fact that
 // betta=0
  {
@@ -242,7 +242,7 @@ DKryskov_nmod_easy_zl(nmod_mat_t A,long i,long j,mp_limb_t n)
    nmod_mat_print(A);
   #endif
   assert(i != j);
-  long iPLUS=i+1;
+  slong iPLUS=i+1;
   mp_limb_t* alpha=A->rows[i]+iPLUS;
   mp_limb_t* betta=A->rows[j]+iPLUS;
   mp_limb_t x=alpha[-1];
@@ -267,11 +267,11 @@ DKryskov_nmod_easy_zl(nmod_mat_t A,long i,long j,mp_limb_t n)
  }
 
 static __inline__ void 
-DKryskov_nmod_Gauss_upper_last_col(nmod_mat_t A,long last_col)
+DKryskov_nmod_Gauss_upper_last_col(nmod_mat_t A,slong last_col)
  {
   mp_limb_t s=nmod_mat_entry( A, last_col, last_col );
   assert(s);
-  long j;
+  slong j;
   for(j=last_col;j--;)
    nmod_mat_entry( A, j, last_col ) %= s;
  }
@@ -283,8 +283,8 @@ zap A over diagonal
 attempt to avoid row operations if possible
 */
  {
-  long last_i=A->c-1;
-  long j,i;
+  slong last_i=A->c-1;
+  slong j,i;
   mp_limb_t n=nmod_mat_entry(A,1,1);
   for(i=2;i<=last_i;i++)
    n *= nmod_mat_entry(A,i,i);
@@ -298,7 +298,7 @@ attempt to avoid row operations if possible
     sP=&nmod_mat_entry( A, i,i );
     mp_limb_t s=*sP;
     assert(s);
-    long v_len=A->c-i;
+    slong v_len=A->c-i;
     for(j=i;j--;)
      {
       tP=&nmod_mat_entry( A, j,i );
@@ -334,14 +334,14 @@ attempt to avoid row operations if possible
  }
 
 static __inline__ void 
-DKryskov_nmod_early_abort(nmod_mat_t A,long e)
+DKryskov_nmod_early_abort(nmod_mat_t A,slong e)
 //all columns after e have 1 on diagonal, so save some effort
 // TODO: apply decreasing modulo to avoid row operations
  {
-  long m=A->c;
-  long i,j;
+  slong m=A->c;
+  slong i,j;
   mp_limb_t* tP,* sP;
-  long ePLUS=e+1;
+  slong ePLUS=e+1;
   j=sizeof(mp_limb_t)*(m-ePLUS);
   for(i=m;i--;)
    {
@@ -367,7 +367,7 @@ DKryskov_nmod_early_abort(nmod_mat_t A,long e)
     sP=&nmod_mat_entry( A, i, i );
     mp_limb_t s=*sP;
     assert(s);
-    long v_len=ePLUS-i;
+    slong v_len=ePLUS-i;
     for(j=i;j--;)
      {
       tP=&nmod_mat_entry( A, j, i );
@@ -393,7 +393,7 @@ DKryskov_nmod_early_abort(nmod_mat_t A,long e)
  }
 
 static __inline__ void
-DKryskov_nmod_reduce_diag(nmod_mat_t A,long i,mp_limb_t det_tgt,mp_limb_t* scratch)
+DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scratch)
  {
   assert(i<A->c-1);
   if( det_tgt % nmod_mat_entry(A,i,i) )
@@ -420,7 +420,7 @@ DKryskov_nmod_reduce_last( mp_limb_t* se_corner, mp_limb_t det_tgt )
  }
 
 static __inline__ void
-DKryskov_nmod_1_lower(nmod_mat_t A,long col,long j,mp_limb_t n)
+DKryskov_nmod_1_lower(nmod_mat_t A,slong col,slong j,mp_limb_t n)
 /*
 A[col,col] is known to be 1
 zap column col starting from row j
@@ -431,11 +431,11 @@ operate modulo n
      printf("DKryskov_nmod_1_lower() start col=%ld j=%ld n=%lu\n",col,j,n);
      nmod_mat_print(A);
     #endif
-  long m=A->c;
+  slong m=A->c;
   mp_limb_t* sP=A->rows[col]+col;
   assert( 1 == *sP );
   //TODO: skip counting elements of column col, to save time
-  long v_len = m-col;
+  slong v_len = m-col;
   while(j < m)
    {
     mp_limb_t* tP=A->rows[j]+col;
@@ -492,11 +492,11 @@ Literature:
 aka DomichKannanTrotter87.pdf 
 */
  {
-  long m=A->c;
-  long i;
-  long bad_n=0;
+  slong m=A->c;
+  slong i;
+  slong bad_n=0;
   mp_limb_t* scratch=(mp_limb_t*)malloc( sizeof(mp_limb_t) * (m-1) );
-  long det_tgt=A->mod.n;
+  slong det_tgt=A->mod.n;
   for(i=0;;i++)
    {// main loop: zap lower, fix diagonal, maintain decreasing modulo
     assert( (i>=0) && (i<m) );
@@ -504,7 +504,7 @@ aka DomichKannanTrotter87.pdf
      printf("nmod_mat_HNF() i=%ld n=%lu\n",i,det_tgt);
      nmod_mat_print(A);
     #endif
-    long j=DKryskov_nmod_find_nonzero(A,i,det_tgt);
+    slong j=DKryskov_nmod_find_nonzero(A,i,det_tgt);
     #if BUG0_nmod_mat_HNF
      printf("nmod_mat_HNF() find_nonzero =%ld\n",j);
     #endif
