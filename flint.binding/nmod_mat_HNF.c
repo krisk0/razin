@@ -11,12 +11,12 @@
 // No, code below is not obfuscated.
 // When I write a program that needs to run fast, it comes this way
 
-// This code is auto-generated from C/nmod_mat_HNF-debug.c
+// This file is auto-generated from C/nmod_mat_HNF-debug.c
 
 #define NDEBUG 1
 
-static __inline__ long 
-DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
+static __inline__ slong 
+DKryskov_nmod_find_nonzero(nmod_mat_t A,slong col,mp_limb_t det_tgt)
 /*
  -3 if diagonal element is 1
  -2 if all is zero
@@ -25,12 +25,12 @@ DKryskov_nmod_find_nonzero(nmod_mat_t A,long col,mp_limb_t det_tgt)
 TODO: multiply by -1 to get smaller element
 */
  {
-  long i0=-1,i1=-1,k=col;
+  slong i0=-1,i1=-1,k=col,max_k=A->r;
   mp_limb_t m0=det_tgt;
   mp_limb_t m1=m0;
   mp_limb_t* kP;
   mp_limb_t Ak;
-  while(k<A->c)
+  while(k<max_k)
    {
     kP = &nmod_mat_entry(A, k, col);
     Ak = *kP;
@@ -128,12 +128,13 @@ DKryskov_gcd_ui_2arg( mp_limb_t alpha, mp_limb_t betta )
   return n_gcd( betta , alpha );
  }
 
-static __inline__ long
-DKryskov_nmod_zero_line(nmod_mat_t A,long i,long j,mp_limb_t n,mp_limb_t* scrth)
+static __inline__ slong
+DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,
+ mp_limb_t* scrth)
 //returns 1 iff new A[i,i] becomes 1
  {
   assert(i != j);
-  long iPLUS=i+1;
+  slong iPLUS=i+1;
   mp_limb_t* alpha=A->rows[i]+iPLUS;
   mp_limb_t* betta=A->rows[j]+iPLUS;
   mp_limb_t x=alpha[-1];
@@ -156,11 +157,11 @@ DKryskov_nmod_zero_line(nmod_mat_t A,long i,long j,mp_limb_t n,mp_limb_t* scrth)
  }
 
 static __inline__ void 
-DKryskov_nmod_Gauss_upper_last_col(nmod_mat_t A,long last_col)
+DKryskov_nmod_Gauss_upper_last_col(nmod_mat_t A,slong last_col)
  {
   mp_limb_t s=nmod_mat_entry( A, last_col, last_col );
   assert(s);
-  long j;
+  slong j;
   for(j=last_col;j--;)
    nmod_mat_entry( A, j, last_col ) %= s;
  }
@@ -172,8 +173,8 @@ zap A over diagonal
 attempt to avoid row operations if possible
 */
  {
-  long last_i=A->c-1;
-  long j,i;
+  slong last_i=A->c-1;
+  slong j,i;
   mp_limb_t n=nmod_mat_entry(A,1,1);
   for(i=2;i<=last_i;i++)
    n *= nmod_mat_entry(A,i,i);
@@ -184,7 +185,7 @@ attempt to avoid row operations if possible
     sP=&nmod_mat_entry( A, i,i );
     mp_limb_t s=*sP;
     assert(s);
-    long v_len=A->c-i;
+    slong v_len=A->c-i;
     for(j=i;j--;)
      {
       tP=&nmod_mat_entry( A, j,i );
@@ -210,14 +211,14 @@ attempt to avoid row operations if possible
  }
 
 static __inline__ void 
-DKryskov_nmod_early_abort(nmod_mat_t A,long e)
+DKryskov_nmod_early_abort(nmod_mat_t A,slong e)
 //all columns after e have 1 on diagonal, so save some effort
 // TODO: apply decreasing modulo to avoid row operations
  {
-  long m=A->c;
-  long i,j;
+  slong m=A->c;
+  slong i,j;
   mp_limb_t* tP,* sP;
-  long ePLUS=e+1;
+  slong ePLUS=e+1;
   j=sizeof(mp_limb_t)*(m-ePLUS);
   for(i=m;i--;)
    {
@@ -233,7 +234,7 @@ DKryskov_nmod_early_abort(nmod_mat_t A,long e)
     sP=&nmod_mat_entry( A, i, i );
     mp_limb_t s=*sP;
     assert(s);
-    long v_len=ePLUS-i;
+    slong v_len=ePLUS-i;
     for(j=i;j--;)
      {
       tP=&nmod_mat_entry( A, j, i );
@@ -251,7 +252,7 @@ DKryskov_nmod_early_abort(nmod_mat_t A,long e)
  }
 
 static __inline__ void
-DKryskov_nmod_reduce_diag(nmod_mat_t A,long i,mp_limb_t det_tgt,mp_limb_t* scratch)
+DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scratch)
  {
   assert(i<A->c-1);
   if( det_tgt % nmod_mat_entry(A,i,i) )
@@ -270,18 +271,18 @@ DKryskov_nmod_reduce_last( mp_limb_t* se_corner, mp_limb_t det_tgt )
  }
 
 static __inline__ void
-DKryskov_nmod_1_lower(nmod_mat_t A,long col,long j,mp_limb_t n)
+DKryskov_nmod_1_lower(nmod_mat_t A,slong col,slong j,mp_limb_t n)
 /*
 A[col,col] is known to be 1
 zap column col starting from row j
 operate modulo n
 */
  {
-  long m=A->c;
+  slong m=A->c;
   mp_limb_t* sP=A->rows[col]+col;
   assert( 1 == *sP );
   //TODO: skip counting elements of column col, to save time
-  long v_len = m-col;
+  slong v_len = m-col;
   while(j < m)
    {
     mp_limb_t* tP=A->rows[j]+col;
@@ -294,7 +295,7 @@ operate modulo n
         _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-t_upd, A->mod );
        }
       else
-       *tP = 0;
+       *tP = 0; // TODO: this line can be deleted?
      }
     ++j;
    }
@@ -326,15 +327,15 @@ Literature:
 aka DomichKannanTrotter87.pdf 
 */
  {
-  long m=A->c;
-  long i;
-  long bad_n=0;
+  slong m=A->c;
+  slong i;
+  slong bad_n=0;
   mp_limb_t* scratch=(mp_limb_t*)malloc( sizeof(mp_limb_t) * (m-1) );
-  long det_tgt=A->mod.n;
+  mp_limb_t det_tgt=A->mod.n;
   for(i=0;;i++)
    {// main loop: zap lower, fix diagonal, maintain decreasing modulo
     assert( (i>=0) && (i<m) );
-    long j=DKryskov_nmod_find_nonzero(A,i,det_tgt);
+    slong j=DKryskov_nmod_find_nonzero(A,i,det_tgt);
     if(j==-2)
      {
       nmod_mat_entry(A,i,i)=det_tgt;
@@ -383,7 +384,7 @@ aka DomichKannanTrotter87.pdf
       j=i;
       while( ++j < m)
        {
-        if( nmod_mat_entry(A,j,i) )
+        if( nmod_mat_entry(A,j,i) % det_tgt )// TODO: test
          {
           if(DKryskov_nmod_zero_line(A,i,j,det_tgt,scratch))
            {
@@ -409,6 +410,47 @@ aka DomichKannanTrotter87.pdf
   return bad_n;
  }
 
+#include "C/nmod_mat_HNF_nonsq.c"
+
+void
+nmod_mat_HNF_nonsquare(nmod_mat_t A)
+/*
+Suppose matrice B exists such that n=A=>mod.n>1, B mod n=A, c=A->c <= A->r, 
+ rank of B over Z equals c, H=upper c rows of HNF(B), n divides det(H)
+ 
+compute HNF of matrice A modulo lattice generated by rows of matrice
+
+I  * n 
+ c     
+        
+where I_x is identity matrice of dimension x,
+     
+result returned in diagonal and over-diagonal entries of A
+*/
+ {
+  slong c=A->c;
+  slong i,j;
+  mp_limb_t* scratch=(mp_limb_t*)malloc( sizeof(mp_limb_t) * (c-1) );
+  mp_limb_t det_tgt=A->mod.n;
+  for(i=0;;i++)
+   {// main loop: zap below diagonal
+    assert( (i>=0) && (i<c) );
+    j=DKryskov_nmod_find_nonzero(A,i,det_tgt);
+    if(i == c-1)
+     {
+      free(scratch);
+      DKryskov_HNF_zap_below_last_col(A,i,j,det_tgt);
+      DKryskov_fix_diagonal_tail(A,i,det_tgt);
+      break;
+     }
+    else
+     {
+      DKryskov_HNF_zap_below(A,i,j,det_tgt,scratch);
+      DKryskov_nmod_reduce_diag(A,i,det_tgt,scratch);
+     }
+   }
+  DKryskov_Gauss_upper(A);
+ }
 /*
 I would be greatly irritated if you tell me that this algorithm is wrong
  WITHOUT GIVING EXAMPLE OF INPUT DATA that make it fail

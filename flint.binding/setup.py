@@ -91,6 +91,7 @@ def sed_and_perl__goodbye( oN, iN ):
   r = re_sub ( r, ' *#' ,'#' )
   r = re_sub ( r, '#define BUG.*?λ', '' )
   r = re_sub ( r, '#if .*?#endifλ' , '' )
+  r = r.replace( '#include "nmod', '#include "C/nmod' )
   r = r.replace( head_trigger, head_trigger+'λ// '+head_warning+'λ' )
   #r = re_sub ( r, 'λλλstatic', 'λλstatic' )
   for s in 'nmod_mat_print','vec_print','DKryskov_nmod_easy_zl':
