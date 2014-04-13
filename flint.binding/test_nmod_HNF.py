@@ -7,7 +7,7 @@
 
 '''
 This program tests fmpz_mat_hermite_form() function, which is a wrapper above
-  nmod_mat.hermite_form()
+  nmod_mat.hermite_form(), which is wrapper above nmod_mat_HNF()
 '''
 
 import sage.all
@@ -20,7 +20,7 @@ ZZ=sage.all.ZZ
 #import sage.misc.prandom
 
 randint=sage.all.randint
-random_matrix=sage.all.random_matrix
+random_matrix,identity_matrix=sage.all.random_matrix,sage.all.identity_matrix
 
 def test_dump(a,h):
  print 'hnf of\n',a,'\nequals\n',h
@@ -84,13 +84,11 @@ def test_serie_1(dim,vol,loud):
   for x in range(vol):
    ' create matrice with abs(det)<2**63 and diagonal with k entries>1 '
    nums=small_nums(k)
-   A=sage.all.identity_matrix(ZZ,dim)
+   A=identity_matrix(ZZ,dim)
    for i in range(k-1):
     A[i,i]=nums[i]
    A[dim-1,dim-1]=nums[k-1]
    A *= unimodular(dim)
-   A *= unimodular(dim)
-   A=left_trans(A,dim)
    A=left_trans(A,dim)
    test(A,loud)
 
@@ -105,8 +103,32 @@ def left_trans(m,dim):
  u=unimodular(dim)
  return u*m
 
+def unimodular_triL(dim, x):
+ r=identity_matrix(dim)
+ for i in range(1,dim):
+  for j in range(i):
+   r[i,j] = randint( -x, x )
+ return r
+
+def unimodular_triU(dim, x):
+ r=identity_matrix(dim)
+ for i in range(dim-1):
+  for j in range(1+i,dim):
+   r[i,j] = randint( -x, x )
+ return r
+
+def randomly_permute_rows( m, dim ):
+ max_i=dim-1
+ for i in range(dim):
+  j=randint( i, max_i )
+  if j != i:
+   m.swap_rows(i,j)
+
 def unimodular(dim):
- return random_matrix(ZZ, dim, algorithm='unimodular')
+ # random_matrix(ZZ, dim, algorithm='unimodular') is too slow
+ r=unimodular_triL(dim,99) * unimodular_triU(dim,99)
+ randomly_permute_rows(r,dim)
+ return r
 
 def test_serie(dim):
  loud=(dim<7)
