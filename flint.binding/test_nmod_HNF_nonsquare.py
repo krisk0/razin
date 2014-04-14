@@ -24,6 +24,7 @@ import sage.matrix.matrix_integer_dense_hnf
 
 from test_nmod_HNF import unimodular,left_trans
 hnf=sage.matrix.matrix_integer_dense_hnf.hnf
+write=sys.stdout.write
 
 max_det_divisor=2**64-1
 
@@ -108,7 +109,7 @@ def small_nums(x):
  border=128//x
  if border>64:
   border=64
- if 1 and border>9:
+ if 0 and border>9:
   border=9
  border=(1<<border)-1
  assert border>2
@@ -135,7 +136,10 @@ def test_serie_1(m,c,vol,loud):
    A *= unimodular(c)
    A=left_trans(A,m)
    d=three_det_divisors( nums )
-   print 'nums=%s divisors=%s' % (nums,d)
+   if 1:
+    write('.')
+   else:
+    print 'nums=%s divisors=%s' % (nums,d)
    test_serie_2(A,d,loud)
 
 def test_serie(c):
