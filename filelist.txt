@@ -21,4 +21,3 @@ Changelog               History of bugs fixes and additions
 To.do                    Plan of changes
 
 ebuild/                 Useful ebuild scripts
-
