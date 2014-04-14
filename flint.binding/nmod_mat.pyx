@@ -25,8 +25,11 @@ cdef extern from 'flint/nmod_mat.h':
  long nmod_mat_lu(long *P, nmod_mat_t A, int rank_check)
  mp_limb_t nmod_mat_det(nmod_mat_t A)
 
+# Take either plain or debug version of subroutines nmod_mat_HNF*()
 cdef extern from './nmod_mat_HNF.c':
+#cdef extern from 'C/nmod_mat_HNF-debug.c':
  void nmod_mat_HNF(nmod_mat_t A)
+ void nmod_mat_HNF_nonsquare(nmod_mat_t A)
 
 cdef extern from 'flint/fmpz_mat.h':
  # these two functions undocumented, as of version 2.4.1
@@ -158,6 +161,37 @@ def fmpz_mat_hermite_form(fmpz_mat A, Integer M):
  nmod_mat_HNF(a.matZn)
  #sig_off()
  return a.export_nonnegative_fmpz_mat_upper()
+
+cdef export_triU(fmpz_mat_t R, nmod_mat_t S):
+ '''
+ on entry R un-initilized, S.r >= S.c
+ on exit R: square upper-trianglular, formed from upper part of S (lower part
+  ignored)
+ '''
+ cdef long dim=S.c,i,j
+ fmpz_mat_init( R, dim, dim )
+ cdef long* on_tgt
+ cdef mp_limb_t* on_src
+ for i in range(dim):
+  on_src = S.rows[i]+i
+  on_tgt = R.rows[i]+i
+  for j in range(dim-i):
+   fmpz_set_ui( on_tgt, on_src[0] )
+   on_tgt += 1
+   on_src += 1
+
+def fmpz_mat_hermite_form_nonsquare(fmpz_mat A, Integer M):
+ '''
+ A rows count >= A columns count=c,    1 < M < 2**64
+ A non-singular over Z, M divides det( H' ) where H' = upper c rows of HNF(A)
+ call nmod_mat_HNF_nonsquare()
+ return H' as fmpz_mat
+ '''
+ a=nmod_mat(A, M)
+ nmod_mat_HNF_nonsquare( a.matZn )
+ cdef fmpz_mat_t r
+ export_triU(r, a.matZn)
+ return wrap_fmpz_mat( r )
 
 def plu_modulo_prime(fmpz_mat A,Integer M):
  '''
