@@ -53,15 +53,6 @@ src_prepare() {
   Makefile.in
 }
 
-#src_unpack()
-# {
-#  unpack "$P.tar.gz"
-#  use ext || return
-#  unpack "$auth0-bland.zip"
-#  cd bland-master
-#  die 'where am i'
-# }
-
 src_configure() {
  # handwritten script, needs extra stabbing
  export FLINT_LIB=lib"${PN}$(get_libname ${PV})"
@@ -78,12 +69,7 @@ src_configure() {
  # add -fPIC to CFLAGS if building position-indepependent .a
  use static-pic && CFLAGS="$CFLAGS -fPIC"
  
- # add -nodefaultlibs so mpfr and other libraries will be taken from EPREFIX 
- #  rather than from /usr/lib64
- #EXTRA_SHARED_FLAGS="$EXTRA_SHARED_FLAGS -nodefaultlibs"
- # this trick failed, commented out
-
- local with_mpir with_ntl with_mp
+ local with_mpir with_ntl with_mp with_ext
  use mpir && with_mpir="--with-mpir=$EPREFIX/usr" ||
              with_mpir="--with-gmp=$EPREFIX/usr"
 
