@@ -14,7 +14,7 @@ Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
 See *filelist.txt*.
 
-The fastest in open-source world subroutine to compute HNF of a matrice with small in absolute value determinant is in *flint.binding/nmod_mat_HNF.c*
+The fastest in open-source world subroutine to compute HNF of a matrice with small in absolute value determinant comes in two variants; C subroutines are called mod_mat_HNF_nonsquare() and mod_mat_HNF(); see file *flint.binding/nmod_mat_HNF.c*
 
 W.Stein double-deteminant algorithm to compute HNF specialized for non-singular matrice and instructed to sometimes use faster low-level routines like FLINT Dixon lifting instead of Sage method is in *benchmark.script/profile_Sage_hnf_square.py*. The modified procedure is faster than original, see bottom of *profile-dd_algorithm.cout* for details.
 
