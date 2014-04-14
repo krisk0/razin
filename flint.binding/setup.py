@@ -61,8 +61,8 @@ def zap_subr( d, subr ):
  return e.sub( '', d )
 
 tail_warning='''
-I would be greatly irritated if you tell me that this algorithm is wrong
- WITHOUT GIVING EXAMPLE OF INPUT DATA that make it fail
+I would be greatly irritated if you tell me that the algorithms implemented in
+ this file are wrong WITHOUT GIVING EXAMPLE OF INPUT DATA that make them fail
 
 Report bugs via Github mechanism or e-mail
 
@@ -98,6 +98,8 @@ def sed_and_perl__goodbye( oN, iN ):
    r = zap_subr( r, s )
   for i in range(10):
    r=r.replace( 'λλλ', 'λλ' )
+  if r[-1] != 'λ':
+   r += 'λ'
   o.write( r.replace('λ','\n') )
   o.write( '/*'+tail_warning+'\n*/' )
 
