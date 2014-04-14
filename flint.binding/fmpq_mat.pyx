@@ -15,11 +15,14 @@ cdef extern from 'flint/fmpq_mat.h':
   const fmpz_t d)
  int fmpq_mat_solve_dixon(fmpq_mat_t X, const fmpq_mat_t A, const fmpq_mat_t B)
  int fmpq_mat_inv(fmpq_mat_t X, const fmpq_mat_t A)
- void fmpq_mat_scalar_div_fmpz( fmpq_mat_t tgt, const fmpq_mat_t sou, 
+ void fmpq_mat_scalar_div_fmpz(fmpq_mat_t tgt, const fmpq_mat_t sou, 
   const fmpz_t x)
  void fmpq_mat_set(fmpq_mat_t tgt, const fmpq_mat_t sou)
- void fmpq_mat_mul(fmpq_mat_t tgt, const fmpq_mat_t A, const fmpq_mat_t B )
+ void fmpq_mat_mul(fmpq_mat_t tgt, const fmpq_mat_t A, const fmpq_mat_t B)
  void fmpq_mat_get_fmpz_mat_matwise(fmpz_mat_t n, fmpz_t d, const fmpq_mat_t s)
+ void fmpq_mat_mul_r_fmpz_mat(fmpq_mat_t tgt, const fmpz_mat_t A, 
+  const fmpq_mat_t B)
+ int fmpq_mat_get_fmpz_mat(fmpz_mat_t tgt, const fmpq_mat_t sou)
 
 def raw_entry( n, d ):
  if d==1:
@@ -304,3 +307,17 @@ def fmpq_mat_scalar_mul_rational(fmpq_mat a, Rational m):
   fmpq_mul(  b.matQQ[0].entries+i, a.matQQ[0].entries+i, q )
  fmpq_clear( q )
  return b
+
+def fmpz_mat_mul_by_fmpq_mat(fmpz_mat a, fmpq_mat b):
+ '''
+ a,b: square matrix
+ compute c=a*b
+ if c is integer, set a:=c and return 1
+ else damage matrice a and return 0
+ '''
+ cdef fmpq_mat_t C
+ cdef long dim=b.matQQ[0].r
+ fmpq_mat_init( C, dim, dim )
+ fmpq_mat_mul_r_fmpz_mat(C, a.matr, b.matQQ)
+ dim=fmpq_mat_get_fmpz_mat(a.matr, C)
+ return dim 
