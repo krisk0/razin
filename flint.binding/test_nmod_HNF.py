@@ -58,22 +58,6 @@ def m(x):
  dim=int( len(x)**.5 )
  return matrix( dim, x )
 
-a2=m( [ 5,5,-7,-8] )
-
-u2=m( [ 1,77,0,-1] ) * m( [ 1,0,-87,1] )
-assert abs(u2.determinant()) == 1
-test( a2, 1 )
-test( u2*a2, 1)
-test( a2*u2, 1)
-
-v2=m( [ 1,67,0,-1] )
-b2=a2 * u2 * v2 * m( [ 3,0,30,36] )
-
-test( b2, 1 )
-test( b2 * m( [-1, 17, 0, 1 ] ), 1 )
-
-sage.all.set_random_seed('20140316')
-
 def test_serie_1(dim,vol,loud):
  if dim<20:
   max_k=dim+1
@@ -140,6 +124,22 @@ def test_serie(dim):
  test_serie_1(dim,vol,loud) 
 
 if __name__ == "__main__":
- for i in range(3,13):  # approximately one day for 3,33
+ a2=m( [ 5,5,-7,-8] )
+ 
+ u2=m( [ 1,77,0,-1] ) * m( [ 1,0,-87,1] )
+ assert abs(u2.determinant()) == 1
+ test( a2, 1 )
+ test( u2*a2, 1)
+ test( a2*u2, 1)
+ 
+ v2=m( [ 1,67,0,-1] )
+ b2=a2 * u2 * v2 * m( [ 3,0,30,36] )
+ 
+ test( b2, 1 )
+ test( b2 * m( [-1, 17, 0, 1 ] ), 1 )
+ 
+ sage.all.set_random_seed('20140316')
+
+ for i in range(3,13):
   test_serie(i)
  print 'test passed'
