@@ -150,7 +150,6 @@ def test_serie(c):
   vol=17
  for i in range(3):
   m=c+i
-  print 'm=%s c=%s' % (m,c)
   test_serie_1(m,c,vol,loud) 
 
 if __name__ == "__main__":
