@@ -447,9 +447,10 @@ Return code:0
     det_tgt /= nmod_mat_entry(A,i,i);
    }
  }
+
 /*
-I would be greatly irritated if you tell me that this algorithm is wrong
- WITHOUT GIVING EXAMPLE OF INPUT DATA that make it fail
+I would be greatly irritated if you tell me that the algorithms implemented in
+ this file are wrong  WITHOUT GIVING EXAMPLE OF INPUT DATA that make them fail
 
 Report bugs via Github mechanism or e-mail
 
