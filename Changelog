@@ -120,3 +120,12 @@
             Tests show that replacing GMP implementation does not make 
              determinant() or solve_right() faster on my computer (at least for 
              matrice of size 90 with 100-bit entries)
+
+11 Apr 2014 Under GMP 6.0.0a Sage/Flint is a lot faster than under MPIR 2.7.0. 
+             Probably everybody except me knows that MPIR is not something to
+             be used under Linux. Now I know that, too. MPIR, goodbye.
+
+20140414-r0 New subroutine mod_mat_HNF_nonsquare(matrice,number): matrice can be
+             non-square; number should be a divisor of determinant of lattice 
+             (rather than multiple). Full spec in C source between func header
+             and func body (as usual)
