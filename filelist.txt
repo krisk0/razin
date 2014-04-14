@@ -1,14 +1,17 @@
-cout/*.cout           Output of python script (usually benchmark or test result)
-*.py                  Python script, usually benchmark or test, usually requires
-                       flint_sage
+cout/*.cout        Output of python script (usually benchmark or test result)
+*.py                Python script, usually benchmark or test, usually requires
+                    flint_sage
 
-flint.binding/         Python binding for small piece of FLINT library, requires
-                        sage. Installs as flint_sage. Tests in separate files test* 
+flint.binding/      Python binding for small piece of FLINT library, requires
+                     sage. Installs as flint_sage. Tests in separate files test*
+                        
+flint.binding/C        fast C code integer linear algebra (HNF, PLU, 
+                        triangular inversion)
 
 flint.binding/*.README  kinda documentation with installation instruction and
                          FAQ
 
-benchmark.script/      benchmark, test-benchmark and profile scripts
+benchmark.script/       benchmark, test-benchmark and profile scripts
 
 
 A_by_B_mod_P.hacks/     Secret voodoo to calculate a*b mod p for small p on amd64 
@@ -17,5 +20,5 @@ A_by_B_mod_P.hacks/     Secret voodoo to calculate a*b mod p for small p on amd6
 Changelog               History of bugs fixes and additions
 To.do                    Plan of changes
 
-ebuild/                  Useful ebuild scripts
+ebuild/                 Useful ebuild scripts
 
