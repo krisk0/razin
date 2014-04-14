@@ -18,6 +18,8 @@ This program benchmarks 5 ways to invert an upper-triangular matrice
 Matrice is generated as small-det HNF calculated by test_nmod_HNF_nonsquare.py
 '''
 
+# TODO: drop slower methods; add fmpz_mat_inv benchmark
+
 import sage.all
 import flint_sage as flint
 import sys,numpy,time,sympy
