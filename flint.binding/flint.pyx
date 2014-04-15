@@ -86,7 +86,8 @@ cdef extern from 'C/GMP_or_MPIR_version.c':
  #  GMP or MPIR is linked, it should be able to report its name
  
  # in fact, two or more gmp*.so libraries can be linked, and it looks
- #  like first of them is unused. Need static linking to be sure
+ #  like first of them is unused. To be sure, need to link statically or
+ #  have only one GMP library
 
 def GMP_or_MPIR_version():
  ' return version as Python unicode string '
