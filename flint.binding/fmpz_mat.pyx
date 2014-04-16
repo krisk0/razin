@@ -18,6 +18,8 @@ cdef extern from 'flint/fmpz_mat.h':
   int rank_check)
  void fmpz_mat_det_bound(fmpz_t bound, const fmpz_mat_t A)
  void fmpz_mat_det_divisor(fmpz_t d, const fmpz_mat_t A)
+ int fmpz_mat_inv(fmpz_mat_t tgt, fmpz_t den, const fmpz_mat_t sou)
+ void fmpz_mat_init_set(fmpz_mat_t tgt, const fmpz_mat_t src)
  
 cdef class fmpz_mat:
 
@@ -256,3 +258,29 @@ cdef fmpz_mat_permute( long* P, fmpz_mat src ):
   for j in range(c):
    fmpz_set( on_tgt_row+j, on_src_row+j )
  return wrap_fmpz_mat( tgt )
+
+def fmpz_mat_inverse( fmpz_mat A ):
+ '''
+ A: square
+ returns None,None if A is singular
+ returns pair Ainv,den such that (Ainv / den) * A = identity
+ '''
+ cdef long t=A.matr[0].r
+ cdef fmpz_mat_t Ainv
+ fmpz_mat_init( Ainv, t, t )
+ cdef fmpz_t den
+ fmpz_init(den)
+ cdef Integer r=Integer(0)
+ t=fmpz_mat_inv( Ainv, den, A.matr )
+ if t:
+  fmpz_get_mpz( r.value, den )
+  fmpz_clear(den)
+  return wrap_fmpz_mat(Ainv),r
+ fmpz_clear(den)
+ fmpz_mat_clear( Ainv )
+ return None,None
+
+def fmpz_mat_copy( fmpz_mat a ):
+ cdef fmpz_mat_t c
+ fmpz_mat_init_set( c, a.matr )
+ return wrap_fmpz_mat(c)
