@@ -22,7 +22,7 @@ PLU decomposition modulo 2^64 test: *flint.binding/test_tmod_mat.py*
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^
-Mid-range target of the project is fast HNF computation with an algorithm resembling W.Stein double-determinant. Python wrapper is minimalistic and only contains functions required to reach the goal or to test/benchmark subroutines/algorithms.
+Mid-range target of the project is fast HNF computation with a new algorithm inspired by W.Stein double-determinant. Python wrapper is minimalistic and only contains functions required to reach the goal or to test/benchmark subroutines/algorithms.
 
 Only FLINT functions will be used for solving hard sub-problems, unless a function from another library (NTL, IML, LinBox, ...) turn to be faster or a serious problem with FLINT discovered. Presently components of FLINT wrapped into flint_sage Python package work as they should. If you think otherwise, your bug-report is welcome.
 
