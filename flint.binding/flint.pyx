@@ -85,7 +85,7 @@ cdef extern from 'C/GMP_or_MPIR_version.c':
  # setup.py links against libflint-*.so*, specific version of
  #  GMP or MPIR is linked, it should be able to report its name
  
- # in fact, two or more gmp*.so libraries can be linked, and it looks
+ # in fact, two gmp*.so libraries instead of one can be linked, and it looks
  #  like first of them is unused. To be sure, need to link statically or
  #  have only one GMP library
 
