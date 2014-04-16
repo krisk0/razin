@@ -70,8 +70,8 @@ tmod_mat_clear(tmod_mat_t mat)
 mp_limb_t
 fmpz_to_t(const fmpz_t f)
 /*
- This function calculates f modulo 2**64 on amd64, at least for FLINT ver 
-  2.4.1. Don't know what it does on other arch
+This function calculates f modulo 2**64 on amd64, at least for FLINT ver 
+ 2.4.1 and 2.4.3. Don't know what it does on other arch
 */
  {
   register long n=(long)(*f);
