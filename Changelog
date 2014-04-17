@@ -129,3 +129,8 @@
              non-square; number should be a divisor of determinant of lattice 
              (rather than multiple). Full spec in C source between func header
              and func body (as usual)
+
+17 Apr 2014 invert upper-triangular integer matrice with small determinant:
+             fmpz_triU_small_det_inverse().
+            Test passes. My specialzed procedure more than 10 times faster
+             than FLINT fmpz_mat_inverse().
