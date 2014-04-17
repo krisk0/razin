@@ -20,6 +20,9 @@ cdef extern from 'flint/fmpz_mat.h':
  void fmpz_mat_det_divisor(fmpz_t d, const fmpz_mat_t A)
  int fmpz_mat_inv(fmpz_mat_t tgt, fmpz_t den, const fmpz_mat_t sou)
  void fmpz_mat_init_set(fmpz_mat_t tgt, const fmpz_mat_t src)
+
+cdef extern from './C/fmpz_mat/window_unsh.c':
+ void fmpz_triU_inverse_smallDet(fmpz_mat_t T, fmpz_t d, const fmpz_mat_t S)
  
 cdef class fmpz_mat:
 
@@ -279,6 +282,25 @@ def fmpz_mat_inverse( fmpz_mat A ):
  fmpz_clear(den)
  fmpz_mat_clear( Ainv )
  return None,None
+
+def fmpz_triU_small_det_inverse( fmpz_mat A ):
+ '''
+ A: square upper-triangular with positive diagonal
+ d=det A is in range 2 .. 2**64-1
+ returns pair Ainv,den such that (Ainv / den) * A = identity
+ den divides d
+ '''
+ cdef long t=A.matr[0].r
+ if t < 4:
+  return fmpz_mat_inverse( A )
+ cdef fmpz_mat_t Ainv
+ fmpz_mat_init( Ainv, t, t )
+ cdef fmpz_t den
+ fmpz_init(den)
+ fmpz_triU_inverse_smallDet( Ainv, den, A.matr )
+ cdef Integer r=Integer(0)
+ fmpz_get_mpz( r.value, den )
+ return wrap_fmpz_mat(Ainv),r
 
 def fmpz_mat_copy( fmpz_mat a ):
  cdef fmpz_mat_t c
