@@ -8,12 +8,12 @@
 '''
 This program benchmarks 3 ways to invert an upper-triangular matrice
 
-
 1 way from Sage: s.I
  
 2 ways from FLINT: subroutines fmpq_mat_inv() and fmpz_mat_inv()
  
-Matrice is generated as small-det HNF calculated by test_nmod_HNF_nonsquare.py
+Upper-tri matrice is a small-det HNF just like the one calculated by 
+ test_nmod_HNF_nonsquare.py
 '''
 
 import sage.all
@@ -28,9 +28,6 @@ randint=sage.all.randint
 random_matrix,identity_matrix=sage.all.random_matrix,sage.all.identity_matrix
 fmpz_mat=flint.fmpz_mat
 write=sys.stdout.write
-
-import sage.matrix.matrix_integer_dense_hnf
-hnf=sage.matrix.matrix_integer_dense_hnf.hnf
 
 from test_nmod_HNF import unimodular,left_trans
 from test_nmod_HNF_nonsquare import small_nums,three_det_divisors,det_divisor,\
