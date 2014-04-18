@@ -132,5 +132,5 @@
 
 17 Apr 2014 invert upper-triangular integer matrice with small determinant:
              fmpz_triU_small_det_inverse().
-            Test passes. My specialzed procedure more than 10 times faster
-             than FLINT fmpz_mat_inverse().
+            My specialzed procedure is a lot faster than FLINT 
+             fmpz_mat_inverse(): 28.5 times for dim=100, 4.9 times for dim=10
