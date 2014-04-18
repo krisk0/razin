@@ -5,7 +5,7 @@
 // This file contains definition of fmpz_mat_window_unsh_struct and some methods
 //  accessing it such as recursive triangular inverse computation
 
-// fmpz_mat_window_unsh_struct is like tmod_mat_window_unsh_struct, but it is 
+// fmpz_mat_window_unsh_struct is like tmod_mat_window_unsh_struct, but it is
 //  for fmpz_mat rather than tmod_mat
 
 typedef struct
@@ -53,7 +53,7 @@ fmpz_mat_to_window_unsh( fmpz_mat_window_unsh_t W, const fmpz_mat_t A )
    }
  }
 
-static __inline__ void 
+static __inline__ void
 fmpz_vec_kill_set(fmpz* tgt, fmpz* sou, slong len)
 /*
 destroy entries of tgt
@@ -99,7 +99,7 @@ fmpz_mat_window_unsh_deep_clear( fmpz_mat_window_unsh_t W )
   flint_free( W->rows );
  }
 
-static __inline__ void 
+static __inline__ void
 fmpz_mat_window_unsh_clear( fmpz_mat_window_unsh_t W )
  {
   flint_free( W->rows );
@@ -123,12 +123,12 @@ fmpz_clear_and_zero(fmpz_t f)
 // works like fmpz_zero(), but does not assign zero twice --- one time
 //  is quite enough
  {
-  if (COEFF_IS_MPZ(*f)) 
+  if (COEFF_IS_MPZ(*f))
    _fmpz_clear_mpz(*f);
   (*f) = WORD(0);
  }
 
-static __inline__ void 
+static __inline__ void
 fmpz_mat_window_unsh_zero( fmpz_mat_window_unsh_t W )
  {
   slong i, rc=W->r, cc=W->c, de=W->delta, j;
@@ -159,7 +159,7 @@ static void fmpz_mat_window_unsh_print(const char* m,const MATR A)
   #endif
  }
 
-void 
+void
 fmpz_neg_1arg( fmpz_t v )
 // inspired by FLINT fmpz_neg
  {
@@ -216,12 +216,12 @@ fmpz_triU_inverse_dim3( MATR W )
   fmpz_mat_window_unsh_print("1st col of B' multiplied",W);
   // e2[0], thank you for being scratch
   e2[0]=WORD(0);
-  // multiply B' by a0  
+  // multiply B' by a0
   fmpz_mul_ui( p, p, a0 );
   p=e1+2;
-  fmpz_mul_ui( p, p, a0 ); 
+  fmpz_mul_ui( p, p, a0 );
   p--;
-  fmpz_mul_ui( p, p, a0 ); 
+  fmpz_mul_ui( p, p, a0 );
   fmpz_mat_window_unsh_print("B' multiplied by a0",W);
   return a0*b0_b2;
  }
@@ -289,7 +289,7 @@ fmpz_mat_window_unsh_mul_negate_triu_general( MUL_TYPE_ARG )
      }
    }
   // last row: scalar multiply
-  p=r[d0_minus]; q=b[d0_minus]; 
+  p=r[d0_minus]; q=b[d0_minus];
   fmpz_set( scr, a[d0_minus]+d0_minus ); fmpz_neg_1arg( scr );
   for( i=d1; i--; )
    {
@@ -303,6 +303,7 @@ fmpz_mat_window_unsh_mul_negate_triu_general( MUL_TYPE_ARG )
 static __inline__ void
 fmpz_mat_triU_C_transform( MATR R, slong A_dim, slong D_dim,
   const MATR A, MATR Cscr, const MATR D)
+// TODO: Use asymptotically fast multiplication  
  {
   MATR C;
   fmpz_mat_window_unsh_init( C, R, 0, A_dim, A_dim, A_dim+D_dim );
@@ -341,11 +342,11 @@ fmpz_triU_inverse_rec_smallDet(MATR alpha)
    return fmpz_triU_inverse_dim3( alpha );
   /*
   Use recursive formula
-       
+ 
   (A C)'    =   (  A'  -A' C D' )
   (  D)         (          D'   )
   */
-  slong n0=m>>1; 
+  slong n0=m>>1;
   slong n1=m-n0;
   MATR A, S, D;
   fmpz_mat_window_unsh_init( A, alpha, 0,  0,  n0, n0 );
