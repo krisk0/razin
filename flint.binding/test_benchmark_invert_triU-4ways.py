@@ -6,7 +6,7 @@
 # Licence: GNU General Public License (GPL)
 
 '''
-This program benchmarks 4 ways to invert an upper-triangular matrice with 
+This program benchmarks 4 ways to invert an upper-triangular matrice with
  small determinant
 
 1 way from Sage: s.I
@@ -85,15 +85,18 @@ def test_serie_2(be,A,det_div):
   t3=time.time()
   rF0=flint_0( Ff )
   t4=time.time()
-  rF1=flint_1( Ff )
-  t5=time.time()
+  # calling flint_sage method A before B makes method A appear to run slower, at
+  #  least for small dim. Calling fmpz_triU_small_det_inverse() first, to give 
+  #  FLINT subroutine fmpz_mat_inv() a handicap
   rM0=mine_0( Ff )
+  t5=time.time()
+  rF1=flint_1( Ff )
   t6=time.time()
   be[-1] += 1
   be[0] += t3-t2
   be[1] += t4-t3
-  be[2] += t5-t4
-  be[3] += t6-t5
+  be[3] += t5-t4
+  be[2] += t6-t5
   Si=identity_matrix(dim)
   assert rS0[0]*rS0[1] == Si
   assert multiply_test_fmpz_fmpq( rF0[0], rF0[1], dim )
@@ -124,7 +127,7 @@ def test_serie_1(be,m,c,vol):
    A=left_trans(A,m)
    d=three_det_divisors( nums )
    test_serie_2(be,A,d)
-  # don't start new iteration if too many experiments done 
+  # don't start new iteration if too many experiments done
   if be[-1]>=1000:
    return
 
@@ -148,7 +151,9 @@ if __name__ == "__main__":
  sage.all.set_random_seed('20140413')
  print ' dim      s0        f0        f1       !!       vol'
  for i in range(3,102):
+ #for i in 10,50,100:
   t,v=test_serie(i)
-  show_time( i, t, v )
+  if i>3:
+   show_time( i, t, v )
 
 print '\ntest passed'
