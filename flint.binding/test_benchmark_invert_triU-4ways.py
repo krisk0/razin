@@ -148,7 +148,7 @@ def show_time( dim, t, v ):
  sys.stdout.flush()
 
 if __name__ == "__main__":
- sage.all.set_random_seed('20140413')
+ sage.all.set_random_seed('20140417')
  print ' dim      s0        f0        f1       !!       vol'
  for i in range(3,102):
  #for i in 10,50,100:
