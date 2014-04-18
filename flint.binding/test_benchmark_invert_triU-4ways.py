@@ -13,26 +13,26 @@ This program benchmarks 4 ways to invert an upper-triangular matrice with
  
 2 ways from FLINT: subroutines fmpq_mat_inv() and fmpz_mat_inv()
 
-1 fastest way: specialized subroutine fmpz_triU_small_det_inverse()
+1 fastest way: specialized subroutine fmpz_triU_inverse_smallDet()
  
 Matrices to test are generated as in test_benchmark_invert_triU-3ways.py
 '''
-# Note about fmpq_mat_inv()/fmpz_triU_small_det_inverse() time ratio:
+# Note about fmpq_mat_inv()/fmpz_triU_inverse_smallDet() time ratio:
 """
  When two procedures work on same matrice, the one that runs first is
   reported to run slower (at least for small-dimension matrice)
- For instance, when fmpq_mat_inv() runs first, fmpz_triU_small_det_inverse()
-  is 4.9 times faster; running fmpz_triU_small_det_inverse() first reduces this
+ For instance, when fmpq_mat_inv() runs first, fmpz_triU_inverse_smallDet()
+  is 4.9 times faster; running fmpz_triU_inverse_smallDet() first reduces this
   ratio to 4.5
- This version of program runs fmpz_triU_small_det_inverse(), so ratio is
+ This version of program runs fmpz_triU_inverse_smallDet(), so ratio is
   as in table below:
    10: 4.5
    20: 11.3
    40: 19.6
   100: 28.7
 """
+# Note about compiler flags:
 """
-Note about compiler flags
 I usually compile everything with '-O2 -march=native'. 
 
 Compiling flint_sage wrapper with 
