@@ -17,6 +17,15 @@ This program benchmarks 4 ways to invert an upper-triangular matrice with
  
 Matrices to test are generated as in test_benchmark_invert_triU-3ways.py
 '''
+"""
+Note about compiler flags
+I usually compile everything with '-O2 -march=native'. 
+
+Compiling flint_sage wrapper with 
+'-O3 -finline-limit=4611686018427387904 -march=native' or
+'-O3 -march=native' or
+actually makes time reported by this program larger
+"""
 
 import sage.all
 import flint_sage as flint
