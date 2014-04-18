@@ -134,3 +134,8 @@
              fmpz_triU_small_det_inverse().
             My specialzed procedure is a lot faster than FLINT 
              fmpz_mat_inverse(): 28.5 times for dim=100, 4.9 times for dim=10
+
+18 Apr 2014 Changing measuring procedure makes figures different: 4.5 not 4.9
+             times for dim=10. But who cares for this low dim? For big dimension
+             the ratio becomes substantially bigger anyway, see 
+             test_benchmark_invert_triU-4ways.cout
