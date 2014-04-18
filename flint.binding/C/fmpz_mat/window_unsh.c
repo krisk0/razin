@@ -237,7 +237,6 @@ fmpz_mat_window_unsh_mul_general_triu( MUL_TYPE_ARG )
   fmpz** a=A->rows;
   slong B_delta=B->delta;
   fmpz_t B_00; fmpz_init_set( B_00, b[0] );
-  fmpz_t scr; fmpz_init( scr );
   for( i=0; i<d0; i++ )
    {
     rho=r[i];
@@ -256,7 +255,6 @@ fmpz_mat_window_unsh_mul_general_triu( MUL_TYPE_ARG )
       rho++;
      }
    }
-  fmpz_clear( scr );
   fmpz_clear( B_00 );
  }
 
@@ -271,7 +269,7 @@ fmpz_mat_window_unsh_mul_negate_triu_general( MUL_TYPE_ARG )
   fmpz** b=B->rows;
   fmpz** a=A->rows;
   slong B_delta=B->delta;
-  fmpz_t scr; fmpz_init( scr );
+  fmpz_t scr;
   // All rows but last
   for (i=0; i<d0_minus; i++)
    {
@@ -280,17 +278,16 @@ fmpz_mat_window_unsh_mul_negate_triu_general( MUL_TYPE_ARG )
     for ( j=0; j<d1; j++ )
      {
       q=b[i]+j; // skip i rows of b, then go to j'th column
-      fmpz_clear_and_zero( scr );
+      fmpz_clear_and_zero( rho );
       for( k=i; k<d0; k++, q += B_delta )
-       fmpz_addmul( scr, p+k, q );
-      fmpz_neg_1arg( scr );
-      fmpz_swap( rho, scr ); // if R entry was small, scr becomes small
+       fmpz_addmul( rho, p+k, q );
+      fmpz_neg_1arg( rho );
       rho++;
      }
    }
   // last row: scalar multiply
   p=r[d0_minus]; q=b[d0_minus];
-  fmpz_set( scr, a[d0_minus]+d0_minus ); fmpz_neg_1arg( scr );
+  fmpz_init_set( scr, a[d0_minus]+d0_minus ); fmpz_neg_1arg( scr );
   for( i=d1; i--; )
    {
     fmpz_mul( p, q, scr );
