@@ -136,7 +136,7 @@ cdef extern from './nmod_mat_HNF.c':
  void nmod_mat_HNF(nmod_mat_t A)
  void nmod_mat_HNF_nonsquare(nmod_mat_t A)
 
-# Python-visible matrice types and methods 
+# Python-visible matrice types and methods
 include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
 include "tmod_mat.pyx"
