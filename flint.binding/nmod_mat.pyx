@@ -31,6 +31,9 @@ cdef extern from './nmod_mat_HNF.c':
  void nmod_mat_HNF(nmod_mat_t A)
  void nmod_mat_HNF_nonsquare(nmod_mat_t A)
 
+cdef extern from './C/tmod_mat/tmod_mat.c':
+ mp_limb_t fmpz_to_t(const fmpz_t f)
+
 cdef extern from 'flint/fmpz_mat.h':
  # these two functions undocumented, as of version 2.4.1
  void fmpz_mat_get_nmod_mat(nmod_mat_t Amod, const fmpz_mat_t A)
@@ -221,3 +224,38 @@ def plu_modulo_prime(fmpz_mat A,Integer M):
  cdef fmpz_mat B=fmpz_mat_permute( p, A )
  free(p)
  return B,LU
+
+cdef nmod_mat_set_fmpz_mat( tmod_mat_t tgt, fmpz_mat_t matr ):
+ tmod_mat_init_fast( tgt, matr[0].r, matr[0].c )
+ cdef long i,j,c=matr[0].c,k=0
+ cdef long* on_row
+ for i in range(matr[0].r):
+  on_row=matr[0].rows[i]
+  for j in range(c):
+   tgt.entries[k]=fmpz_to_t( on_row+j )
+   k += 1
+
+cdef nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou):
+ '''
+ compute tgt := sou modulo 2**63
+ 
+ This subroutine is for amd64
+ '''
+ cdef long rc=sou.r, cc=sou.c, i, j
+ nmod_mat_init( tgt, rc, 0, 0x8000000000000000 )
+ cdef mp_limb_t* e = <mp_limb_t*>flint_malloc( rc * cc * sizeof(mp_limb_t) )
+ tgt.rows = <mp_limb_t**>flint_malloc( rc * sizeof(mp_limb_t*) )
+ cdef long* s
+ tgt.entries = e
+ tgt.c=cc
+ for i in range(rc):
+  tgt.rows[i] = e
+  s=sou.rows[i]
+  for j in range(cc):
+   e[j] = fmpz_to_t( s+j ) & 0x7FFFFFFFFFFFFFFF
+  e += cc
+
+def nmod_mat_set_fmpz_mat_mod_thalf(fmpz_mat A):
+ cdef nmod_mat r=nmod_mat.__new__( nmod_mat )
+ nmod_mat_mod_t_half( r.matZn, A.matr )
+ return r

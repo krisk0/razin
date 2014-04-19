@@ -146,6 +146,12 @@ print tmod_pretty_m( flint.export_Lti(LU_inv) )
 def test_constructor_export( m ):
  f=flint.tmod_mat_single( fmpz_mat(m) )
  assert f.export_sage() == m % 2**64
+ f=flint.nmod_mat_set_fmpz_mat_mod_thalf( fmpz_mat(m) )
+ assert f.export_nonnegative_fmpz_mat().export_sage() == m % 2**63
+
+test_constructor_export( identity_matrix( 3 ) )
+test_constructor_export( identity_matrix( 4 ).matrix_from_rows(range(3)) )
+test_constructor_export( identity_matrix( 4 ).matrix_from_columns(range(3)) )
 
 sage.all.set_random_seed('20140402')
 for dim in (20,):

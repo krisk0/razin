@@ -120,5 +120,5 @@ cdef wrap_agnostic_array(void* p):
 # Python-visible matrice types and methods 
 include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
-include "nmod_mat.pyx"
 include "tmod_mat.pyx"
+include "nmod_mat.pyx"

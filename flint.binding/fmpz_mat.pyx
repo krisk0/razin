@@ -306,3 +306,5 @@ def fmpz_mat_copy( fmpz_mat a ):
  cdef fmpz_mat_t c
  fmpz_mat_init_set( c, a.matr )
  return wrap_fmpz_mat(c)
+
+# include 'fmpz_unimodular.pyx'
