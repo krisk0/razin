@@ -6,9 +6,10 @@ For now, I offer
          a) it is non-singular;
          b) its determinant is known and lies in range 2..2^64-1 where 2^64-1 is maximal native unsigned integer;
   b) PLU decomposition of a matrice modulo 2^64;
-  c) inversion of square lower-triangular matrice modulo 2^64;
-  d) Python binding to some methods of FLINT, called flint_sage;
-  e) some algorithms benchmarks (such as determinant, linear equations solver)
+  c) inversion of lower-triangular matrice modulo 2^64;
+  d) inversion of integer upper-triangular matrice with small determinant and positive diagonal;
+  e) Python binding to some methods of FLINT, called flint_sage;
+  f) some algorithms benchmarks (such as determinant, linear equations solver)
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
