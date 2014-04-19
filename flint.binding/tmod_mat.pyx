@@ -106,7 +106,7 @@ def take_mod_2_64(Integer x):
  return r
 
 cdef tmod_mat_set_fmpz_mat( tmod_mat_t tgt, fmpz_mat_t matr ):
- tmod_mat_init( tgt, matr[0].r, matr[0].c )
+ tmod_mat_init_fast( tgt, matr[0].r, matr[0].c )
  cdef long i,j,c=matr[0].c,k=0
  cdef long* on_row
  for i in range(matr[0].r):
@@ -207,7 +207,7 @@ cdef wrap_tmod_mat(tmod_mat_t a):
 
 def tmod_mat_PLU(fmpz_mat s):
  '''
- s:matrice of dim n*(n-1), n-1 >= 1, whose HNF is diagonal of ones
+ s:matrice of dim n*(n-1), n-1 >= 1, whose HNF modulo 2 is diagonal of ones
   and one zero line
  
  on error return None,None
@@ -220,6 +220,11 @@ def tmod_mat_PLU(fmpz_mat s):
    FLINT nmod_mat_lu_classical() does
   
  P * old s = L * U 
+ 
+  1  -6         1  -6               -4 -15
+  4 -21   ->    4   3     (inv->)    1   2
+  7 -48         7  -2                2 1/3
+ 
  '''
  cdef tmod_mat_t m
  # delay Python object creation for m
