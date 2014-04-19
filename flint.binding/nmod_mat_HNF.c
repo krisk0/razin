@@ -410,7 +410,7 @@ aka DomichKannanTrotter87.pdf
   return bad_n;
  }
 
-#include "C/nmod_mat_HNF_nonsq.c"
+#include "C/nmod_mat/nmod_mat_HNF_nonsq.c"
 
 slong
 nmod_mat_HNF_nonsquare(nmod_mat_t A)

@@ -91,7 +91,7 @@ def sed_and_perl__goodbye( oN, iN ):
   r = re_sub ( r, ' *#' ,'#' )
   r = re_sub ( r, '#define BUG.*?λ', '' )
   r = re_sub ( r, '#if .*?#endifλ' , '' )
-  r = r.replace( '#include "nmod', '#include "C/nmod' )
+  r = r.replace( '#include "nmod', '#include "C/nmod_mat/nmod' )
   r = r.replace( head_trigger, head_trigger+'λ// '+head_warning+'λ' )
   #r = re_sub ( r, 'λλλstatic', 'λλstatic' )
   for s in 'nmod_mat_print','vec_print','DKryskov_nmod_easy_zl':
@@ -103,7 +103,7 @@ def sed_and_perl__goodbye( oN, iN ):
   o.write( r.replace('λ','\n') )
   o.write( '/*'+tail_warning+'\n*/' )
 
-sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat_HNF-debug.c' )
+sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat/nmod_mat_HNF-debug.c' )
 
 '''
  sage-on-gentoo ebuilds put *.p* into $EPREFIX/usr/share/sage
