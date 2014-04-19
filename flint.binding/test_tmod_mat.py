@@ -143,6 +143,10 @@ print tmod_pretty_m( LU_inv.export_sage() ),'\n'
 print tmod_pretty_m( flint.export_Wti(LU_inv) )
 print tmod_pretty_m( flint.export_Lti(LU_inv) )
 
+def test_constructor_export( m ):
+ f=flint.tmod_mat_single( fmpz_mat(m) )
+ assert f.export_sage() == m % 2**64
+
 sage.all.set_random_seed('20140402')
 for dim in (20,):
  for i in range(20):
@@ -153,6 +157,7 @@ for dim in (20,):
     aS[1,0] += 3 * w_modulo
    else:
     aS[1,0] -= 5 * w_modulo
+  test_constructor_export( aS )
   test_matrice(aS)
   if 0:
    print 'so far so good\n\n'
