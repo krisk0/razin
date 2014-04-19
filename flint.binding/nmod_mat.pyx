@@ -3,33 +3,13 @@
 # Licence: GNU General Public License (GPL)
 # Copyright Денис Крыськов 2014
 
-cdef extern from 'flint/nmod_vec.h':
- ctypedef struct nmod_t:
-  mp_limb_t n
-  mp_limb_t ninv
-  mp_bitcnt_t norm
-
 cdef extern from 'flint/nmod_mat.h':
- ctypedef struct nmod_mat_struct:
-  mp_limb_t* entries
-  long r
-  long c
-  mp_limb_t** rows
-  nmod_t mod
- ctypedef nmod_mat_struct nmod_mat_t[1]
- 
  void nmod_mat_init(nmod_mat_t tgt,long rows,long cols,mp_limb_t n)
  void nmod_mat_clear(nmod_mat_t mat)
  long nmod_mat_rref(nmod_mat_t A) 
  # unclear what nmod_mat_rref does. It appears to return spoilt HNF
  long nmod_mat_lu(long *P, nmod_mat_t A, int rank_check)
  mp_limb_t nmod_mat_det(nmod_mat_t A)
-
-# Take either plain or debug version of subroutines nmod_mat_HNF*()
-cdef extern from './nmod_mat_HNF.c':
-#cdef extern from 'C/nmod_mat_HNF-debug.c':
- void nmod_mat_HNF(nmod_mat_t A)
- void nmod_mat_HNF_nonsquare(nmod_mat_t A)
 
 cdef extern from './C/tmod_mat/tmod_mat.c':
  mp_limb_t fmpz_to_t(const fmpz_t f)

@@ -117,6 +117,25 @@ cdef wrap_agnostic_array(void* p):
  r.array=p
  return r
 
+cdef extern from 'flint/nmod_vec.h':
+ ctypedef struct nmod_t:
+  mp_limb_t n
+  mp_limb_t ninv
+  mp_bitcnt_t norm
+
+cdef extern from 'flint/nmod_mat.h':
+ ctypedef struct nmod_mat_struct:
+  mp_limb_t* entries
+  long r
+  long c
+  mp_limb_t** rows
+  nmod_t mod
+ ctypedef nmod_mat_struct nmod_mat_t[1]
+
+cdef extern from './nmod_mat_HNF.c':
+ void nmod_mat_HNF(nmod_mat_t A)
+ void nmod_mat_HNF_nonsquare(nmod_mat_t A)
+
 # Python-visible matrice types and methods 
 include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
