@@ -332,7 +332,6 @@ mp_limb_t
 fmpz_triU_inverse_rec_smallDet(MATR alpha)
  {
   slong m=alpha->r;
-  assert(m>1);
   if(m==2)
    return fmpz_triU_inverse_dim2( alpha );
   if(m==3)
