@@ -35,6 +35,10 @@ cdef extern from 'gmp.h':
 
 ctypedef __mpz_struct* mpz_ptr
 
+cdef extern from 'flint/flint.h':
+ void* flint_malloc(long size)
+ void flint_free(void* p)
+
 cdef extern from 'flint/fmpz.h':
  ctypedef long fmpz_t[1]
  void fmpz_init(fmpz_t x)
