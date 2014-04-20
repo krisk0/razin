@@ -116,6 +116,7 @@ def det_modulo_prime(Matrix_integer_dense sage, Integer p):
  return nmod_mat( a, p ).determinant()
 
 cdef nmod_mat_export_nonnegative_fmpz_mat_upper( nmod_mat_t s ):
+ ' export upper part of s as fmpz_mat '
  cdef Py_ssize_t i,j
  cdef Py_ssize_t cc=s.c, rc=s.r
  cdef fmpz_mat r=fmpz_mat.__new__(fmpz_mat)
