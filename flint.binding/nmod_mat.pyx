@@ -60,16 +60,8 @@ cdef class nmod_mat:
 
  def export_nonnegative_fmpz_mat_upper(self):
   ' like export_nonnegative_fmpz_mat, but only outputs diagonal and upper part '
-  cdef Py_ssize_t i,j
-  cdef fmpz_mat r=fmpz_mat.__new__(fmpz_mat)
-  cdef mp_limb_t* on_row
-  fmpz_mat_init( r.matr, self.matZn[0].r, self.matZn[0].c )
-  for i in range(self.matZn[0].r):
-   on_row=self.matZn[0].rows[i]
-   for j in range(i,self.matZn[0].c):
-    fmpz_set_ui( r.matr[0].entries+i*self.matZn[0].c+j, on_row[j] )
-  return r
-
+  return nmod_mat_export_nonnegative_fmpz_mat_upper( self.matZn )
+  
  def export_balanced_fmpz_mat(self):
   '''
   lifts oneself to ZZ. returns result as fmpz_mat with possibly negative entries
@@ -122,6 +114,20 @@ def det_modulo_prime(Matrix_integer_dense sage, Integer p):
  # TODO: to speed-up, directly convert Sage matrice to nmod_mat
  cdef fmpz_mat a=fmpz_mat( sage )
  return nmod_mat( a, p ).determinant()
+
+cdef nmod_mat_export_nonnegative_fmpz_mat_upper( nmod_mat_t s ):
+ cdef Py_ssize_t i,j
+ cdef Py_ssize_t cc=s.c, rc=s.r
+ cdef fmpz_mat r=fmpz_mat.__new__(fmpz_mat)
+ fmpz_mat_init( r.matr, rc, cc )
+ cdef mp_limb_t* on_s_row
+ cdef long* on_r_row
+ for i in range(rc):
+  on_s_row=s.rows[i]
+  on_r_row=r.matr[0].rows[i]
+  for j in range(i,cc):
+   fmpz_set_ui( on_r_row+j, on_s_row[j] )
+ return r
 
 def fmpz_mat_hermite_form(fmpz_mat A, Integer M):
  '''
