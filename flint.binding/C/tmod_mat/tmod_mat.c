@@ -91,8 +91,8 @@ static mp_limb_t inv_mod__2_64__tab[13]={
  ,0x2E8BA2E8BA2E8BA3,0x4EC4EC4EC4EC4EC5,0xEEEEEEEEEEEEEEEF,0xF0F0F0F0F0F0F0F1,
  0x86BCA1AF286BCA1B,0xCF3CF3CF3CF3CF3D,0xD37A6F4DE9BD37A7,0x8F5C28F5C28F5C29};
 
-static __inline__ 
-mp_limb_t t_invmod(mp_limb_t a)
+static __inline__ mp_limb_t 
+t_invmod(mp_limb_t a)
  {
   #define m 64
   mp_limb_t s;
