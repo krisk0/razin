@@ -139,3 +139,6 @@
              times for dim=10. But who cares for this low dim? For big dimension
              the ratio becomes substantially bigger anyway, see 
              test_benchmark_invert_triU-4ways.cout
+
+28 Apr 2014 Included Agrawal-Kayal-Saxena primality test implemented by 袁轶君:
+             n_is_prime_AKS()
