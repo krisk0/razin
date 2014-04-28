@@ -18,6 +18,7 @@ cdef extern from 'flint/fmpz_mat.h':
  # these two functions undocumented, as of version 2.4.1
  void fmpz_mat_get_nmod_mat(nmod_mat_t Amod, const fmpz_mat_t A)
  void fmpz_mat_set_nmod_mat(fmpz_mat_t A, const nmod_mat_t Amod)
+ void fmpz_mat_zero(fmpz_mat_t A)
 
 def AmodB(Integer a, Integer b):
  ' test that mp_limb_t arithmetic works in Cython '
@@ -130,6 +131,23 @@ cdef nmod_mat_export_nonnegative_fmpz_mat_upper( nmod_mat_t s ):
    fmpz_set_ui( on_r_row+j, on_s_row[j] )
  return r
 
+cdef fmpz_mat_set_nmod_mat_upper(fmpz_mat_t tgt, nmod_mat_t sou):
+ '''
+ cc <= rc, tgt and sou has same dimenisions. 
+ Zero tgt, make it virgin, put upper part of sou into tgt 
+ '''
+ cdef Py_ssize_t i,j
+ cdef Py_ssize_t cc=sou.c, rc=sou.r
+ fmpz_mat_zero(tgt)
+ cdef mp_limb_t* on_s_row
+ cdef long* on_r_row=tgt.entries
+ for i in range(cc):
+  on_s_row=sou.rows[i]
+  tgt.rows[i]=on_r_row
+  for j in range(i,cc):
+   fmpz_set_ui( on_r_row+j, on_s_row[j] )
+  on_r_row += cc
+
 def fmpz_mat_hermite_form(fmpz_mat A, Integer M):
  '''
  A: square non-singular over Z matrice
@@ -212,17 +230,7 @@ def plu_modulo_prime(fmpz_mat A,Integer M):
  free(p)
  return B,LU
 
-cdef nmod_mat_set_fmpz_mat( tmod_mat_t tgt, fmpz_mat_t matr ):
- tmod_mat_init_fast( tgt, matr[0].r, matr[0].c )
- cdef long i,j,c=matr[0].c,k=0
- cdef long* on_row
- for i in range(matr[0].r):
-  on_row=matr[0].rows[i]
-  for j in range(c):
-   tgt.entries[k]=fmpz_to_t( on_row+j )
-   k += 1
-
-cdef nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou):
+cdef void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou):
  '''
  compute tgt := sou modulo 2**63
  

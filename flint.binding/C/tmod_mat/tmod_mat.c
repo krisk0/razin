@@ -67,6 +67,19 @@ tmod_mat_clear(tmod_mat_t mat)
    }
  }
 
+mp_limb_t 
+tmod_mat_diag_product_ZZ_ui(const tmod_mat_t m)
+// counts product of diagonal entries
+// m: count of rows >= count of columns > 0
+ {
+  slong cc=m->c-1;
+  mp_limb_t** rows=m->rows;
+  mp_limb_t r=rows[cc][cc];
+  for( ; cc--; )
+   r *= rows[cc][cc];
+  return r;
+ }
+
 mp_limb_t
 fmpz_to_t(const fmpz_t f)
 /*
