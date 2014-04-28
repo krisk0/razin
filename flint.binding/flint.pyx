@@ -50,6 +50,7 @@ cdef extern from 'flint/fmpz.h':
  void fmpz_set_ui(fmpz_t tgt, mp_limb_t val)
  void fmpz_lcm(fmpz_t f , const fmpz_t g , const fmpz_t h)
  void fmpz_one(fmpz_t tgt)
+ int fmpz_is_zero(const fmpz_t f)
  
 cdef extern from 'flint/fmpq.h':
  ctypedef struct fmpq:
@@ -136,7 +137,10 @@ cdef extern from './nmod_mat_HNF.c':
  void nmod_mat_HNF(nmod_mat_t A)
  void nmod_mat_HNF_nonsquare(nmod_mat_t A)
 
-# Python-visible matrice types and methods
+# fmpz, mpz, ui number manipulation
+include "fmpz.pyx"
+
+# matrice types and methods
 include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
 include "tmod_mat.pyx"
