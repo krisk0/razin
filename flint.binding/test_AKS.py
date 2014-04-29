@@ -1,11 +1,12 @@
-#!/usr/bin/python2
+#!/usr/bin/python2 -u
 # -*- coding: utf-8
 
 # This program is part of RAZIN
 # Copyright Денис Крыськов 2014
 
 '''
-This program tests Agrawal-Kayal-Saxena primality test implemented by 袁轶君
+This program tests Agrawal-Kayal-Saxena primality test originally implemented by 
+ 袁轶君 and modified by me
 '''
 
 import sage.all
