@@ -255,13 +255,8 @@ AKS(fmpz_t n)
    fmpz_mod_poly_set_coeff_ui(p, 0 , a_ui);
    fmpz_mod_poly_set_coeff_ui(p, 1 , 1);     //p=x+a
    fmpz_mod_poly_zero(q);
-   if( n_modulo_r ) // Денис Крыськов was here
-    {
-     fmpz_mod_poly_set_coeff_ui( q, n_modulo_r, 1     );
-     fmpz_mod_poly_set_coeff_ui( q,          0, a_ui  );
-    }
-   else
-     fmpz_mod_poly_set_coeff_ui( q,          0, a_ui+1);
+   fmpz_mod_poly_set_coeff_ui( q, n_modulo_r, 1     );
+   fmpz_mod_poly_set_coeff_ui( q,          0, a_ui  );
    // Денис Крыськов was here: q taken mod modulo, division not needed
    fmpz_mod_poly_powmod_ui_binexp(p,p,n_ui,modulo);//p=p^n mod modulo
    if(fmpz_mod_poly_equal(p,q)==0)
