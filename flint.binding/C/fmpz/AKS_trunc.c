@@ -70,6 +70,7 @@ AKS(fmpz_t n)
     /*Step5*/
     fmpz_set_d(c,fmpz_dlog(n));//c=log(n)
     arith_euler_phi(temp1,r);//temp1=euler(r)
+    // TODO: take square root of temp1
     fmpz_mul(c,c,temp1);//c=log(n)*euler(r)
     fmpz_clear(temp1);
     fmpz_mod_poly_t e;fmpz_mod_poly_init(e,n);
@@ -77,7 +78,7 @@ AKS(fmpz_t n)
     mp_limb_t r_ui=fmpz_get_ui(r);
     /*                        Денис Крыськов was here
      c is less than 2**40 for 64-bit machine. Probably c fits machine word on other
-      arch, too. 
+      arch, too 
     */
     // TODO: make a and c mp_limb_t instead of fmpz
     // TODO: move polynom definition and coefficients setting out of cycle 
