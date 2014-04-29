@@ -136,7 +136,7 @@ r < ceil( log2(n)**5 ) <= 64**5 = 2*30, so it is safe to multiply then reduce
   while(1)
    {
     // n**deg equals m modulo r, deg < c
-    if(n==1)
+    if(m==1)
      return 0;
     if( ++deg >= c )
      return 1;
@@ -223,7 +223,7 @@ AKS(fmpz_t n)
  mp_limb_t n_ui=fmpz_get_ui(n);
  mp_limb_t c_ui=ceil_square_log2(n_ui); // c_ui=(log2(n))**2 rounded up, c in 2..2**12
  mp_limb_t r_ui;
- for(r_ui=4;;r_ui++)
+ for(r_ui=c_ui+1;;r_ui++)
   {
    if( multiplicative_order_greater( r_ui, n_ui, c_ui ) )
     break;
@@ -241,10 +241,9 @@ AKS(fmpz_t n)
  if( n_ui <= r_ui )
   return 1;
  /*Step5*/
- c_ui = stage5_AKS_bound( r_ui, n_ui );       // Денис Крыськов was here
- // Денис Крыськов was here: polynom definition moved outside
+ c_ui = stage5_AKS_bound( r_ui, n_ui );
  fmpz_mod_poly_t modulo; fmpz_mod_poly_init(modulo,n);
- fmpz_mod_poly_set_coeff_ui(modulo,0,n_ui-1); // Денис Крыськов was here
+ fmpz_mod_poly_set_coeff_ui(modulo,0,n_ui-1);
  fmpz_mod_poly_set_coeff_ui(modulo,r_ui, 1);  //modulo=x^r-1
  fmpz_mod_poly_t p     ; fmpz_mod_poly_init(p     ,n);
  fmpz_mod_poly_t q     ; fmpz_mod_poly_init(q     ,n);
@@ -257,7 +256,6 @@ AKS(fmpz_t n)
    fmpz_mod_poly_zero(q);
    fmpz_mod_poly_set_coeff_ui( q, n_modulo_r, 1     );
    fmpz_mod_poly_set_coeff_ui( q,          0, a_ui  );
-   // Денис Крыськов was here: q taken mod modulo, division not needed
    fmpz_mod_poly_powmod_ui_binexp(p,p,n_ui,modulo);//p=p^n mod modulo
    if(fmpz_mod_poly_equal(p,q)==0)
     {
