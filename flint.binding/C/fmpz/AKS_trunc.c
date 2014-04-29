@@ -14,7 +14,7 @@
 #include<flint/fmpz_mod_poly.h>
 #include<flint/arith.h>
 //#include<mpir.h>     gmp or mpir header is included by FLINT
-//#include<stdio.h>   Денис Крыськов was here --- stdio.h too
+//#include<stdio.h>    stdio.h too
 #include<math.h>
 
 int 
