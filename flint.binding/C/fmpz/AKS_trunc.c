@@ -75,6 +75,12 @@ AKS(fmpz_t n)
     fmpz_mod_poly_t e;fmpz_mod_poly_init(e,n);
     mp_limb_t n_ui=fmpz_get_ui(n);
     mp_limb_t r_ui=fmpz_get_ui(r);
+    /*                        Денис Крыськов was here
+     c is less than 2**40 for 64-bit machine. Probably c fits machine word on other
+      arch, too. 
+    */
+    // TODO: make a and c mp_limb_t instead of fmpz
+    // TODO: move polynom definition and coefficients setting out of cycle 
     for(fmpz_one(a);fmpz_cmp(a,c)<=0;fmpz_add_ui(a,a,1)){
         fmpz_mod_poly_t modulo;fmpz_mod_poly_init(modulo,n);
         fmpz_mod_poly_t p     ;fmpz_mod_poly_init(p     ,n);
