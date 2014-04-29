@@ -248,6 +248,7 @@ AKS(fmpz_t n)
  fmpz_mod_poly_t p     ; fmpz_mod_poly_init(p     ,n);
  fmpz_mod_poly_t q     ; fmpz_mod_poly_init(q     ,n);
  mp_limb_t n_modulo_r=n_ui % r_ui;
+ // TODO: move more code outside loop
  for( a_ui=c_ui; a_ui--; ) 
   {
    fmpz_mod_poly_zero(p);
