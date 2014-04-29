@@ -2,6 +2,9 @@
 // Copyright 袁轶君 (Yijun Yuan), Денис Крыськов 2014
 // Licence: public domain
 
+// original code was not working for large n, fixes by Денис Крыськов make it work
+// the fixed lines are marked `Денис Крыськов was here`
+
 // This file contains public domain code put online by 袁轶君 (Yijun Yuan) 23 apr
 //  2014 at https://github.com/YijunYuan/AKS_FLINT
 
@@ -34,6 +37,7 @@ int
 AKS(fmpz_t n)
 // n must be odd in range 3..ULONG_MAX where ULONG_MAX equals 2**64-1 for amd64
 {
+ // Денис Крыськов was here - some lines deleted in view of specification
     fmpz_t temp1;fmpz_init(temp1);
  /*Step1*/
     mpz_t k;mpz_init(k);fmpz_get_mpz(k,n);
@@ -69,16 +73,23 @@ AKS(fmpz_t n)
     fmpz_mul(c,c,temp1);//c=log(n)*euler(r)
     fmpz_clear(temp1);
     fmpz_mod_poly_t e;fmpz_mod_poly_init(e,n);
+    mp_limb_t n_ui=fmpz_get_ui(n);
+    mp_limb_t r_ui=fmpz_get_ui(r);
     for(fmpz_one(a);fmpz_cmp(a,c)<=0;fmpz_add_ui(a,a,1)){
         fmpz_mod_poly_t modulo;fmpz_mod_poly_init(modulo,n);
         fmpz_mod_poly_t p     ;fmpz_mod_poly_init(p     ,n);
         fmpz_mod_poly_t q     ;fmpz_mod_poly_init(q     ,n);
-        fmpz_mod_poly_set_coeff_ui(modulo,0             ,-1);
-        fmpz_mod_poly_set_coeff_ui(modulo,fmpz_get_ui(r), 1);//modulo=x^r-1
+        fmpz_mod_poly_set_coeff_ui(modulo,0             ,n_ui-1); // Денис Крыськов was here
+        fmpz_mod_poly_set_coeff_ui(modulo,r_ui          , 1);//modulo=x^r-1
         fmpz_mod_poly_set_coeff_ui(p     ,1             , 1);
         fmpz_mod_poly_set_coeff_fmpz(p   ,0             , a);//p=x+a
-        fmpz_mod_poly_set_coeff_ui(q     ,fmpz_get_ui(n), 1);
-        fmpz_mod_poly_set_coeff_fmpz(q   ,0             , a);//q=x^n+a
+        //fmpz_mod_poly_set_coeff_ui(q     ,fmpz_get_ui(n), 1);
+        // The commented line above is not good for big n, if below fixes it
+        if(n_ui > r_ui) // Денис Крыськов was here
+         fmpz_mod_poly_set_coeff_ui(q     ,n_ui % r_ui, 1);
+        else
+         fmpz_mod_poly_set_coeff_ui(q     ,n_ui       , 1);
+        fmpz_mod_poly_set_coeff_fmpz(q   ,0             , a);//q=x^n+a or x^(n-r)+a
         fmpz_mod_poly_powmod_fmpz_binexp(p,p,n,modulo);//p=p^n mod modulo
         fmpz_mod_poly_divrem(e,q,q,modulo);//q=q mod modulo
         if(fmpz_mod_poly_equal(p,q)==0){
