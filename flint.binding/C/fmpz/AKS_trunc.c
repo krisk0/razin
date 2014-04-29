@@ -92,10 +92,7 @@ AKS(fmpz_t n)
         fmpz_mod_poly_set_coeff_fmpz(p   ,0             , a);//p=x+a
         //fmpz_mod_poly_set_coeff_ui(q     ,fmpz_get_ui(n), 1);
         // The commented line above is not good for big n, if below fixes it
-        if(n_ui > r_ui) // Денис Крыськов was here
-         fmpz_mod_poly_set_coeff_ui(q     ,n_ui % r_ui, 1);
-        else
-         fmpz_mod_poly_set_coeff_ui(q     ,n_ui       , 1);
+        fmpz_mod_poly_set_coeff_ui(q     ,n_ui % r_ui, 1);// Денис Крыськов was here
         fmpz_mod_poly_set_coeff_fmpz(q   ,0             , a);//q=x^n+a or x^(n-r)+a
         fmpz_mod_poly_powmod_fmpz_binexp(p,p,n,modulo);//p=p^n mod modulo
         fmpz_mod_poly_divrem(e,q,q,modulo);//q=q mod modulo
