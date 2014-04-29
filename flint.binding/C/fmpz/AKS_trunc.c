@@ -2,18 +2,18 @@
 // Copyright 袁轶君 (Yijun Yuan), Денис Крыськов 2014
 // Licence: public domain
 
-// original code was not working for large n, fixes by Денис Крыськов make it work
-// the fixed lines are marked `Денис Крыськов was here`
+// Original code was not working for large n, fixes by Денис Крыськов make it work
+// The fixed lines are marked `Денис Крыськов was here`
 
-// This file contains public domain code put online by 袁轶君 (Yijun Yuan) 23 apr
-//  2014 at https://github.com/YijunYuan/AKS_FLINT
+// This file contains public domain code put online by 袁轶君 23 apr 2014 at 
+//  https://github.com/YijunYuan/AKS_FLINT
 
 #include<flint/flint.h>
 #include<flint/fmpz.h>
 #include<flint/fmpz_mod_poly.h>
 #include<flint/arith.h>
-//#include<mpir.h>
-#include<stdio.h>
+//#include<mpir.h>    Денис Крыськов was here --- gmp or mpir header is included by FLINT
+//#include<stdio.h>   Денис Крыськов was here --- I/O not needed
 #include<math.h>
 
 static __inline__ void 
