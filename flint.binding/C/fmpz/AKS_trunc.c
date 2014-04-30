@@ -138,7 +138,7 @@ n must be odd in range 3..ULONG_MAX where ULONG_MAX equals 2**64-1 for amd64
  /*Step3*/
  // r_ui < 2**30
  mp_limb_t a_ui;
- for( a_ui=1; a_ui<=r_ui; a_ui++)
+ for( a_ui=3; a_ui<=r_ui; a_ui++)
   {
    c_ui=n_gcd_full( a_ui, n_ui );
    if( (c_ui > 1) && (c_ui < n_ui) )
