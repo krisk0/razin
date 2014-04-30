@@ -155,8 +155,8 @@ n must be odd in range 3..ULONG_MAX where ULONG_MAX equals 2**64-1 for amd64
  fmpz_mod_poly_t p     ; fmpz_mod_poly_init(p     ,n);
  fmpz_mod_poly_t q     ; fmpz_mod_poly_init(q     ,n);
  mp_limb_t n_modulo_r=n_ui % r_ui;
- // TODO: move more code outside loop. I won't do that since this the code is
- //  too slow
+ // TODO: move more code outside loop. I won't do that since this code is too 
+ //  slow
  for( a_ui=c_ui; a_ui--; ) 
   {
    fmpz_mod_poly_zero(p);
@@ -165,6 +165,7 @@ n must be odd in range 3..ULONG_MAX where ULONG_MAX equals 2**64-1 for amd64
    fmpz_mod_poly_zero(q);
    fmpz_mod_poly_set_coeff_ui( q, n_modulo_r, 1     );
    fmpz_mod_poly_set_coeff_ui( q,          0, a_ui  );
+   // TODO: attempt to avoid exponentation somehow
    fmpz_mod_poly_powmod_ui_binexp(p,p,n_ui,modulo);//p=p^n mod modulo
    if(fmpz_mod_poly_equal(p,q)==0)
     {
