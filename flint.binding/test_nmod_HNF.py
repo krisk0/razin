@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python2 -u
 # -*- coding: utf-8
 
 # This program is part of RAZIN
