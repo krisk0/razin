@@ -165,7 +165,7 @@ n must be odd in range 3..ULONG_MAX where ULONG_MAX equals 2**64-1 for amd64
    fmpz_mod_poly_zero(q);
    fmpz_mod_poly_set_coeff_ui( q, n_modulo_r, 1     );
    fmpz_mod_poly_set_coeff_ui( q,          0, a_ui  );
-   // TODO: attempt to avoid exponentation somehow
+   // TODO: avoid exponentation by using binomial expansion of (x+y)**n
    fmpz_mod_poly_powmod_ui_binexp(p,p,n_ui,modulo);//p=p^n mod modulo
    if(fmpz_mod_poly_equal(p,q)==0)
     {
