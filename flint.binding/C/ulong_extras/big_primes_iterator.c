@@ -32,19 +32,20 @@ trial_gcd_test_then_big_sureprime_test(mp_limb_t n)
   #else
    #define GCD n_gcd_full
   #endif
-  if( 1<GCD( n, WORD(0xF1354E62564E313) )) //7*11*13*17*19*23*29*31*37*41*
-   return 0;                                     // 43*47*53
-  if( 1<GCD( n, WORD(0x6329899EA9F2714B) ))//59*61*67*71*73*79*83*89*97
-   return 0;                                     // *101
-  if( 1<GCD( n, WORD(0x21A3907D1B750A13) ))//193*407521*299210837*103
-   return 0;
+  #define GCDt(x) if( 1<GCD( n, WORD(x) )) return 0;
+  GCDt( 0xF1354E62564E313  ) //7*11*13*17*19*23*29*31*37*41*43*47*53
+  GCDt( 0x6329899EA9F2714B ) //59*61*67*71*73*79*83*89*97*101
+  GCDt( 0x21A3907D1B750A13 ) //193*407521*299210837*103
+  // adding line below did not give any noticeable time difference
+  GCDt( 0x825F18A4856CE7FB ) //107*109*113*127*131*137*139*149*151
+  #undef GCDt
   #undef GCD
   // do MR test
   return n_is_big_sureprime(n);
  }
 
 //                0                       8          12    14
-int prevmod30[]={ 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 1, 2, 1, 2,
+int prevmod30[]={ 1, 2, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 1, 2, 1, 2,
                   3, 4, 1, 2, 1, 2, 3, 4, 1, 2, 3, 4, 5, 6 };
 //               16          20                      28
 static __inline__ void
@@ -73,8 +74,10 @@ n_primes_rev_shift(n_primes_rev_t i)
   while(1)
    {
     // curr==prime already output or even number, curr_mod_30==curr % 30
+    //printf("rev_shift(): curr=%lx\n",curr);
     mp_limb_t shi=prevmod30[ curr_mod_30 ];
     curr -= shi;
+    //printf("rev_shift(): down by %lx\n",shi);
     if(curr < MIN_n_primes_rev)
      {
       curr = 1;
