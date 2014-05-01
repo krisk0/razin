@@ -7,16 +7,15 @@ FLINT n_is_probabprime() is not very good for numbers >= 10**16
 
 The subroutine below should be better. It should test primality without errors,
  if there is no mistake on http://miller-rabin.appspot.com concerning base 
- 
- 2 325 9375 28178 450775 9780504 1795265022
+2 325 9375 28178 450775 9780504 1795265022
 */
 
 #include "is_strong_probabprime2_preinv.c"
 
-int 
+static __inline__ int 
 n_is_big_sureprime(mp_limb_t n)
 /*
-n: odd > 1795265022
+return 1 iff MR test passes for a=2 325 9375 28178 450775 9780504 1795265022
  
 if n<10**16, then n_is_probabprime() should be faster
 */
