@@ -147,3 +147,7 @@
              袁轶君, thanks for initial version. The code is terribly slow on 
              64-bit primes. I spent many hours on the code and therefore do not
              delete it
+
+01 May 2014 implemented reverse iterator on primes, which is able to re-iterate
+             at incredible speed (since it memorises primes found). On 1st run 
+             it is twice slower than FLINT n_nextprime()
