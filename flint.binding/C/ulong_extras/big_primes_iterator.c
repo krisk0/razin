@@ -44,10 +44,9 @@ trial_gcd_test_then_big_sureprime_test(mp_limb_t n)
   return n_is_big_sureprime(n);
  }
 
-//                0                       8          12    14
 int prevmod30[]={ 1, 2, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 1, 2, 1, 2,
                   3, 4, 1, 2, 1, 2, 3, 4, 1, 2, 3, 4, 5, 6 };
-//               16          20                      28
+
 static __inline__ void
 n_primes_rev_shift(n_primes_rev_t i)
 // shift state and get ready to output next number
@@ -74,10 +73,8 @@ n_primes_rev_shift(n_primes_rev_t i)
   while(1)
    {
     // curr==prime already output or even number, curr_mod_30==curr % 30
-    //printf("rev_shift(): curr=%lx\n",curr);
     mp_limb_t shi=prevmod30[ curr_mod_30 ];
     curr -= shi;
-    //printf("rev_shift(): down by %lx\n",shi);
     if(curr < MIN_n_primes_rev)
      {
       curr = 1;
