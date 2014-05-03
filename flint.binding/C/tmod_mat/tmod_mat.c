@@ -8,7 +8,7 @@
 #include "flint/fmpz.h"
 
 // Subroutines in this file are machine-dependent and known to work on amd64
-//  with GMP and FLINT ver 2.4.1
+//  with FLINT ver 2.4.1 and 2.4.3
 
 // Some code borrowed from flint nmod_mat/*.c, data layout is different
 
