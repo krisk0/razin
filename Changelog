@@ -149,5 +149,10 @@
              delete it
 
 01 May 2014 implemented reverse iterator on primes, which is able to re-iterate
-             at incredible speed (since it memorises primes found). On 1st run 
+             at incredible speed (since it memorises primes found). On first run 
              it is twice slower than FLINT n_nextprime()
+
+05 May 2014 Dana Jacobsen checked on example my calculation of bounds in AKS() 
+             subroutine, found no error. Thanks, Dana. For now I am happy with 
+             deterministic Miller-Rabin test and do not need the slow 
+             AKS().
