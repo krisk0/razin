@@ -9,6 +9,21 @@
 // Original code did not work for large n, set `c` border on stage 2 and 5 
 //  incorrectly. So I (Денис Крыськов) rewrote it
 
+/*
+This file contains Agrawal–Kayal–Saxena primality test implementation
+ 
+According to benchmarks by Dana Jacobsen, published at 
+
+https://groups.google.com/forum/#!topic/flint-devel/aZd06iHitzY
+
+my code is slower than other implementations of primality testing
+
+I however do not remove the subroutine, because
+
+1) I spent time on it
+2) I declared it on the forum 
+*/
+
 #include<flint/flint.h>
 #include<flint/fmpz.h>
 #include<flint/fmpz_mod_poly.h>
