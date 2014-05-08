@@ -16,12 +16,11 @@ According to benchmarks by Dana Jacobsen, published at
 
 https://groups.google.com/forum/#!topic/flint-devel/aZd06iHitzY
 
-my code is slower than other implementations of primality testing
+my code is slower than other implementations of primality testing.
 
 I however do not remove the subroutine, because
-
-1) I spent time on it
-2) I declared it on the forum 
+ 1) I spent time on it
+ 2) I declared it on the forum 
 */
 
 #include<flint/flint.h>
