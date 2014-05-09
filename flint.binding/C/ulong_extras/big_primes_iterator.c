@@ -40,7 +40,8 @@ trial_gcd_test_then_big_sureprime_test(mp_limb_t n)
   GCDt( 0x825F18A4856CE7FB ) //107*109*113*127*131*137*139*149*151
   #undef GCDt
   #undef GCD
-  // do MR test
+  // TODO: FLINT n_is_probabprime_BPSW() is presumably reliable enough and 
+  //  faster than n_is_big_sureprime(n)
   return n_is_big_sureprime(n);
  }
 
