@@ -52,6 +52,8 @@ Presumably n_is_big_sureprime() and n_is_probabprime_BPSW() never make
  {
   GCDt( 0xF1354E62564E313  ) //7*11*13*17*19*23*29*31*37*41*43*47*53
   GCDt( 0x6329899EA9F2714B ) //59*61*67*71*73*79*83*89*97*101
+  // adding GCDt below slows down a little, so disabling it
+  //GCDt( 0x58EDCB4C9ED39C8B ) //103*107*109*113*127*131*137*139*149
   return n_is_probabprime_BPSW(n);
  }
 
