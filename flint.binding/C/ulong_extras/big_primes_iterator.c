@@ -28,7 +28,7 @@ trial_gcd_test_then_big_sureprime_test(mp_limb_t n)
  {
   // call a suitable gcd subroutine
   #if (defined (__amd64__) || defined (__i386__) || defined (__i486__)) 
-   #define GCD n_gcd_odd_even
+   #define GCD n_gcd_odd_odd
   #else
    #define GCD n_gcd_full
   #endif
