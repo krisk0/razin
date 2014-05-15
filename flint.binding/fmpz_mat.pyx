@@ -300,6 +300,7 @@ def fmpz_triU_small_det_inverse( fmpz_mat A ):
  fmpz_triU_inverse_smallDet( Ainv, den, A.matr )
  cdef Integer r=Integer(0)
  fmpz_get_mpz( r.value, den )
+ fmpz_clear(den)
  return wrap_fmpz_mat(Ainv),r
 
 def fmpz_mat_copy( fmpz_mat a ):
