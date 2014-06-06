@@ -29,6 +29,7 @@ typedef n_primes_rev_struct n_primes_rev_t[1];
 
  #if (defined (__amd64__) || defined (__i386__) || defined (__i486__)) 
   #define GCD n_gcd_odd_odd
+  mp_limb_t n_gcd_odd_odd(mp_limb_t x,mp_limb_t y);
  #else
   #define GCD n_gcd_full
  #endif
