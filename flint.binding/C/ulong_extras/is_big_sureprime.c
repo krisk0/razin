@@ -3,10 +3,11 @@
 // Licence: GNU General Public License (GPL)
 
 /*
-FLINT n_is_probabprime() is not very good for numbers >= 10**16
+The subroutine below should do the same as FLINT n_is_probabprime()
 
-The subroutine below should be better. It should test primality without errors,
- if there is no mistake on http://miller-rabin.appspot.com concerning base 
+The two subroutines should return same result, if n_is_probabprime() never makes
+ mistakes and there is no error on http://miller-rabin.appspot.com concerning 
+ base
 2 325 9375 28178 450775 9780504 1795265022
 */
 
