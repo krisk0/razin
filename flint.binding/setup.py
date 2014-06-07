@@ -102,6 +102,7 @@ def sed_and_perl__goodbye( oN, iN ):
    r += 'λ'
   o.write( r.replace('λ','\n') )
   o.write( '/*'+tail_warning+'\n*/' )
+  o.write( '\n#undef NDEBUG\n' )
 
 sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat/nmod_mat_HNF-debug.c' )
 
