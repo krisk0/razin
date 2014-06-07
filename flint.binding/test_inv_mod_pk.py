@@ -27,12 +27,18 @@ def select_a(p,p_deg_k):
   if a % p != 0:
    return a
 
-def test_3arg(p,k):
+def real_test_3arg(p,k):
  p_deg_k = p**k
  a=select_a( p, p_deg_k )
  q=inv_3arg( a, p, k )
  if q*a % p_deg_k != 1:
   test_failed(a,p,k,q)
+
+def test_3arg(p,k):
+ real_test_3arg(p,k)
+ if k>1:
+  k=randint(1,k-1)
+  real_test_3arg(p,k)
 
 def test_6arg(p, k, p_deg_k, p_deg_k_norm, p_deg_k_inv):
  a=select_a( p, p_deg_k )
