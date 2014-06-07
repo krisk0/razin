@@ -9,28 +9,33 @@ cdef extern from 'C/fmpz/AKS_trunc.c':
  int AKS_ui(mp_limb_t n)
  int AKS(fmpz_t n)
 
-def n_is_prime_AKS(Integer n):
+def n_is_prime_AKS(n):
  'n must be odd in range 3..ULONG_MAX where ULONG_MAX equals 2**64-1 for amd64'
- cdef mp_limb_t nn=mpz_get_ui(n.value)
- return AKS_ui(nn)
+ return AKS_ui(<mp_limb_t>n)
 
 cdef extern from 'C/ulong_extras/big_primes_iterator.c':
  int n_is_big_sureprime(mp_limb_t n)
 
 cdef extern from 'C/ulong_extras/gcd_odd_.c':     # this only compiles on 
  mp_limb_t n_gcd_odd_even(mp_limb_t x,mp_limb_t y)#  AMD/Intel
+ mp_limb_t n_gcd_odd_odd(mp_limb_t x,mp_limb_t y)
+
+cdef extern from 'C/ulong_extras/inv_mod_pk.c':
+ # according to FLINT documentation mp_limb_t is same size and unsigned like 
+ #  ulong. Can't write ulong on Cython, replacing with mp_limb_t
+ mp_limb_t inv_mod_pk(mp_limb_t a,mp_limb_t p,mp_limb_t k,mp_limb_t p_deg_k,
+  mp_limb_t p_deg_k_norm,mp_limb_t p_deg_k_inv)
 
 cdef extern from 'flint/ulong_extras.h':
  int n_is_probabprime_BPSW(mp_limb_t n)
  mp_limb_t n_nextprime(mp_limb_t n, int proved)
+ mp_limb_t n_preinvert_limb(mp_limb_t n)
  
 def is_big_sureprime(n):
- cdef mp_limb_t nn=n
- return n_is_big_sureprime(nn)
+ return n_is_big_sureprime(<mp_limb_t>n)
 
 def is_probabprime_BPSW(n):
- cdef mp_limb_t nn=n
- return n_is_probabprime_BPSW(nn)
+ return n_is_probabprime_BPSW(<mp_limb_t>n)
 
 cdef extern from 'C/ulong_extras/big_primes_iterator.c':
  ctypedef struct n_primes_rev_struct:
@@ -66,6 +71,21 @@ def primes_in_range(a,b):
  n_primes_rev_clear(i)
  return r
 
+def prev_prime(a):
+ '''
+  return previous prime for a >= MIN_n_primes_rev
+  else return next prime for a-1
+ '''
+ cdef mp_limb_t n=a, p
+ if n&1:
+  n += 1
+ cdef n_primes_rev_t i
+ p=n_primes_rev_init(i,n)
+ n_primes_rev_clear(i)
+ if p>1:
+  return p
+ return n_nextprime( (<mp_limb_t>a)-1, 0)
+
 def count_primes_in_range(a,b):
  '''
   MIN_n_primes_rev <= a 
@@ -93,7 +113,7 @@ def primes_in_range_2010(a,b):
  cdef mp_limb_t aa=a, bb=b, p
  if aa & 1:
   aa -= 1
- p=n_nextprime(aa,0)
+ p=n_nextprime(aa,0)  # even though 2nd parameter proved is 0, error is unlikely
  r=dict()
  while 1:
   if p>b:
@@ -121,3 +141,19 @@ def count_primes_in_range_2010(a,b):
   r += 1
   p=n_nextprime(p,0)
  return r
+
+def inverse_mod_pk(a,p,k,p_deg_k,p_deg_k_nrm,p_deg_k_inv):
+ return inv_mod_pk(<mp_limb_t>a,<mp_limb_t>p,<mp_limb_t>k,
+  <mp_limb_t>p_deg_k,<mp_limb_t>p_deg_k_nrm,<mp_limb_t>p_deg_k_inv)
+
+def inverse_mod_pk_3arg(a,p,k):
+ cdef mp_limb_t p_deg_k = <mp_limb_t>( p**k )
+ cdef p_deg_k_nrm=p_deg_k
+ while p_deg_k_nrm<0x8000000000000000:
+  p_deg_k_nrm <<= 1
+ cdef p_deg_k_inv=n_preinvert_limb(p_deg_k_nrm)
+ return inv_mod_pk(<mp_limb_t>a,<mp_limb_t>p,<mp_limb_t>k,
+  p_deg_k,p_deg_k_nrm,p_deg_k_inv)
+
+def n_preinvert_limb_wr( n ):
+ return n_preinvert_limb(<mp_limb_t>n)
