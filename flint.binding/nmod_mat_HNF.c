@@ -457,3 +457,4 @@ Report bugs via Github mechanism or e-mail
 My e-mail is in my blog, detailed information on how to get it is close to tail
  of setup.py
 */
+#undef NDEBUG
