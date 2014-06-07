@@ -27,13 +27,14 @@ typedef struct
 n_primes_rev_struct;
 typedef n_primes_rev_struct n_primes_rev_t[1];
 
- #if (defined (__amd64__) || defined (__i386__) || defined (__i486__)) 
-  #define GCD n_gcd_odd_odd
-  mp_limb_t n_gcd_odd_odd(mp_limb_t x,mp_limb_t y);
- #else
-  #define GCD n_gcd_full
- #endif
- #define GCDt(x) if( 1<GCD( n, WORD(x) )) return 0;
+#if (defined (__amd64__) || defined (__i386__) || defined (__i486__)) 
+ #define GCD n_gcd_odd_odd
+ mp_limb_t n_gcd_odd_odd(mp_limb_t x,mp_limb_t y);
+#else
+ #define GCD n_gcd_full
+#endif
+#define GCDt(x) if( 1<GCD( n, WORD(x) )) return 0;
+
 int
 trial_gcd_test_then_big_sureprime_test(mp_limb_t n)
  {
