@@ -448,6 +448,9 @@ Return code:0
    }
  }
 
+
+#undef NDEBUG
+
 /*
 I would be greatly irritated if you tell me that the algorithms implemented in
  this file are wrong WITHOUT GIVING EXAMPLE OF INPUT DATA that make them fail
@@ -457,4 +460,3 @@ Report bugs via Github mechanism or e-mail
 My e-mail is in my blog, detailed information on how to get it is close to tail
  of setup.py
 */
-#undef NDEBUG

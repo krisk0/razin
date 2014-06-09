@@ -11,8 +11,15 @@ cdef extern from 'flint/nmod_mat.h':
  long nmod_mat_lu(long *P, nmod_mat_t A, int rank_check)
  mp_limb_t nmod_mat_det(nmod_mat_t A)
 
-cdef extern from './C/tmod_mat/tmod_mat.c':
+cdef extern from 'C/tmod_mat/tmod_mat.c':
  mp_limb_t fmpz_to_t(const fmpz_t f)
+
+cdef extern from 'C/nmod_mat/det_mod_pk.c':
+ mp_limb_t nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,mp_limb_t p_deg_k,
+  mp_limb_t k,mp_limb_t* scratch)
+
+cdef extern from 'C/nmod_mat/init_square_2arg.c':
+ void nmod_mat_init_square_2arg(nmod_mat_t mat, long dim)
 
 cdef extern from 'flint/fmpz_mat.h':
  # these two functions undocumented, as of version 2.4.1

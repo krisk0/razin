@@ -16,7 +16,7 @@ cdef extern from 'flint/flint.h':
  void fmpz_randbits(fmpz_t tgt, flint_rand_t state, mp_bitcnt_t bits)
  void fmpz_randtest(fmpz_t tgt, flint_rand_t state, mp_bitcnt_t bits)
 
-cdef extern from './C/tmod_mat/tmod_mat.c':
+cdef extern from 'C/tmod_mat/tmod_mat.c':
  ctypedef struct tmod_mat_struct:
   long r
   long c

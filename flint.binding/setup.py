@@ -101,8 +101,8 @@ def sed_and_perl__goodbye( oN, iN ):
   if r[-1] != 'λ':
    r += 'λ'
   o.write( r.replace('λ','\n') )
+  o.write( '\n#undef NDEBUG\n\n' )
   o.write( '/*'+tail_warning+'\n*/' )
-  o.write( '\n#undef NDEBUG\n' )
 
 sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat/nmod_mat_HNF-debug.c' )
 

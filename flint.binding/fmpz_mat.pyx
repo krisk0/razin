@@ -21,8 +21,11 @@ cdef extern from 'flint/fmpz_mat.h':
  int fmpz_mat_inv(fmpz_mat_t tgt, fmpz_t den, const fmpz_mat_t sou)
  void fmpz_mat_init_set(fmpz_mat_t tgt, const fmpz_mat_t src)
 
-cdef extern from './C/fmpz_mat/window_unsh.c':
+cdef extern from 'C/fmpz_mat/window_unsh.c':
  void fmpz_triU_inverse_smallDet(fmpz_mat_t T, fmpz_t d, const fmpz_mat_t S)
+
+cdef extern from 'C/fmpz_mat/det_mod_pk.c':
+ mp_limb_t fmpz_mat_det_mod_pk_3arg(fmpz_mat_t M,mp_limb_t p,mp_limb_t k)
  
 cdef class fmpz_mat:
 
@@ -307,5 +310,8 @@ def fmpz_mat_copy( fmpz_mat a ):
  cdef fmpz_mat_t c
  fmpz_mat_init_set( c, a.matr )
  return wrap_fmpz_mat(c)
+
+def det_mod_pk_3arg( fmpz_mat a, p, k ):
+ return fmpz_mat_det_mod_pk_3arg( a.matr, <mp_limb_t>p, <mp_limb_t>k )
 
 # include 'fmpz_unimodular.pyx'

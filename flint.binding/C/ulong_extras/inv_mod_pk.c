@@ -12,7 +12,8 @@
 
 #include <flint/flint.h>
 
-static mp_limb_t
+//TODO: this should be in separate file
+mp_limb_t
 n_mulmod_preinv_4arg(mp_limb_t a, mp_limb_t b, mp_limb_t n, 
                                           mp_limb_t ninv)
 //castrated FLINT subroutine n_mulmod_preinv(): norm parameter removed
