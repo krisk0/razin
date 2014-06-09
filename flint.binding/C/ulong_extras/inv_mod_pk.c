@@ -56,7 +56,8 @@ return inverse of a modulo p**t where p is odd prime and p**t < 2**64, p does
      q=(a%p_deg_k_plus_m)*r % p_deg_k_plus_m - 1;
     else
      {
-      q=n_mulmod_preinv_4arg(a,r,p_deg_t_norm,p_deg_t_inv);
+      // TODO: is it faster to use n_mulmod2_preinv() instead?
+      q=n_mulmod_preinv_4arg(a,r,p_deg_t_norm,p_deg_t_inv); 
       q = (q % p_deg_k_plus_m)-1;
      }
     q /= p_deg_k; // should divide exactly
@@ -66,7 +67,8 @@ return inverse of a modulo p**t where p is odd prime and p**t < 2**64, p does
    }
   if(k < t)
    {
-    q=(n_mulmod_preinv_4arg(a,r,p_deg_t_norm,p_deg_t_inv)-1) % p_deg_t;
+    // TODO: is it faster to use n_mulmod2_preinv() instead?
+    q=(n_mulmod_preinv_4arg(a,r,p_deg_t_norm,p_deg_t_inv)-1) % p_deg_t; //
     q /= p_deg_k; // should divide exactly
     p_deg_k_plus_m = p_deg_t / p_deg_k;
     // m < t/2 => p**m < 2**32, no overflow in next line
