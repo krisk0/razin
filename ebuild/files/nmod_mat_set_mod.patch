@@ -1,0 +1,13 @@
+diff -ur old/nmod_mat.h new/nmod_mat.h
+--- old/nmod_mat.h	2014-04-30 16:55:40.000000000 +0400
++++ new/nmod_mat.h	2014-06-09 10:38:55.877107772 +0400
+@@ -65,8 +65,8 @@
+ _nmod_mat_set_mod(nmod_mat_t mat, mp_limb_t n)
+ {
+     mat->mod.n = n;
+-    mat->mod.ninv = n_preinvert_limb(n);
+     count_leading_zeros(mat->mod.norm, n);
++    invert_limb(mat->mod.ninv, n<<mat->mod.norm);
+ }
+ 
+ /* Memory management */

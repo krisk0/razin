@@ -39,6 +39,8 @@ src_prepare() {
   -i configure
  sed -i "s:\$(DESTDIR)\$(PREFIX)/lib:\$(DESTDIR)\$(PREFIX)/$(get_libdir):g" \
   Makefile.in
+ epatch "$FILESDIR/nmod_mat_set_mod.patch" || 
+  die "_nmod_mat_set_mod patch failed"
  epatch "$FILESDIR/Abhinav_Baid__gcd.patch" || die "gcd patch failed"
 }
 
