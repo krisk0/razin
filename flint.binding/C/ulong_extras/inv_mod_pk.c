@@ -6,7 +6,7 @@
 ******************************************************************************/
 // Copyright Денис Крыськов 2014
 
-// This file contains a pieve of FLINT mulmod_preinv.c owned by W.Hart
+// This file contains a piece of FLINT mulmod_preinv.c owned by W.Hart
 
 // Licence: GNU General Public License (GPL)
 
