@@ -34,6 +34,13 @@ def real_test_3arg(p,k):
  assert q<p_deg_k
  if q*a % p_deg_k != 1:
   test_failed(a,p,k,q)
+ bigger_a=a+p_deg_k
+ co=10
+ while bigger_a<2**64 and co:
+  q_again=inv_3arg( bigger_a, p, k )
+  assert q_again==q
+  bigger_a += p_deg_k
+  co -= 1
 
 def test_3arg(p,k):
  real_test_3arg(p,k)
