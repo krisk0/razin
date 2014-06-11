@@ -84,7 +84,7 @@ def test_number(p):
  print 'max degree for %X is %X' % (p,k)
  test_3arg(p,k)
 
-sage.all.set_random_seed('20140706')
+sage.all.set_random_seed('20140607')
 
 test_number(3)
 test_number(5)
