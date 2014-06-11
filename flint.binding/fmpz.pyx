@@ -21,8 +21,6 @@ cdef extern from 'C/ulong_extras/gcd_odd_.c':     # this only compiles on
  mp_limb_t n_gcd_odd_odd(mp_limb_t x,mp_limb_t y)
 
 cdef extern from 'C/ulong_extras/inv_mod_pk.c':
- # according to FLINT documentation mp_limb_t is same size and unsigned like 
- #  ulong. Can't write ulong on Cython, replacing with mp_limb_t
  mp_limb_t inv_mod_pk(mp_limb_t a,mp_limb_t p,mp_limb_t k,mp_limb_t p_deg_k,
   mp_limb_t p_deg_k_norm,mp_limb_t p_deg_k_inv)
 
@@ -73,8 +71,8 @@ def primes_in_range(a,b):
 
 def prev_prime(a):
  '''
-  return previous prime for a >= MIN_n_primes_rev
-  else return next prime for a-1
+  return maximal prime <= a for a >= MIN_n_primes_rev
+  else return minimal prime >= a
  '''
  cdef mp_limb_t n=a, p
  if n&1:
