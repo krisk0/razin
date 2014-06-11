@@ -31,6 +31,7 @@ def real_test_3arg(p,k):
  p_deg_k = p**k
  a=select_a( p, p_deg_k )
  q=inv_3arg( a, p, k )
+ assert q<p_deg_k
  if q*a % p_deg_k != 1:
   test_failed(a,p,k,q)
 
