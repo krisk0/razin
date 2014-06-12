@@ -61,7 +61,7 @@ A1. No, I am using special rules: complex wordz such as un-shit, re-implement or
 Q2. Why Sage library is required?
 A2. Because mpz_t number need to be converted to/from a Python int, and plain Python does not support this. Therefore some Python wrapper for GMP library like gmpy, pycddlib or Sage required. Besides some fast algorithms doing certain tasks are part of Sage, which makes direct comparison possible.
 
-    It takes less than half day to install Sage into lmonade prefix environment http://www.lmona.de
+    It takes less than half day to install Sage into lmonade prefix environment, url: http://www.lmona.de
 
 Q3. Your binding to fmpq_mat is ugly
      f=flint_sage.fmpq_mat( (Integer(1), flint_sage.fmpz_mat(s)) )
