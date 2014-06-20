@@ -64,6 +64,7 @@ return inverse of a modulo p**t where p is odd prime and p**t < 2**64, p does
     q /= p_deg_k; // should divide exactly
     q = q*r % p_deg_k; // no overflow because q,r < p**k < 2**32
     r += p_deg_k * (p_deg_k-q);
+    assert(r < p_deg_t);
     k <<= 1; p_deg_k = p_deg_k_plus_m;
    }
   if(k < t)
@@ -74,7 +75,7 @@ return inverse of a modulo p**t where p is odd prime and p**t < 2**64, p does
     p_deg_k_plus_m = p_deg_t / p_deg_k;
     // m < t/2 => p**m < 2**32, no overflow in next line
     q = q * (r % p_deg_k_plus_m) % p_deg_k_plus_m;
-    r += p_deg_k*(p_deg_k_plus_m-q);
+    r = (r+p_deg_k*(p_deg_k_plus_m-q)) % p_deg_t;
    }
   return r;
  }
