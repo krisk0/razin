@@ -75,7 +75,7 @@ return inverse of a modulo p**t where p is odd prime and p**t < 2**64, p does
     p_deg_k_plus_m = p_deg_t / p_deg_k;
     // m < t/2 => p**m < 2**32, no overflow in next line
     q = q * (r % p_deg_k_plus_m) % p_deg_k_plus_m;
-    r = (r+p_deg_k*(p_deg_k_plus_m-q)) % p_deg_t;
+    r += p_deg_k*(p_deg_k_plus_m-q);
    }
-  return r;
+  return r % p_deg_t;
  }

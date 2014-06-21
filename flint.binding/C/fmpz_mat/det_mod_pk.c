@@ -21,6 +21,7 @@ modify Mmod and scrtch
  {
   _nmod_mat_set_mod(Mmod, p_deg_k);
   Mmod->mod.n <<= Mmod->mod.norm;  // make sure mod.n has higher bit set
+  Mmod->mod.norm = 0;              // now normalizer is zero
   fmpz_mat_get_nmod_mat(Mmod, M);
   return nmod_mat_det_mod_pk(Mmod,p,p_deg_k,k,scrtch);
  }
@@ -32,7 +33,12 @@ fmpz_mat_det_mod_pk_3arg(fmpz_mat_t M,mp_limb_t p,ulong k)
   mp_limb_t pk=n_pow(p,k);
   mp_limb_t* scratch;
   if(dim>4)
-   scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
+   {
+    if(dim>8)
+     scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
+    else
+     scratch=flint_malloc( 16*sizeof(mp_limb_t) );
+   }
   nmod_mat_t Mmod;
   nmod_mat_init_square_2arg(Mmod, dim);
   mp_limb_t r=fmpz_mat_det_mod_pk(M,Mmod,p,pk,k,scratch);

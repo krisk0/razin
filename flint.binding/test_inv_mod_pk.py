@@ -92,21 +92,23 @@ def test_number(p):
  print 'max degree for %X is %X' % (p,k)
  test_3arg(p,k)
 
-sage.all.set_random_seed('20140607')
-
-test_number(3)
-test_number(5)
-test_number(2**64-2)
-
-for i in range(10):
- test_serie( 1<<10 )
- test_serie( 1<<20 )
- test_serie( 1<<30 )
- test_serie( 1<<32 )
- test_serie( 1<<50 )
-
-for i in range(100):
- test_serie( 1<<63 )
- test_serie( 1<<64-1 )
-
-print '\ntest passed'
+if __name__ == "__main__":
+ sage.all.set_random_seed('20140607')
+ 
+ test_number(3)
+ test_number(5)
+ test_number(2**64-2)
+ 
+ for i in range(10):
+  test_serie( 1<<10 )
+  test_serie( 1<<20 )
+  test_serie( 1<<30 )
+  test_serie( 1<<32 )
+  test_serie( 1<<50 )
+ 
+ for i in range(100):
+  test_serie( 1<<63 )
+  test_serie( 1<<64-1 )
+ 
+ print '\ntest passed'
+ 

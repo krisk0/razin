@@ -17,6 +17,8 @@ cdef extern from 'C/tmod_mat/tmod_mat.c':
 cdef extern from 'C/nmod_mat/det_mod_pk.c':
  mp_limb_t nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,mp_limb_t p_deg_k,
   mp_limb_t k,mp_limb_t* scratch)
+ mp_limb_t det_mod_pk_fix_SE_corner(mp_limb_t* I,nmod_mat_t M,long* negate_det,
+  mp_limb_t p,mp_limb_t k,mp_limb_t p_deg_k)
 
 cdef extern from 'C/nmod_mat/init_square_2arg.c':
  void nmod_mat_init_square_2arg(nmod_mat_t mat, long dim)
@@ -236,6 +238,32 @@ def plu_modulo_prime(fmpz_mat A,Integer M):
  cdef fmpz_mat B=fmpz_mat_permute( p, A )
  free(p)
  return B,LU
+
+def test_invert_4x4_corner(fmpz_mat A,p,k):
+ '''
+ call det_mod_pk_fix_SE_corner
+ if result less than 3, return None
+ else return tuple (negate_det,determinant,Mi,M)
+ '''
+ cdef mp_limb_t pp=p
+ cdef mp_limb_t kk=k
+ cdef mp_limb_t p_deg_k = <mp_limb_t>( p**k )
+ cdef Integer p_deg_k_nrm=Integer(0)
+ mpz_set_ui( p_deg_k_nrm.value, p_deg_k )
+ while p_deg_k_nrm<0x8000000000000000:
+  p_deg_k_nrm <<= 1
+ M=nmod_mat(A,p_deg_k_nrm)
+ cdef nmod_mat Mi=nmod_mat.__new__( nmod_mat )
+ nmod_mat_init( Mi.matZn, 4, 4, p_deg_k_nrm )
+ cdef long negate_det[1]
+ negate_det[0]=0
+ cdef mp_limb_t r=det_mod_pk_fix_SE_corner(Mi.matZn.entries,M.matZn,negate_det,
+  pp,kk,p_deg_k)
+ if r<3:
+  return
+ r = (r-2) % p_deg_k
+ return negate_det[0],r,Mi.export_nonnegative_fmpz_mat().export_sage(),\
+  M.export_nonnegative_fmpz_mat().export_sage()
 
 cdef void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou):
  '''
