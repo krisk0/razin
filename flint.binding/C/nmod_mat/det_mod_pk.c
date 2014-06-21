@@ -9,7 +9,7 @@
 #include <flint/nmod_mat.h>
 #include <assert.h>
 
-#define LOUD_4x4_INVERT 1
+#define LOUD_4x4_INVERT 0
 #if LOUD_4x4_INVERT
  #define PRINTF flint_printf
  #define SHOW_0TH_COL(m,a) flint_printf("%s 0th col: %wu %wu %wu %wu %wu\n", \
@@ -663,18 +663,18 @@ when switching rows, add 1 to negate_det
   mp_limb_t r;
   // start with pivot in lower-right corner
   r=I[15]=det_mod_pk_SE_0th_row( M, negate_det, p, p_deg_k );
-  SHOW_0TH_COL("after 0th row",M)
+  SHOW_0TH_COL("after 0th row",M);
   if( 0==r )
    return det_mod_pk_examine_last_column( M, negate_det, p, p_deg_k );
   assert( r == M->rows[M->r-1][M->r-1] );
   // row 1
   if( 0==det_mod_pk_SE_1st_row( I, M, negate_det, p, k, p_deg_k ) )
    return 1;
-  SHOW_0TH_COL("after 1st row",M)
+  SHOW_0TH_COL("after 1st row",M);
   assert( M->rows[M->r-1][M->r-1] );
   r=det_mod_pk_SE_row_23( I, M, negate_det, p, k, p_deg_k );
   PRINTF("det_mod_pk_SE_row_23() result: %wu\n",r);
-  SHOW_0TH_COL("after row_23",M)
+  SHOW_0TH_COL("after row_23",M);
   if( 0==r )
    return 1;
   assert( M->rows[M->r-1][M->r-1] );

@@ -52,7 +52,7 @@ def test_1_failed( a, i, u, negate_det, mess, m ):
 
 def test_1( a, a1, p, k):
  p_deg_k=p**k
- if 1:
+ if 0:
   print 'p=%s k=%s p**k=%s' % (p,k,p_deg_k)
   print 'a=\n',a,'\n'
  rez=flint.test_invert_4x4_corner( flint.fmpz_mat(a1), p, k )
