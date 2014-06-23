@@ -69,7 +69,7 @@ def test_1( a, a1, p, k):
   iInv=i.change_ring(Zn(p_deg_k)).I
  except:
   test_1_failed( a, i, u, negate_det, 'i not invertible', p_deg_k )
- a_mod=a.change_ring(Zn(p_deg_k))
+ a_p=a.change_ring(Zn(p_deg_k))
  a_det=a.determinant() % p_deg_k
  det %= p_deg_k
  if negate_det&1:
@@ -78,21 +78,37 @@ def test_1( a, a1, p, k):
   print "good/bad determinant: %s / %s" % (a_det,det)
   test_1_failed( a, i, u, negate_det, 'bad determinant', p_deg_k )
  if u[1,0]==2 and u[2,0]==3 and u[3,0]==4 and u[4,0]==5:
-  if not iInv==a_mod:
+  if not iInv==a_p:
    print 'p**k=%s' % p_deg_k
    print 'a modulo p**k=\n',a % p_deg_k
    print "i' modulo p**k=\n",iInv % p_deg_k
    test_1_failed( a, i, u, negate_det, 'bad inverse, kind 0', p_deg_k )
  else:
-  a1h=(a1%p_deg_k).hermite_form()
+  a1_p=a1.change_ring(Zn(p_deg_k))
   for v in range(4):
    for w in range(4):
     u[1+v,1+w]=iInv[v,w]
-  uh=(u.change_ring(ZZ)%p_deg_k).hermite_form()
-  #print 'a1 hermite=\n',a1h%p_deg_k,'\n'
-  #print 'u  hermite=\n',uh%p_deg_k,'\n'
-  if a1h != uh:
-   test_1_failed( a, i, u, negate_det, 'bad inverse, kind 1', p_deg_k )
+  u_p=u.change_ring(Zn(p_deg_k))
+  try:
+   #print 'p=%s a1_p=\n' % p,a1_p
+   a_i=a1_p.I
+  except:
+   test_1_failed( a, i, u, negate_det, 'a1 is not invertible', p_deg_k )
+  v=u_p*a_i
+  if not is_permutation(v,p_deg_k):
+   print 'u=\n',u
+   test_1_failed( a, i, u, negate_det, 'a is not a row-swapped u', p_deg_k )
+
+def is_permutation(x,n):
+ d=x.determinant()
+ if d != 1 and d+1 != n:
+  return 0
+ d=x.nrows()
+ for i in range(d):
+  for j in range(d):
+   if x[i,j]>1:
+    return 0
+ return 1
 
 def grow_element( a ):
  co=10
