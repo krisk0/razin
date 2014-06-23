@@ -103,6 +103,7 @@ def is_permutation(x):
  if d != 1 and d+1 != 0:
   return 0
  d=x.nrows()
+ x=x.change_ring(ZZ)
  for i in range(d):
   for j in range(d):
    if x[i,j]>1:
