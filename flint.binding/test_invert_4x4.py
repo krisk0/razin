@@ -90,18 +90,17 @@ def test_1( a, a1, p, k):
     u[1+v,1+w]=iInv[v,w]
   u_p=u.change_ring(Zn(p_deg_k))
   try:
-   #print 'p=%s a1_p=\n' % p,a1_p
    a_i=a1_p.I
   except:
    test_1_failed( a, i, u, negate_det, 'a1 is not invertible', p_deg_k )
   v=u_p*a_i
-  if not is_permutation(v,p_deg_k):
+  if not is_permutation(v):
    print 'u=\n',u
    test_1_failed( a, i, u, negate_det, 'a is not a row-swapped u', p_deg_k )
 
-def is_permutation(x,n):
+def is_permutation(x):
  d=x.determinant()
- if d != 1 and d+1 != n:
+ if d != 1 and d+1 != 0:
   return 0
  d=x.nrows()
  for i in range(d):
