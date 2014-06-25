@@ -96,7 +96,7 @@ def test_1( a, a1, p, k):
   v=u_p*a_i
   if not is_permutation(v):
    print 'u=\n',u
-   test_1_failed( a, i, u, negate_det, 'a is not a row-swapped u', p_deg_k )
+   test_1_failed( a, i, u, negate_det, 'a1 is not a row-swapped u', p_deg_k )
 
 def is_permutation(x):
  d=x.determinant()
