@@ -171,7 +171,7 @@ return the pivot element on success, 0 on failure
    {
     if( (found=rows[i][s]) % p )
      {
-      (*negate_det)++;
+      (*negate_det) ^= 1;
       MP_PTR_SWAP( rows[s], rows[i] );
       return found;
      }
@@ -250,7 +250,7 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
      {
       if(i != dim_minus_2)
        {
-        (*negate_det)++;
+        (*negate_det) ^= 1;
         MP_PTR_SWAP( rows[i], rows[dim_minus_2] );
        }
       invM[12]=epsln; // put the pivot into SW corner of invM
@@ -348,14 +348,14 @@ return 0 on failure, det on success
   ROW_23( 0, dim_minus_3 );
   if( ok )
    {
-    (*negate_det)++;
+    (*negate_det) ^= 1;
     MP_PTR_SWAP( rows[0], rows[dim_minus_4] );
     return ok;
    }
   ROW_23( dim_minus_4, 0 );
   if( ok )
    {
-    (*negate_det)++;
+    (*negate_det) ^= 1;
     MP_PTR_SWAP( rows[0], rows[dim_minus_3] );
     return ok;
    }
@@ -366,7 +366,6 @@ return 0 on failure, det on success
     ROW_23( i, j );
     if( ok )
      {
-      //(*negate_det)+=2;                                don't need statistic
       MP_PTR_SWAP( rows[i], rows[dim_minus_4] );
       MP_PTR_SWAP( rows[j], rows[dim_minus_3] );
       return ok;
@@ -412,7 +411,7 @@ otherwise find best element, put it into lower-right corner, return 1
    }
   if(best_row != shi)
    {
-    *negate_det += 1;
+    (*negate_det) ^= 1;
     MP_PTR_SWAP( rows[best_row], rows[shi] );
    }
   return (best_row != -1);
@@ -720,7 +719,7 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,mp_limb_t p_deg_k,ulong k,
    rez=det_mod_pk_cutoff_1(M,p,p_deg_k,k,scrtch);
   else
    rez=det_mod_pk_cutoff_4(inv,M,rez-2,p,p_deg_k,k,scrtch);
-  if(negate_det & 1)
+  if(negate_det)
    rez=n_negmod(rez,p_deg_k);
   return rez;
  }
