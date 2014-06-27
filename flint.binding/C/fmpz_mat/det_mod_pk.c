@@ -5,8 +5,8 @@
 #include <flint/flint.h>
 #include <flint/fmpz_mat.h>
 #include <flint/nmod_mat.h>
-mp_limb_t nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,mp_limb_t p_deg_k,
- ulong k,mp_limb_t* scrtch);
+mp_limb_t nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,
+ mp_limb_t p_deg_k,mp_limb_t* scrtch);
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
 
 mp_limb_t
@@ -23,7 +23,7 @@ modify Mmod and scrtch
   Mmod->mod.n <<= Mmod->mod.norm;  // make sure mod.n has higher bit set
   Mmod->mod.norm = 0;              // now normalizer is zero
   fmpz_mat_get_nmod_mat(Mmod, M);
-  return nmod_mat_det_mod_pk(Mmod,p,p_deg_k,k,scrtch);
+  return nmod_mat_det_mod_pk(Mmod,p,k,p_deg_k,scrtch);
  }
 
 mp_limb_t
