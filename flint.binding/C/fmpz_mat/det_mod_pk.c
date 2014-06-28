@@ -33,12 +33,7 @@ fmpz_mat_det_mod_pk_3arg(fmpz_mat_t M,mp_limb_t p,ulong k)
   mp_limb_t pk=n_pow(p,k);
   mp_limb_t* scratch;
   if(dim>4)
-   {
-    if(dim>8)
-     scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
-    else
-     scratch=flint_malloc( 16*sizeof(mp_limb_t) );
-   }
+   scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
   nmod_mat_t Mmod;
   nmod_mat_init_square_2arg(Mmod, dim);
   mp_limb_t r=fmpz_mat_det_mod_pk(M,Mmod,p,pk,k,scratch);
