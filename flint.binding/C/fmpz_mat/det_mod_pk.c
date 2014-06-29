@@ -11,7 +11,7 @@ void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
 
 mp_limb_t
 fmpz_mat_det_mod_pk(fmpz_mat_t M,nmod_mat_t Mmod,
-           mp_limb_t p,mp_limb_t p_deg_k,ulong k,
+           mp_limb_t p,ulong k,mp_limb_t p_deg_k,
            mp_limb_t* scrtch)
 /*
 M: square of dimension >= 1
@@ -36,7 +36,7 @@ fmpz_mat_det_mod_pk_3arg(fmpz_mat_t M,mp_limb_t p,ulong k)
    scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
   nmod_mat_t Mmod;
   nmod_mat_init_square_2arg(Mmod, dim);
-  mp_limb_t r=fmpz_mat_det_mod_pk(M,Mmod,p,pk,k,scratch);
+  mp_limb_t r=fmpz_mat_det_mod_pk(M,Mmod,p,k,pk,scratch);
   nmod_mat_clear(Mmod);
   if(dim>4)
    flint_free(scratch);
