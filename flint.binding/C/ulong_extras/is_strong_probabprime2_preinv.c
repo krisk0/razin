@@ -8,7 +8,7 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-#include "flint/flint.h"
+#include <flint/flint.h>
 
 static __inline__ int
 n_is_strong_probabprime2_preinv_speedup(mp_limb_t n, mp_limb_t ninv, mp_limb_t a,
