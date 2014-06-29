@@ -9,7 +9,7 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-#include "flint/flint.h"
+#include <flint/flint.h>
 
 #if (defined (__amd64__) || defined (__i386__) || defined (__i486__)) 
 mp_limb_t
