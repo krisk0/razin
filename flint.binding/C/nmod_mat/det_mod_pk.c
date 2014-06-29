@@ -12,6 +12,7 @@
 
 #define LOUD_4x4_INVERT 0
 #define BUG_IN_cutoff_4 0
+#define DUMP_cutoff_1_CALL 0
 #if LOUD_4x4_INVERT
  #define PRINTF flint_printf
  #define SHOW_0TH_COL(m,a) flint_printf("%s 0th col: %wu %wu %wu %wu %wu\n", \
@@ -723,6 +724,9 @@ D := D-C*A'*B
 */
  {
   const slong dim_minus_1 = --M->r;
+  #if DUMP_cutoff_1_CALL
+   flint_printf("%x.",dim_minus_1);
+  #endif
   mp_limb_t** rows=M->rows;
   mp_limb_t A=rows[dim_minus_1][dim_minus_1];
   mp_limb_t t;
