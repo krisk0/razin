@@ -159,3 +159,6 @@
 
 07 Jun 2014 Hopefully fast subroutine to invert a number modulo prime power:
              inv_mod_pk(). No bounds checking as usual.
+
+29 Jun 2014 nmod_mat_det_mod_pk(): test passes. That's most difficult part
+             in determinant calculation
