@@ -20,6 +20,9 @@ cdef extern from 'C/ulong_extras/gcd_odd_.c':     # this only compiles on
  mp_limb_t n_gcd_odd_even(mp_limb_t x,mp_limb_t y)#  AMD/Intel
  mp_limb_t n_gcd_odd_odd(mp_limb_t x,mp_limb_t y)
 
+cdef extern from 'C/ulong_extras/pow.c':
+ mp_limb_t n_pow_speedup(mp_limb_t n, mp_limb_t exp)
+
 cdef extern from 'C/ulong_extras/inv_mod_pk.c':
  mp_limb_t inv_mod_pk(mp_limb_t a,mp_limb_t p,mp_limb_t k,mp_limb_t p_deg_k,
   mp_limb_t p_deg_k_norm,mp_limb_t p_deg_k_inv)
