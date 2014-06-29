@@ -5,14 +5,13 @@
 # Copyright Денис Крыськов 2014
 
 '''
-This program tests subroutine inv_mod_pk()
+This program tests subroutine nmod_mat_det_mod_pk()
 '''
 
 import sage.all
 import flint_sage as flint,sys
 
-Integer=sage.all.Integer
-WRITE=sys.stdout.write
+randint=sage.all.randint
 
 sage.all.set_random_seed('20140609')
 
@@ -30,28 +29,36 @@ def max_degree(n):
   if m>2**64:
    return k
   k += 1
- return k
 
 def test_p( dim, p ):
  p=flint.prev_prime( p )
- k=max_degree( p )
- if k>2:
-  test_pk(dim, p, 2 )
- test_pk(dim, p, k )
+ k_max=max_degree( p )
+ if k_max>1:
+  test_pk(dim, p, 1 )
+  if k_max>2:
+   test_pk(dim, p, 2 )
+   if k_max >= 4:
+    test_pk(dim, p, randint(3,k_max-1) )
+ test_pk(dim, p, k_max )
 
 def test_pk( dim, p, k ):
  p_deg_k = p**k
  for i in range(100):
-  m=sage.all.random_matrix( sage.all.ZZ, dim, x=0, y=p_deg_k-1 )
+  m=sage.all.random_matrix( sage.all.ZZ, dim, x=0, y=p_deg_k )
   dG = m.det() % p_deg_k
+  if dim>4 and 0:
+   print 'p=%s k=%s p**k=%s' % (p,k,p_deg_k)
+   print 'm=\n',m
   dB = flint.det_mod_pk_3arg( flint.fmpz_mat(m), p, k )
   if dG==dB:
    continue
+  print 'p=%s k=%s p**k=%s' % (p,k,p_deg_k)
   print 'test failed, det good/bad=%s/%s' % (dG,dB)
   print m
   assert 0
 
-for d in range(1,5):
+for d in range(1,15):
+ sys.stdout.write('%X ' % d)
  test_for_dim( d )
 
 print '\ntest passed'

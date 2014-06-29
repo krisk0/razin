@@ -8,6 +8,7 @@
 #include <flint/flint.h>
 #include <flint/nmod_mat.h>
 #include <assert.h>
+#include "../ulong_extras/ulong_extras_.h"
 
 #define LOUD_4x4_INVERT 0
 #if LOUD_4x4_INVERT
@@ -57,7 +58,7 @@
  r=ADD_mod_n( r, MUL_mod_n(a,b) );
 
 mp_limb_t
-nmod_mat_det_dim4(nmod_mat_t M)
+nmod_mat_det_dim4(const nmod_mat_t M)
 /*
 count determinant of 4x4 submatrice in upper-left corner
  
@@ -70,33 +71,34 @@ Use same algorithm as Sage:
  a = x[1]*x[4]; a-=x[0]*x[5]; b = x[11]*x[14]; b-=x[10]*x[15]; r += a*b
 */
  {
-  mp_limb_t** rows=M->rows;
-  mp_limb_t* r0=rows[0];
-  mp_limb_t* r1=rows[1];
-  mp_limb_t* r2=rows[2];
-  mp_limb_t* r3=rows[3];
-  mp_limb_t n=M->mod.n;
-  mp_limb_t i=M->mod.ninv;
+  // initialization from incompatible pointer type for next line --- why?
+  const mp_limb_t** const rows=M->rows;
+  const mp_limb_t* r0=rows[0];
+  const mp_limb_t* r1=rows[1];
+  const mp_limb_t* r2=rows[2];
+  const mp_limb_t* r3=rows[3];
+  const mp_limb_t n=M->mod.n;
+  const mp_limb_t i=M->mod.ninv;
   mp_limb_t r,a,b;
   DET_4x4
   return r;
  }
 
 mp_limb_t
-nmod_mat_det_dim4_SE(nmod_mat_t M)
+nmod_mat_det_dim4_SE(const nmod_mat_t M)
 /*
 count determinant of 4x4 submatrice in lower-right corner
 use same algorithm as nmod_mat_det_dim4()
 */
  {
   slong s=M->r-4;
-  mp_limb_t** rows=M->rows;
-  mp_limb_t* r0=rows[s]+s;
-  mp_limb_t* r1=rows[s+1]+s;
-  mp_limb_t* r2=rows[s+2]+s;
-  mp_limb_t* r3=rows[s+3]+s;
-  mp_limb_t n=M->mod.n;
-  mp_limb_t i=M->mod.ninv;
+  const mp_limb_t** const rows=M->rows;
+  const mp_limb_t* r0=rows[s]+s;
+  const mp_limb_t* r1=rows[s+1]+s;
+  const mp_limb_t* r2=rows[s+2]+s;
+  const mp_limb_t* r3=rows[s+3]+s;
+  const mp_limb_t n=M->mod.n;
+  const mp_limb_t i=M->mod.ninv;
   mp_limb_t r,a,b;
   DET_4x4
   return r;
@@ -109,14 +111,14 @@ use same algorithm as nmod_mat_det_dim4()
             n );
 
 mp_limb_t
-nmod_mat_det_dim3(nmod_mat_t A)
+nmod_mat_det_dim3(const nmod_mat_t A)
  {
-  mp_limb_t** rows=A->rows;
-  mp_limb_t* r0=rows[0];
-  mp_limb_t* r1=rows[1];
-  mp_limb_t* r2=rows[2];
-  mp_limb_t n=A->mod.n;
-  mp_limb_t i=A->mod.ninv;
+  const mp_limb_t** const rows=A->rows;
+  const mp_limb_t* r0=rows[0];
+  const mp_limb_t* r1=rows[1];
+  const mp_limb_t* r2=rows[2];
+  const mp_limb_t n=A->mod.n;
+  const mp_limb_t i=A->mod.ninv;
   mp_limb_t rez,t;
   DIM2_DET( rez, n, i, r0, r1 );
   rez=MUL( rez, r2[2], n, i );
@@ -125,17 +127,16 @@ nmod_mat_det_dim3(nmod_mat_t A)
   rez=n_submod( rez, t, n);
   DIM2_DET( t, n, i, r1, r2 );
   t=MUL( t, r0[2], n, i );
-  rez=n_addmod( rez, t, n);
-  return rez;
+  return n_addmod( rez, t, n);
  }
 
 mp_limb_t
-nmod_mat_det_dim2(nmod_mat_t A)
+nmod_mat_det_dim2(const nmod_mat_t A)
  {
-  mp_limb_t* r0=A->rows[0];
-  mp_limb_t* r1=A->rows[1];
-  mp_limb_t n=A->mod.n;
-  mp_limb_t i=A->mod.ninv;
+  const mp_limb_t* r0=A->rows[0];
+  const mp_limb_t* r1=A->rows[1];
+  const mp_limb_t n=A->mod.n;
+  const mp_limb_t i=A->mod.ninv;
   mp_limb_t rez;
   DIM2_DET( rez, n, i, r0, r1 );
   return rez;
@@ -147,11 +148,6 @@ nmod_mat_det_dim2(nmod_mat_t A)
 #undef ADD_mod_n
 #undef SUB_mod_n
 #undef DET_4x4
-
-mp_limb_t det_mod_pk_cutoff_1(nmod_mat_t M,mp_limb_t p,mp_limb_t p_deg_k,
- ulong k,mp_limb_t* scrtch);
-mp_limb_t det_mod_pk_cutoff_4(mp_limb_t* I,nmod_mat_t M,mp_limb_t SE_det,
- mp_limb_t p,mp_limb_t p_deg_k,ulong k,mp_limb_t* scrtch);
 
 static __inline__ mp_limb_t
 det_mod_pk_SE_0th_row(nmod_mat_t M,slong* negate_det,mp_limb_t p,
@@ -514,8 +510,8 @@ det_mod_pk_mul_negate_gamma_alphaINV(
 void
 det_mod_pk_mul_add_2x2(
   mp_limb_t* tgt0,mp_limb_t* tgt1,
-  mp_limb_t* rho0,mp_limb_t* rho1,
-  mp_limb_t* eta0,mp_limb_t* eta1,
+  const mp_limb_t* rho0,const mp_limb_t* rho1,
+  const mp_limb_t* eta0,const mp_limb_t* eta1,
   const nmod_t mod)
 // tgt := tgt + rho * eta
  {
@@ -683,43 +679,182 @@ when switching rows, add 1 to negate_det
   return r;
  }
 
-mp_limb_t
-nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,mp_limb_t p_deg_k,ulong k,
-                    mp_limb_t* scrtch)
+static __inline__ void
+det_mod_pk_cutoff_1(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
+  mp_limb_t* scrtch)
+/*
+divide away degree of p from C
+
+D := D-C*A'*B 
+*/
  {
-  slong negate_det=0;
-  slong dim=M->r;
-  mp_limb_t rez;
-  if(dim <= 4)
+  const slong dim_minus_1 = --M->r;
+  mp_limb_t** rows=M->rows;
+  mp_limb_t A=rows[dim_minus_1][dim_minus_1];
+  mp_limb_t t;
+  mp_limb_t* B0_ptr=rows[dim_minus_1];
+  mp_limb_t* B_ptr;
+  mp_limb_t* D_ptr;
+  slong i,j;
+  const nmod_t mod=M->mod;
+  // Divide by a power of p if necessary
+  if( 0 == A%p )
    {
-    // Use division-less algorithm
-    if(dim == 4)
-     rez = nmod_mat_det_dim4(M);
+    t=(mp_limb_t)n_remove( &A, p );
+    t=n_pow_speedup(p, t);
+    for(j=dim_minus_1;j--;)
+     rows[j][dim_minus_1] /= t;
+   }
+  A=inv_mod_pk(A,p,k,p_deg_k,mod.n,mod.ninv);
+  // scrtch[0..dim_minus_1-1] := column M[0..dim_minus_1-1][dim_minus_1]*A
+  for(j=dim_minus_1;j--;)
+   scrtch[j]=n_mulmod_preinv_4arg(rows[j][dim_minus_1],A, mod.n,mod.ninv);
+  // D := D - scrtch transposed * B
+  for(i=dim_minus_1;i--;)
+   {
+    t=scrtch[i];
+    D_ptr=rows[i];
+    B_ptr=B0_ptr;
+    for(j=dim_minus_1;j--;B_ptr++,D_ptr++)
+     D_ptr[0] = n_submod( 
+                 D_ptr[0],
+                 n_mulmod_preinv_4arg(t,B_ptr[0], mod.n,mod.ninv),
+                 mod.n);
+   }
+ }
+
+#define A_BY_B( Arow )        \
+    tgt=scrtch+Arow;              \
+    sou=Ainv+4*Arow;                 \
+    SCALAR_4(b0[0],b1[0],b2[0],b3[0]); \
+    for(j=1;j<dim_minus_4;j++)          \
+     {                                   \
+      tgt += 4;                          \
+      SCALAR_4(b0[j],b1[j],b2[j],b3[j]); \
+     }
+
+#define SCALAR_4(b_0,b_1,b_2,b_3)                     \
+ t=n_mulmod_preinv_4arg( sou[0],b_0, mod.n,mod.ninv ); \
+ t=n_addmod(                                           \
+  t,                                                   \
+  n_mulmod_preinv_4arg( sou[1],b_1, mod.n,mod.ninv ),  \
+  mod.n);                                              \
+ t=n_addmod(                                           \
+  t,                                                   \
+  n_mulmod_preinv_4arg( sou[2],b_2, mod.n,mod.ninv ),  \
+  mod.n);                                              \
+ tgt[0]=n_addmod(                                      \
+  t,                                                   \
+  n_mulmod_preinv_4arg( sou[3],b_3, mod.n,mod.ninv ),  \
+  mod.n);
+
+static __inline__ void
+det_mod_pk_cutoff_4(mp_limb_t* Ainv,nmod_mat_t M,mp_limb_t p,ulong k,
+  mp_limb_t p_deg_k,mp_limb_t* scrtch)
+/*
+D := D-C*A'*B 
+*/
+ {
+  mp_limb_t** rows=M->rows;
+  const slong dim_minus_4=( M->r -= 4);
+  const mp_limb_t* b0=rows[dim_minus_4];
+  const mp_limb_t* b1=rows[dim_minus_4+1];
+  const mp_limb_t* b2=rows[dim_minus_4+2];
+  const mp_limb_t* b3=rows[dim_minus_4+3];
+  mp_limb_t* tgt;
+  mp_limb_t* sou;
+  mp_limb_t* so2;
+  const nmod_t mod=M->mod;
+  mp_limb_t t;
+  slong i,j;
+  // scrtch := (A'*B) transposed
+  A_BY_B(0);
+  A_BY_B(1);
+  A_BY_B(2);
+  A_BY_B(3);
+  // D := D-C * scrtch transposed
+  // TODO: reduce the code so it fits one screen
+  for(i=dim_minus_4;i--;)
+   {
+    tgt=rows[i];
+    sou=tgt+dim_minus_4;
+    so2=scrtch;
+    for(j=dim_minus_4;j--;tgt++,so2 += 4)
+     {
+      t=tgt[0];
+      t=n_submod(
+       t,
+       n_mulmod_preinv_4arg( sou[0],so2[0], mod.n,mod.ninv ),
+       mod.n);
+      t=n_submod(
+       t,
+       n_mulmod_preinv_4arg( sou[1],so2[1], mod.n,mod.ninv ),
+       mod.n);
+      t=n_submod(
+       t,
+       n_mulmod_preinv_4arg( sou[2],so2[2], mod.n,mod.ninv ),
+       mod.n);
+      tgt[0]=n_submod(
+       t,
+       n_mulmod_preinv_4arg( sou[3],so2[3], mod.n,mod.ninv ),
+       mod.n);
+     }
+   }
+ }
+
+#undef A_BY_B
+#undef SCALAR_4
+
+mp_limb_t
+nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
+  mp_limb_t* scrtch)
+ {
+  slong negate_det=0,dim;
+  mp_limb_t inv[16];
+  mp_limb_t c,result=UWORD_MAX;
+  const nmod_t mod=M->mod;
+  // Reduce dimension
+  while( (dim=M->r) > 4 )
+   {
+    c=det_mod_pk_fix_SE_corner( inv, M, &negate_det, p, k, p_deg_k );
+    if(c==0)
+     return 0; // zero column
+    if(c==1)
+     {
+      c=dim-1;
+      if(result != UWORD_MAX)
+       result=n_mulmod_preinv_4arg( M->rows[c][c], result, mod.n, mod.ninv );
+      else
+       result=M->rows[c][c];
+      det_mod_pk_cutoff_1( M, p, k, p_deg_k, scrtch);
+     }
     else
      {
-      if(dim == 3)
-       rez = nmod_mat_det_dim3(M);
+      if(result != UWORD_MAX)
+       result=n_mulmod_preinv_4arg( c-2, result, mod.n, mod.ninv );
       else
-       {
-        if(dim == 2)
-         rez = nmod_mat_det_dim2(M);
-        else
-         rez = M->entries[0];
-       }
+       result=c-2;
+      det_mod_pk_cutoff_4( inv, M, p, p_deg_k, k, scrtch );
      }
-    return rez % p_deg_k;
    }
-  mp_limb_t inv[16];
-  rez=det_mod_pk_fix_SE_corner( inv, M, &negate_det, p, k, p_deg_k );
-  if(rez==0)
-   return rez;
-  printf("end of rails\n");
-  abort();
-  if(rez==1)
-   rez=det_mod_pk_cutoff_1(M,p,p_deg_k,k,scrtch);
+  // Use division-less algorithm
+  if(dim == 4)
+   c = nmod_mat_det_dim4(M);
   else
-   rez=det_mod_pk_cutoff_4(inv,M,rez-2,p,p_deg_k,k,scrtch);
+   {
+    if(dim == 3)
+     c = nmod_mat_det_dim3(M);
+    else
+     {
+      if(dim == 2)
+       c = nmod_mat_det_dim2(M);
+      else
+       c = M->entries[0];
+     }
+   }
   if(negate_det)
-   rez=n_negmod(rez,p_deg_k);
-  return rez;
+   c=n_negmod( c, mod.n );
+  if(result != UWORD_MAX)
+   c=n_mulmod_preinv_4arg( c, result, mod.n, mod.ninv );
+  return c % p_deg_k;
  }
