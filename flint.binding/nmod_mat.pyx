@@ -15,8 +15,8 @@ cdef extern from 'C/tmod_mat/tmod_mat.c':
  mp_limb_t fmpz_to_t(const fmpz_t f)
 
 cdef extern from 'C/nmod_mat/det_mod_pk.c':
- mp_limb_t nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,mp_limb_t p_deg_k,
-  mp_limb_t k,mp_limb_t* scratch)
+ mp_limb_t nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,mp_limb_t k,
+  mp_limb_t p_deg_k,mp_limb_t* scratch)
  mp_limb_t det_mod_pk_fix_SE_corner(mp_limb_t* I,nmod_mat_t M,long* negate_det,
   mp_limb_t p,mp_limb_t k,mp_limb_t p_deg_k)
 
