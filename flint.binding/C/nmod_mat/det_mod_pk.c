@@ -786,6 +786,12 @@ D := D-C*A'*B
   n_mulmod_preinv_4arg( sou[3],b_3, mod.n,mod.ninv ),  \
   mod.n);
 
+#define MUL_SUB(r, s, m0,m1)                 \
+ r=n_submod(                                  \
+  s,                                            \
+  n_mulmod_preinv_4arg( m0,m1, mod.n,mod.ninv ), \
+  mod.n);
+
 static __inline__ void
 det_mod_pk_cutoff_4(mp_limb_t* Ainv,nmod_mat_t M,mp_limb_t p,ulong k,
   mp_limb_t p_deg_k,mp_limb_t* scrtch)
@@ -805,28 +811,12 @@ D := D-B*A'*C
   const nmod_t mod=M->mod;
   mp_limb_t t;
   slong i,j;
-  #if BUG_IN_cutoff_4
-   if(dim_minus_4==1)
-    {
-     flint_printf("D = %wu\n",rows[0][0]);
-     flint_printf("B transpose = %wu %wu %wu %wu\n",
-      b0[0]%p_deg_k,b1[0]%p_deg_k,b2[0]%p_deg_k,b3[0]%p_deg_k);
-    }
-  #endif  
   // scrtch := (A'*B) transposed
   A_BY_B(0);
   A_BY_B(1);
   A_BY_B(2);
   A_BY_B(3);
-  #if BUG_IN_cutoff_4
-   if(dim_minus_4==1)
-    {
-     flint_printf("A'*B = %wu %wu %wu %wu\n",scrtch[0]%p_deg_k,
-      scrtch[1]%p_deg_k,scrtch[2]%p_deg_k,scrtch[3]%p_deg_k);
-    }
-  #endif  
-  // D := D-B * scrtch transposed
-  // TODO: reduce the code so it fits one screen
+  // D := D-C * scrtch transposed
   for(i=dim_minus_4;i--;)
    {
     tgt=rows[i];
@@ -835,44 +825,15 @@ D := D-B*A'*C
     for(j=dim_minus_4;j--;tgt++,so2 += 4)
      {
       t=tgt[0];
-      #if BUG_IN_cutoff_4
-       flint_printf("D element: %wu\n",t%p_deg_k);
-       flint_printf("multiplying %wu %wu %wu %wu by %wu %wu %wu %wu\n",
-        sou[0]%p_deg_k,sou[1]%p_deg_k,sou[2]%p_deg_k,sou[3]%p_deg_k,
-        so2[0]%p_deg_k,so2[1]%p_deg_k,so2[2]%p_deg_k,so2[3]%p_deg_k);
-      #endif
-      t=n_submod(
-       t,
-       n_mulmod_preinv_4arg( sou[0],so2[0], mod.n,mod.ninv ),
-       mod.n);
-      #if BUG_IN_cutoff_4
-       flint_printf("submul 0: %wu\n",t%p_deg_k);
-      #endif
-      t=n_submod(
-       t,
-       n_mulmod_preinv_4arg( sou[1],so2[1], mod.n,mod.ninv ),
-       mod.n);
-      #if BUG_IN_cutoff_4
-       flint_printf("submul 1: %wu\n",t%p_deg_k);
-      #endif
-      t=n_submod(
-       t,
-       n_mulmod_preinv_4arg( sou[2],so2[2], mod.n,mod.ninv ),
-       mod.n);
-      #if BUG_IN_cutoff_4
-       flint_printf("submul 2: %wu\n",t%p_deg_k);
-      #endif
-      tgt[0]=n_submod(
-       t,
-       n_mulmod_preinv_4arg( sou[3],so2[3], mod.n,mod.ninv ),
-       mod.n);
-      #if BUG_IN_cutoff_4
-       flint_printf("submul 3: %wu\n",tgt[0]%p_deg_k);
-      #endif
+      MUL_SUB(t, t, sou[0],so2[0] );
+      MUL_SUB(t, t, sou[1],so2[1] );
+      MUL_SUB(t, t, sou[2],so2[2] );
+      MUL_SUB(tgt[0], t, sou[3],so2[3] );
      }
    }
  }
 
+#undef MUL_SUB
 #undef A_BY_B
 #undef SCALAR_4
 
