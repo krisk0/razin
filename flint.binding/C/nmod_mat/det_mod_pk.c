@@ -10,6 +10,7 @@
 #include <assert.h>
 #include "../ulong_extras/ulong_extras_.h"
 
+#define NDEBUG 1
 #define LOUD_4x4_INVERT 0
 #define BUG_IN_cutoff_4 0
 #define DUMP_cutoff_1_CALL 0
@@ -227,12 +228,12 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
   const nmod_t mod=M->mod;
   const mp_limb_t alpha=invM[15];
   const mp_limb_t alpha_inv=inv_mod_pk(alpha,p,k,p_deg_k,mod.n,mod.ninv);
+  invM[0]=alpha_inv;
   const mp_limb_t betta=rows[dim_minus_1][dim_minus_2];
   const mp_limb_t alpha_inv_by_beta=n_mulmod_preinv_4arg(alpha_inv,betta,
    mod.n, mod.ninv );
   mp_limb_t* tail;
   mp_limb_t gamma,delta,epsln;
-  assert( n_mulmod_preinv_4arg(alpha,alpha_inv,mod.n,mod.ninv) % p_deg_k==1 );
   //flint_printf("p,alpha,alpha_inv=%wu,%wu,%wu\n",p,alpha,alpha_inv);
   slong i;
   for(i=dim_minus_1;i--;)
@@ -690,24 +691,31 @@ if the attempt succeeded, return 2+determinant(the corner), destroy SE
 when switching rows, add 1 to negate_det
 */
  {
-  mp_limb_t r;
+  mp_limb_t r,alpha_inv;
   // start with pivot in lower-right corner
   r=I[15]=det_mod_pk_SE_0th_row( M, negate_det, p, p_deg_k );
   SHOW_0TH_COL("after 0th row",M);
   if( 0==r )
-   return det_mod_pk_examine_last_column( M, negate_det, p, p_deg_k );
-  assert( r == M->rows[M->r-1][M->r-1] );
+   {
+    I[0]=0;
+    return det_mod_pk_examine_last_column( M, negate_det, p, p_deg_k );
+   }
   // row 1
   if( 0==det_mod_pk_SE_1st_row( I, M, negate_det, p, k, p_deg_k ) )
    return 1;
+  assert(1 == n_mulmod_preinv_4arg(I[0],M->rows[M->r-1][M->r-1], 
+   M->mod.n,M->mod.ninv) % p_deg_k);
   SHOW_0TH_COL("after 1st row",M);
-  assert( M->rows[M->r-1][M->r-1] );
+  // protect inverse of 0th pivot
+  alpha_inv=I[0];
   r=det_mod_pk_SE_row_23( I, M, negate_det, p, k, p_deg_k );
   PRINTF("det_mod_pk_SE_row_23() result: %wu\n",r);
   SHOW_0TH_COL("after row_23",M);
   if( 0==r )
-   return 1;
-  assert( M->rows[M->r-1][M->r-1] );
+   {
+    I[0]=alpha_inv;
+    return 1;
+   }
   r=2+det_mod_pk_SE_corner_det( I, M, r );
   PRINTF("det_mod_pk_SE_corner_det(): %wu\n",r-2);
   det_mod_pk_SE_4x4_invert( I, M, p, k, p_deg_k );
@@ -715,8 +723,8 @@ when switching rows, add 1 to negate_det
  }
 
 static __inline__ void
-det_mod_pk_cutoff_1(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
-  mp_limb_t* scrtch)
+det_mod_pk_cutoff_1(nmod_mat_t M,mp_limb_t alpha_inv,
+  mp_limb_t p,ulong k,mp_limb_t p_deg_k,mp_limb_t* scrtch)
 /*
 divide away degree of p from C
 
@@ -863,7 +871,17 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
        result=n_mulmod_preinv_4arg( M->rows[c][c], result, mod.n, mod.ninv );
       else
        result=M->rows[c][c];
-      det_mod_pk_cutoff_1( M, p, k, p_deg_k, scrtch);
+      assert
+       ( 
+        ( (0<inv[0]) &&
+          n_mulmod_preinv_4arg(M->rows[c][c],inv[0],mod.n,mod.ninv)
+        )
+        || 
+        ( (0==inv[0]) &&
+          (0==(M->rows[c][c])%p )
+        )
+       );
+      det_mod_pk_cutoff_1( M, inv[0], p, k, p_deg_k, scrtch);
      }
     else
      {
@@ -899,3 +917,5 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
    c=n_mulmod_preinv_4arg( c, result, mod.n, mod.ninv );
   return c % p_deg_k;
  }
+
+#undef NDEBUG
