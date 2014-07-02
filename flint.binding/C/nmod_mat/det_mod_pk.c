@@ -736,25 +736,26 @@ D := D-C*A'*B
    flint_printf("%x.",dim_minus_1);
   #endif
   mp_limb_t** rows=M->rows;
-  mp_limb_t A=rows[dim_minus_1][dim_minus_1];
-  mp_limb_t t;
   mp_limb_t* B0_ptr=rows[dim_minus_1];
+  mp_limb_t t,A;
   mp_limb_t* B_ptr;
   mp_limb_t* D_ptr;
   slong i,j;
   const nmod_t mod=M->mod;
   // Divide by a power of p if necessary
-  if( 0 == A%p )
+  if( 0 == alpha_inv )
    {
+    A=B0_ptr[dim_minus_1];
     t=(mp_limb_t)n_remove( &A, p );
     t=n_pow_speedup(p, t);
     for(j=dim_minus_1;j--;)
      rows[j][dim_minus_1] /= t;
+    alpha_inv=inv_mod_pk(A,p,k,p_deg_k,mod.n,mod.ninv);
    }
-  A=inv_mod_pk(A,p,k,p_deg_k,mod.n,mod.ninv);
   // scrtch[0..dim_minus_1-1] := column M[0..dim_minus_1-1][dim_minus_1]*A
   for(j=dim_minus_1;j--;)
-   scrtch[j]=n_mulmod_preinv_4arg(rows[j][dim_minus_1],A, mod.n,mod.ninv);
+   scrtch[j]=n_mulmod_preinv_4arg(rows[j][dim_minus_1],alpha_inv,
+    mod.n,mod.ninv);
   // D := D - scrtch transposed * B
   for(i=dim_minus_1;i--;)
    {
