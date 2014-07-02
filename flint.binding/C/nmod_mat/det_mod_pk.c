@@ -875,14 +875,14 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
       assert
        ( 
         ( (0<inv[0]) &&
-          n_mulmod_preinv_4arg(M->rows[c][c],inv[0],mod.n,mod.ninv)
+          (1==n_mulmod_preinv_4arg(M->rows[c][c],inv[0],mod.n,mod.ninv)%p_deg_k)
         )
         || 
         ( (0==inv[0]) &&
           (0==(M->rows[c][c])%p )
         )
        );
-      det_mod_pk_cutoff_1( M, inv[0], p, k, p_deg_k, scrtch);
+      det_mod_pk_cutoff_1( M, inv[0], p, k, p_deg_k, scrtch );
      }
     else
      {
