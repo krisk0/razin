@@ -26,6 +26,10 @@ cdef extern from 'C/ulong_extras/pow.c':
 cdef extern from 'C/ulong_extras/inv_mod_pk.c':
  mp_limb_t inv_mod_pk(mp_limb_t a,mp_limb_t p,mp_limb_t k,mp_limb_t p_deg_k,
   mp_limb_t p_deg_k_norm,mp_limb_t p_deg_k_inv)
+  
+cdef extern from 'C/ulong_extras/mulmod_preinv_4arg.c':
+ mp_limb_t n_mulmod_preinv_4arg(mp_limb_t a,mp_limb_t b,mp_limb_t n,
+  mp_limb_t ninv)
 
 cdef extern from 'flint/ulong_extras.h':
  int n_is_probabprime_BPSW(mp_limb_t n)
