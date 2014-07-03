@@ -124,6 +124,12 @@ cdef extern from 'flint/nmod_vec.h':
   mp_limb_t ninv
   mp_bitcnt_t norm
 
+cdef extern from 'C/ulong_extras/ulong_extras_.h':
+ ctypedef struct p_k_pk_t:
+  mp_limb_t p
+  mp_limb_t k
+  mp_limb_t p_deg_k
+
 cdef extern from 'flint/nmod_mat.h':
  ctypedef struct nmod_mat_struct:
   mp_limb_t* entries

@@ -154,8 +154,7 @@ nmod_mat_det_dim2(const nmod_mat_t A)
 #undef DET_4x4
 
 static __inline__ mp_limb_t
-det_mod_pk_SE_0th_row(nmod_mat_t M,slong* negate_det,mp_limb_t p,
-  mp_limb_t p_deg_k)
+det_mod_pk_SE_0th_row(nmod_mat_t M,slong* negate_det,mp_limb_t p)
 /*
 arrange it so M[-1,-1] is non-degenerate
 return the pivot element on success, 0 on failure
@@ -220,7 +219,7 @@ Produce result modulo M->mod.n.
 
 static __inline__ mp_limb_t 
 det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
-  mp_limb_t p,ulong k,mp_limb_t p_deg_k)
+  const p_k_pk_t pp)
 // return 1 on success  
  {
   mp_limb_t** rows=M->rows;
@@ -228,7 +227,7 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
   const mp_limb_t dim_minus_2=dim_minus_1-1;
   const nmod_t mod=M->mod;
   const mp_limb_t alpha=invM[15];
-  const mp_limb_t alpha_inv=inv_mod_pk(alpha,p,k,p_deg_k,mod.n,mod.ninv);
+  const mp_limb_t alpha_inv=inv_mod_pk_3arg(alpha,pp,mod);
   invM[0]=alpha_inv;
   const mp_limb_t betta=rows[dim_minus_1][dim_minus_2];
   const mp_limb_t alpha_inv_by_beta=n_mulmod_preinv_4arg(alpha_inv,betta,
@@ -246,7 +245,7 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
     epsln=n_mulmod_preinv_4arg( gamma, alpha_inv_by_beta, mod.n, mod.ninv );
     epsln=n_submod( delta, epsln, mod.n );
     //flint_printf("i=%ld epsilon=%wu\n",i,epsln%p_deg_k);
-    if(epsln % p)
+    if(epsln % pp.p)
      {
       if(i != dim_minus_2)
        {
@@ -254,7 +253,7 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
         MP_PTR_SWAP( rows[i], rows[dim_minus_2] );
        }
       invM[12]=epsln; // put the pivot into SW corner of invM
-      epsln=inv_mod_pk(epsln,p,k,p_deg_k,mod.n,mod.ninv);
+      epsln=inv_mod_pk_3arg(epsln,pp,mod);
       det_mod_pk_SE_2x2_invert( invM, M, alpha_inv, betta, epsln, gamma );
       return 1;
      }
@@ -303,13 +302,11 @@ delta is at sou0,sou1, gamma at sou0+2,sou1+2
  PRINTF("i=%w j=%w epsi=%wu %wu | %wu %wu\n",i,j,       \
   invM[0],invM[1],epsi1[0],epsi1[1]);                   \
  ok=SUB( MUL(invM[0],epsi1[1]), MUL(invM[1],epsi1[0]) );                     \
- PRINTF("epsi det modulo %wu = %wu\n",p,ok%p);           \
  if(0 == ok % p )                                                             \
   ok=0;
 
 static __inline__ mp_limb_t 
-det_mod_pk_SE_row_23(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
-  mp_limb_t p,ulong k,mp_limb_t p_deg_k)
+det_mod_pk_SE_row_23(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,mp_limb_t p)
 /*
 count 2x2 matrice epsilon=delta-gamma*alpha'*betta
 
@@ -380,8 +377,8 @@ return 0 on failure, det on success
 #undef ROW_23
 
 static __inline__ mp_limb_t
-det_mod_pk_examine_last_column(nmod_mat_t M,slong* negate_det,mp_limb_t p,
-  mp_limb_t p_deg_k)
+det_mod_pk_examine_last_column(nmod_mat_t M,slong* negate_det,
+  const p_k_pk_t pp)
 /*
 return 0 if last column is zero modulo p**k
 otherwise find best element, put it into lower-right corner, return 1
@@ -396,10 +393,10 @@ otherwise find best element, put it into lower-right corner, return 1
   // find less spoilt element
   for(i=dim;i--;)
    {
-    e=rows[i][shi] % p_deg_k;
+    e=rows[i][shi] % pp.p_deg_k;
     if(e)
      {
-      j=n_remove( &e, p );// TODO: maybe use n_remove2_precomp() here?
+      j=n_remove( &e, pp.p );// TODO: maybe use n_remove2_precomp() here?
       if(j<all_zero)
        {
         all_zero=j;
@@ -433,28 +430,27 @@ det_mod_pk_SE_corner_det(mp_limb_t* invM,nmod_mat_t M,mp_limb_t d)
  }
 
 void
-nmod_invert_2x2_5arg(mp_limb_t* s0,mp_limb_t* s1,const nmod_t mod,
-  mp_limb_t p,ulong k,mp_limb_t p_deg_k)
+nmod_invert_2x2(mp_limb_t* s0,mp_limb_t* s1,const nmod_t mod,const p_k_pk_t pp)
  {
   mp_limb_t delta,gamma,betta,alpha=s1[1];
   mp_limb_t epsil,zetta,theta; 
-  if(alpha % p)
+  if(alpha % pp.p)
    {
     betta=s1[0];
     delta=s0[0];
     gamma=s0[1];
-    alpha=inv_mod_pk(alpha,p,k,p_deg_k,mod.n,mod.ninv);
+    alpha=inv_mod_pk_3arg(alpha,pp,mod);
     // epsil=delta-gamma*alpha'*betta
     epsil=n_mulmod_preinv_4arg(gamma,alpha,mod.n,mod.ninv);
     epsil=n_mulmod_preinv_4arg(epsil,betta,mod.n,mod.ninv);
     epsil=n_submod(delta,epsil,mod.n);
     // zetta=-epsil'*alpha'*betta
-    s0[0]=epsil=inv_mod_pk(epsil,p,k,p_deg_k,mod.n,mod.ninv);
-    assert(epsil<p_deg_k);
-    zetta=n_mulmod_preinv_4arg(p_deg_k-epsil,alpha,mod.n,mod.ninv);
+    s0[0]=epsil=inv_mod_pk_3arg(epsil,pp,mod);
+    assert(epsil<pp.p_deg_k);
+    zetta=n_mulmod_preinv_4arg(pp.p_deg_k-epsil,alpha,mod.n,mod.ninv);
     s1[0]=zetta=n_mulmod_preinv_4arg(zetta,betta,mod.n,mod.ninv);
     // theta=gamma*alpha'
-    theta=n_mulmod_preinv_4arg(p_deg_k-alpha,gamma,mod.n,mod.ninv);
+    theta=n_mulmod_preinv_4arg(pp.p_deg_k-alpha,gamma,mod.n,mod.ninv);
     //r0[0]=epsil;
     s0[1]=n_mulmod_preinv_4arg(epsil,theta,mod.n,mod.ninv);
     //r1[0]=zetta;
@@ -467,16 +463,16 @@ nmod_invert_2x2_5arg(mp_limb_t* s0,mp_limb_t* s1,const nmod_t mod,
     gamma=s0[1];
     betta=s0[0];
     // same as above, only switch gamma<->alpha and switch cols of result
-    gamma=inv_mod_pk(gamma,p,k,p_deg_k,mod.n,mod.ninv);
+    gamma=inv_mod_pk_3arg(gamma,pp,mod);
     // epsil=delta-gamma*alpha'*betta
     epsil=n_mulmod_preinv_4arg(gamma,alpha,mod.n,mod.ninv);
     epsil=n_mulmod_preinv_4arg(epsil,betta,mod.n,mod.ninv);
     epsil=n_submod(delta,epsil,mod.n);
-    s0[1]=epsil=inv_mod_pk(epsil,p,k,p_deg_k,mod.n,mod.ninv);
-    assert(epsil<p_deg_k);
-    zetta=n_mulmod_preinv_4arg(p_deg_k-epsil,gamma,mod.n,mod.ninv);
+    s0[1]=epsil=inv_mod_pk_3arg(epsil,pp,mod);
+    assert(epsil<pp.p_deg_k);
+    zetta=n_mulmod_preinv_4arg(pp.p_deg_k-epsil,gamma,mod.n,mod.ninv);
     s1[1]=zetta=n_mulmod_preinv_4arg(zetta,betta,mod.n,mod.ninv);
-    theta=n_mulmod_preinv_4arg(p_deg_k-gamma,alpha,mod.n,mod.ninv);
+    theta=n_mulmod_preinv_4arg(pp.p_deg_k-gamma,alpha,mod.n,mod.ninv);
     //r0[0]=epsil;
     s0[0]=n_mulmod_preinv_4arg(epsil,theta,mod.n,mod.ninv);
     //r1[0]=zetta;
@@ -600,8 +596,7 @@ show_Ainv(mp_limb_t* m,mp_limb_t n)
  }
 
 static __inline__ void
-det_mod_pk_SE_4x4_invert(mp_limb_t* invM,nmod_mat_t M,mp_limb_t p,ulong k,
-  mp_limb_t p_deg_k)
+det_mod_pk_SE_4x4_invert(mp_limb_t* invM,nmod_mat_t M,const p_k_pk_t pp)
 /*
 Invert 4x4 matrice X stored at SE corner of M.
 
@@ -624,6 +619,7 @@ where zetta = -alpha'*betta*epsln', epsln=delta-gamma*alpha'*beta
 alpha' is at SE corner of invM; epsln is at NW corner of invM
 */
  {
+  #define p_deg_k pp.p_deg_k
   const nmod_t mod=M->mod;
   mp_limb_t** rows=M->rows;
   const slong dim_minus_2=M->r-2;
@@ -634,7 +630,7 @@ alpha' is at SE corner of invM; epsln is at NW corner of invM
   // NW corner of target: epsilon->epsilon'
   PRINTF("det_mod_pk_SE_4x4_invert(): epsilon =%wu %wu | %wu %wu\n",
    invM[0]%p_deg_k,invM[1]%p_deg_k,invM[4]%p_deg_k,invM[5]%p_deg_k);
-  nmod_invert_2x2_5arg(invM,invM+4,mod,p,k,p_deg_k);
+  nmod_invert_2x2(invM,invM+4,mod,pp);
   PRINTF("det_mod_pk_SE_4x4_invert(): epsilon'=%wu %wu | %wu %wu\n",
    invM[0]%p_deg_k,invM[1]%p_deg_k,invM[4]%p_deg_k,invM[5]%p_deg_k);
   // NE corner of source: gamma -> -gamma*alpha'
@@ -675,11 +671,12 @@ alpha' is at SE corner of invM; epsln is at NW corner of invM
    invM+8, invM+12,
    source_NE_0,source_NE_1,
    mod);
+  #undef p_deg_k
  }
 
 mp_limb_t
 det_mod_pk_fix_SE_corner(mp_limb_t* I,nmod_mat_t M,slong* negate_det,
- mp_limb_t p,ulong k,mp_limb_t p_deg_k)
+ const p_k_pk_t pp)
 /*
 switch rows so lower-right 4x4 corner is non-singular modulo p,
  or at least put a good element into lower-right corner
@@ -694,38 +691,38 @@ when switching rows, add 1 to negate_det
  {
   mp_limb_t r,alpha_inv;
   // start with pivot in lower-right corner
-  r=I[15]=det_mod_pk_SE_0th_row( M, negate_det, p, p_deg_k );
+  r=I[15]=det_mod_pk_SE_0th_row( M, negate_det, pp.p );
   SHOW_0TH_COL("after 0th row",M);
   if( 0==r )
    {
-    I[0]=0;
-    return det_mod_pk_examine_last_column( M, negate_det, p, p_deg_k );
+    I[0]=0; // 0th pivot not invertible
+    return det_mod_pk_examine_last_column( M, negate_det, pp );
    }
   // row 1
-  if( 0==det_mod_pk_SE_1st_row( I, M, negate_det, p, k, p_deg_k ) )
+  if( 0==det_mod_pk_SE_1st_row( I, M, negate_det, pp ) )
    return 1;
   assert(1 == n_mulmod_preinv_4arg(I[0],M->rows[M->r-1][M->r-1], 
-   M->mod.n,M->mod.ninv) % p_deg_k);
+   M->mod.n,M->mod.ninv) % pp.p_deg_k);
   SHOW_0TH_COL("after 1st row",M);
   // protect inverse of 0th pivot
   alpha_inv=I[0];
-  r=det_mod_pk_SE_row_23( I, M, negate_det, p, k, p_deg_k );
+  r=det_mod_pk_SE_row_23( I, M, negate_det, pp.p );
   PRINTF("det_mod_pk_SE_row_23() result: %wu\n",r);
   SHOW_0TH_COL("after row_23",M);
   if( 0==r )
    {
-    I[0]=alpha_inv;
+    I[0]=alpha_inv; // 0th pivot inverted
     return 1;
    }
   r=2+det_mod_pk_SE_corner_det( I, M, r );
   PRINTF("det_mod_pk_SE_corner_det(): %wu\n",r-2);
-  det_mod_pk_SE_4x4_invert( I, M, p, k, p_deg_k );
+  det_mod_pk_SE_4x4_invert( I, M, pp );
   return r;
  }
 
 static __inline__ void
-det_mod_pk_cutoff_1(nmod_mat_t M,mp_limb_t alpha_inv,
-  mp_limb_t p,ulong k,mp_limb_t p_deg_k,mp_limb_t* scrtch)
+det_mod_pk_cutoff_1(nmod_mat_t M,mp_limb_t alpha_inv,const p_k_pk_t pp,
+  mp_limb_t* scrtch)
 /*
 divide away degree of p from C
 
@@ -747,11 +744,11 @@ D := D-C*A'*B
   if( 0 == alpha_inv )
    {
     A=B0_ptr[dim_minus_1];
-    t=(mp_limb_t)n_remove( &A, p );
-    t=n_pow_speedup(p, t);
+    t=(mp_limb_t)n_remove( &A, pp.p );
+    t=n_pow_speedup(pp.p, t);
     for(j=dim_minus_1;j--;)
      rows[j][dim_minus_1] /= t;
-    alpha_inv=inv_mod_pk(A,p,k,p_deg_k,mod.n,mod.ninv);
+    alpha_inv=inv_mod_pk_3arg(A,pp,mod);
    }
   // scrtch[0..dim_minus_1-1] := column M[0..dim_minus_1-1][dim_minus_1]*A
   for(j=dim_minus_1;j--;)
@@ -803,8 +800,7 @@ D := D-C*A'*B
   mod.n);
 
 static __inline__ void
-det_mod_pk_cutoff_4(mp_limb_t* Ainv,nmod_mat_t M,mp_limb_t p,ulong k,
-  mp_limb_t p_deg_k,mp_limb_t* scrtch)
+det_mod_pk_cutoff_4(mp_limb_t* Ainv,nmod_mat_t M,mp_limb_t* scrtch)
 /*
 D := D-B*A'*C 
 */
@@ -848,9 +844,11 @@ D := D-B*A'*C
 #undef SCALAR_4
 
 mp_limb_t
-nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
-  mp_limb_t* scrtch)
+nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
  {
+  #define p pp.p
+  #define k pp.k
+  #define p_deg_k pp.p_deg_k
   slong negate_det=0,dim;
   mp_limb_t inv[16];
   mp_limb_t c,result=UWORD_MAX;
@@ -858,7 +856,7 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
   // Reduce dimension
   while( (dim=M->r) > 4 )
    {
-    c=det_mod_pk_fix_SE_corner( inv, M, &negate_det, p, k, p_deg_k );
+    c=det_mod_pk_fix_SE_corner( inv, M, &negate_det, pp );
     #if BUG_IN_cutoff_4
      flint_printf("dim=%w fix_SE_corner():%wu\n",dim,c);
      show_all_but_SE_4x4_corner(M,p_deg_k);
@@ -883,7 +881,7 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
           (0==(M->rows[c][c])%p )
         )
        );
-      det_mod_pk_cutoff_1( M, inv[0], p, k, p_deg_k, scrtch );
+      det_mod_pk_cutoff_1( M, inv[0], pp, scrtch );
      }
     else
      {
@@ -891,7 +889,7 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
        result=n_mulmod_preinv_4arg( c-2, result, mod.n, mod.ninv );
       else
        result=c-2;
-      det_mod_pk_cutoff_4( inv, M, p, k, p_deg_k, scrtch );
+      det_mod_pk_cutoff_4( inv, M, scrtch );
      }
    }
   // For small dim, use division-less algorithm
@@ -918,6 +916,9 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
   if(result != UWORD_MAX)
    c=n_mulmod_preinv_4arg( c, result, mod.n, mod.ninv );
   return c % p_deg_k;
+  #undef p
+  #undef k
+  #undef p_deg_k
  }
 
 #undef NDEBUG
