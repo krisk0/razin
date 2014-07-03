@@ -7,10 +7,11 @@
 
 #include <flint/flint.h>
 #include <flint/nmod_mat.h>
+#include "nmod_mat_.h"
 #include <assert.h>
 #include "../ulong_extras/ulong_extras_.h"
 
-#define NDEBUG 1
+#define NDEBUG 0
 #define LOUD_4x4_INVERT 0
 #define BUG_IN_cutoff_4 0
 #define DUMP_cutoff_1_CALL 0
@@ -858,8 +859,8 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
   while( (dim=M->r) > 4 )
    {
     c=det_mod_pk_fix_SE_corner( inv, M, &negate_det, p, k, p_deg_k );
-    //flint_printf("dim=%w fix_SE_corner():%wu\n",dim,c);
     #if BUG_IN_cutoff_4
+     flint_printf("dim=%w fix_SE_corner():%wu\n",dim,c);
      show_all_but_SE_4x4_corner(M,p_deg_k);
      show_Ainv(inv,p_deg_k);
     #endif
@@ -893,7 +894,7 @@ nmod_mat_det_mod_pk(nmod_mat_t M,mp_limb_t p,ulong k,mp_limb_t p_deg_k,
       det_mod_pk_cutoff_4( inv, M, p, k, p_deg_k, scrtch );
      }
    }
-  // Use division-less algorithm
+  // For small dim, use division-less algorithm
   if(dim == 4)
    c = nmod_mat_det_dim4(M);
   else
