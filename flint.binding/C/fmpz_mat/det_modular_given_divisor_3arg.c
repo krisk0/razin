@@ -77,8 +77,8 @@ fmpz_mat_det_modular_given_divisor_3arg(fmpz_t det,const fmpz_mat_t A,
   while(fmpz_cmp(prod, bound) <= 0)
    {
     divisor_inv=select_prime_and_degree( pp, Amod->mod, divisor );
-    mpz_mat_get_nmod_mat(Amod, A);
-    xmod=mod_mat_det_mod_pk(Amod,pp,scratch);
+    fmpz_mat_get_nmod_mat(Amod, A);
+    xmod=nmod_mat_det_mod_pk(Amod,pp,scratch);
     xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
     
     fmpz_CRT_ui(xnew, x, prod, xmod, pp.p_deg_k, 1);
