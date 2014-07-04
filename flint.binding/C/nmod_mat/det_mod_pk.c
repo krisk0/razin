@@ -11,7 +11,7 @@
 #include <assert.h>
 #include "../ulong_extras/ulong_extras_.h"
 
-#define NDEBUG 0
+#define NDEBUG 1
 #define LOUD_4x4_INVERT 0
 #define BUG_IN_cutoff_4 0
 #define DUMP_cutoff_1_CALL 0
@@ -846,8 +846,6 @@ D := D-B*A'*C
 mp_limb_t
 nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
  {
-  #define p pp.p
-  #define k pp.k
   #define p_deg_k pp.p_deg_k
   slong negate_det=0,dim;
   mp_limb_t inv[16];
@@ -878,7 +876,7 @@ nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
         )
         || 
         ( (0==inv[0]) &&
-          (0==(M->rows[c][c])%p )
+          (0==(M->rows[c][c])%pp.p )
         )
        );
       det_mod_pk_cutoff_1( M, inv[0], pp, scrtch );
@@ -916,8 +914,6 @@ nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
   if(result != UWORD_MAX)
    c=n_mulmod_preinv_4arg( c, result, mod.n, mod.ninv );
   return c % p_deg_k;
-  #undef p
-  #undef k
   #undef p_deg_k
  }
 
