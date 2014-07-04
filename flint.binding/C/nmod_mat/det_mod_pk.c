@@ -25,6 +25,8 @@
  #define SHOW_0TH_COL
 #endif
 
+//TODO: use better algorithm for vector dot product, in all subroutines
+
 #define MUL n_mulmod_preinv_4arg
 #define MUL_mod_n(x,y) n_mulmod_preinv_4arg(x,y,n,i)
 #define SUB_mod_n(x,y) n_submod(x,y,n)
