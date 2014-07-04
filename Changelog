@@ -162,3 +162,5 @@
 
 29 Jun 2014 nmod_mat_det_mod_pk(): test passes. That's most difficult part
              in determinant calculation
+
+04 Jul 2014 fmpz_mat_det_Kryskov(): test passes, runs slower than fmpz_mat_det()
