@@ -36,7 +36,7 @@ def test_m(m):
   dG = flint.det(a)
   dB = flint.det_20140704( a )
   if dG==dB:
-   sys.stdout.write('.')
+   #sys.stdout.write('.')
    return
   print 'test failed, det good/bad=%s/%s' % (dG,dB)
   print m
