@@ -61,7 +61,7 @@
  b=SUB_mod_n( b, MUL_mod_n( r2[2],r3[3] ) ); \
  r=ADD_mod_n( r, MUL_mod_n(a,b) );
 
-mp_limb_t
+static __inline__ mp_limb_t
 nmod_mat_det_dim4(const nmod_mat_t M)
 /*
 count determinant of 4x4 submatrice in upper-left corner
@@ -88,7 +88,7 @@ Use same algorithm as Sage:
   return r;
  }
 
-mp_limb_t
+static __inline__ mp_limb_t
 nmod_mat_det_dim4_SE(const nmod_mat_t M)
 /*
 count determinant of 4x4 submatrice in lower-right corner
@@ -114,7 +114,7 @@ use same algorithm as nmod_mat_det_dim4()
                 MUL( r0[1], r1[0], n, i ), \
             n );
 
-mp_limb_t
+static __inline__ mp_limb_t
 nmod_mat_det_dim3(const nmod_mat_t A)
  {
   const mp_limb_t** const rows=A->rows;
@@ -134,7 +134,7 @@ nmod_mat_det_dim3(const nmod_mat_t A)
   return n_addmod( rez, t, n);
  }
 
-mp_limb_t
+static __inline__ mp_limb_t
 nmod_mat_det_dim2(const nmod_mat_t A)
  {
   const mp_limb_t* r0=A->rows[0];
