@@ -14,13 +14,11 @@
 void fmpz_mat_det_modular_given_divisor_3arg(fmpz_t r,const fmpz_mat_t A,
   fmpz_t divisor);
 
-#define DECREASE_IT_FOR_DEBUGGING_PURPOSES 3
-
 void
 fmpz_mat_det_Kryskov(fmpz_t r, const fmpz_mat_t A)
  {
   slong dim = A->r;
-  if(dim < 5 - DECREASE_IT_FOR_DEBUGGING_PURPOSES)
+  if(dim < 5)
    fmpz_mat_det_cofactor(r, A);
   else
    {
