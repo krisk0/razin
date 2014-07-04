@@ -28,5 +28,3 @@ fmpz_mat_det_Kryskov(fmpz_t r, const fmpz_mat_t A)
     fmpz_clear(t);
    }
  }
-
-#undef DECREASE_IT_FOR_DEBUGGING_PURPOSES
