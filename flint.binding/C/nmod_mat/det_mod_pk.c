@@ -893,19 +893,12 @@ nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
      }
    }
   // For small dim, use division-less algorithm
-  if(dim == 4)
-   c = nmod_mat_det_dim4(M);
-  else
+  switch(dim)
    {
-    if(dim == 3)
-     c = nmod_mat_det_dim3(M);
-    else
-     {
-      if(dim == 2)
-       c = nmod_mat_det_dim2(M);
-      else
-       c = M->rows[0][0];
-     }
+    case 4 : c = nmod_mat_det_dim4(M); break;
+    case 3 : c = nmod_mat_det_dim3(M); break;
+    case 2 : c = nmod_mat_det_dim2(M); break;
+    default: c = M->rows[0][0];
    }
   #if BUG_IN_cutoff_4
    flint_printf("det_mod_pk(): negate_det=%wu result=%wu c=%wu\n",
