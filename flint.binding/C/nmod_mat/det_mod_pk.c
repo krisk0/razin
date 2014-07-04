@@ -876,7 +876,7 @@ nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
         )
         || 
         ( (0==inv[0]) &&
-          (0==(M->rows[c][c])%pp.p )
+          (0==(M->rows[c][c])%pp.p)
         )
        );
       det_mod_pk_cutoff_1( M, inv[0], pp, scrtch );
