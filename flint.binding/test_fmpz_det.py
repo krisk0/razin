@@ -17,15 +17,6 @@ ZZ=sage.all.ZZ
 
 sage.all.set_random_seed('20140704')
 
-def max_degree(n):
- k,m=1,n
- assert n>1
- while 1:
-  m *= n
-  if m>2**64:
-   return k
-  k += 1
-
 def test_for_dim( dim ):
  for i in range(100):
   m=sage.all.random_matrix( sage.all.ZZ, dim, x=0, y=100 )
