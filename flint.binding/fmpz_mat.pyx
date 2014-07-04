@@ -235,6 +235,15 @@ def det(fmpz_mat i):
  #can return either r or int(r)
  return r
 
+def det_20140704(fmpz_mat i):
+ cdef fmpz_t d
+ cdef Integer r=Integer(0)
+ fmpz_init( d )
+ fmpz_mat_det_Kryskov( d, i.matr )
+ fmpz_get_mpz( r.value, d )
+ fmpz_clear( d )
+ return r
+
 def det_modular(fmpz_mat i):
  cdef fmpz_t d
  cdef Integer r
