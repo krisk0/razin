@@ -6,7 +6,7 @@
 ******************************************************************************/
 // Copyright Денис Крыськов 2014
 
-// This file contain pieces of FLINT det*.c owned by F.Johansson
+// This file contains pieces of FLINT det*.c owned by F.Johansson
 
 // Licence: GNU General Public License (GPL)
 
