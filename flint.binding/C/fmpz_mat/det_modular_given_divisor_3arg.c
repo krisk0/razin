@@ -18,34 +18,36 @@ void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
 mp_limb_t nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
 
 static __inline__ void
-max_degree(p_k_pk_t s)
+max_degree(p_k_pk_t* s)
  {
-  mp_limb_t b=UWORD_MAX / s.p;
-  s.k=1;
-  s.p_deg_k=s.p;
-  while( s.p_deg_k <= b )
+  mp_limb_t p=s->p;
+  mp_limb_t b=UWORD_MAX / p;
+  s->k=1;
+  s->p_deg_k=p;
+  while( s->p_deg_k <= b )
    {
-    s.p_deg_k *= s.p;
-    ++s.k;
+    s->p_deg_k *= p;
+    ++s->k;
    }
-  assert( 0 == s.p_deg_k % s.p );
+  assert( 0 == s->p_deg_k % p );
  }
 
 static __inline__ mp_limb_t
-select_prime_and_degree(p_k_pk_t pp,nmod_t mod,const fmpz_t divisor)
+select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor)
  {
   mp_limb_t r,t;
   while(1)
    {
-    pp.p = n_nextprime(pp.p, 0); // in FLINT 2.4.4 this is prime
+    pp->p = n_nextprime(pp->p, 0); // in FLINT 2.4.4 this is prime
     max_degree( pp );
-    r=fmpz_fdiv_ui( divisor, pp.p_deg_k );
-    if(r % pp.p)
+    assert( pp->p_deg_k );
+    r=fmpz_fdiv_ui( divisor, pp->p_deg_k );
+    if(r % pp->p)
      {
-      count_leading_zeros( t, pp.p_deg_k );
-      mod.n = pp.p_deg_k << t;
-      mod.ninv = n_preinvert_limb(mod.n);
-      return inv_mod_pk_3arg(r,pp,mod);
+      count_leading_zeros( t, pp->p_deg_k );
+      mod->n = pp->p_deg_k << t;
+      mod->ninv = n_preinvert_limb(mod->n);
+      return inv_mod_pk_3arg(r,pp[0],mod[0]);
      }
    }
  }
@@ -76,15 +78,18 @@ fmpz_mat_det_modular_given_divisor_3arg(fmpz_t det,const fmpz_mat_t A,
 
   while(fmpz_cmp(prod, bound) <= 0)
    {
-    divisor_inv=select_prime_and_degree( pp, Amod->mod, divisor );
+    divisor_inv=select_prime_and_degree( &pp, &Amod->mod, divisor );
     fmpz_mat_get_nmod_mat(Amod, A);
     xmod=nmod_mat_det_mod_pk(Amod,pp,scratch);
-    xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
+    flint_printf("p=%wu p**k=%wu det=%wu\n",pp.p,pp.p_deg_k,xmod);
     
+    xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
+     
     fmpz_CRT_ui(xnew, x, prod, xmod, pp.p_deg_k, 1);
     fmpz_mul_ui(prod, prod, pp.p_deg_k);
     fmpz_set(x, xnew);
    }
+  fmpz_mul(det, x, divisor);
   
   nmod_mat_clear(Amod);
   fmpz_clear(xnew);
