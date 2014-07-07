@@ -168,4 +168,4 @@
 07 Jul 2014 fmpz_mat_det_Kryskov() is actually faster than FLINT fmpz_mat_det()
              for big and fat matrix. For instance, with 1000-bit entries and 
              dimension 221, my subroutine is 50% faster; the relative speed 
-             appears to monotonically grow
+             appears to monotonically grow as dimension grows
