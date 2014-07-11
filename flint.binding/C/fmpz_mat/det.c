@@ -11,11 +11,11 @@
 // Licence: GNU General Public License (GPL)
 
 #include <flint/flint.h>
-void fmpz_mat_det_modular_given_divisor_3arg(fmpz_t r,const fmpz_mat_t A,
+void fmpz_mat_det_modular_given_divisor_4block(fmpz_t r,const fmpz_mat_t A,
   fmpz_t divisor);
 
 void
-fmpz_mat_det_Kryskov(fmpz_t r, const fmpz_mat_t A)
+fmpz_mat_det_4block(fmpz_t r, const fmpz_mat_t A)
  {
   slong dim = A->r;
   if(dim < 5)
@@ -24,7 +24,7 @@ fmpz_mat_det_Kryskov(fmpz_t r, const fmpz_mat_t A)
    {
     fmpz_t t; fmpz_init(t);
     fmpz_mat_det_divisor(t, A);
-    fmpz_mat_det_modular_given_divisor_3arg(r, A, t);
+    fmpz_mat_det_modular_given_divisor_4block(r, A, t);
     fmpz_clear(t);
    }
  }

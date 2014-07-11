@@ -27,12 +27,12 @@ cdef extern from 'C/fmpz_mat/window_unsh.c':
 cdef extern from 'C/fmpz_mat/det_mod_pk.c':
  mp_limb_t fmpz_mat_det_mod_pk_3arg(fmpz_mat_t M,mp_limb_t p,mp_limb_t k)
 
-cdef extern from 'C/fmpz_mat/det_modular_given_divisor_3arg.c':
- void fmpz_mat_det_modular_given_divisor_3arg(fmpz_t det,const fmpz_mat_t A,
+cdef extern from 'C/fmpz_mat/det_modular_given_divisor_4block.c':
+ void fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   fmpz_t divisor)
 
 cdef extern from 'C/fmpz_mat/det.c':
- void fmpz_mat_det_Kryskov(fmpz_t r, const fmpz_mat_t A)
+ void fmpz_mat_det_4block(fmpz_t r, const fmpz_mat_t A)
 
 cdef class fmpz_mat:
 
@@ -239,7 +239,7 @@ def det_20140704(fmpz_mat i):
  cdef fmpz_t d
  cdef Integer r=Integer(0)
  fmpz_init( d )
- fmpz_mat_det_Kryskov( d, i.matr )
+ fmpz_mat_det_4block( d, i.matr )
  fmpz_get_mpz( r.value, d )
  fmpz_clear( d )
  return r

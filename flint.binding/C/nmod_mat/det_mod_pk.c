@@ -846,7 +846,7 @@ D := D-B*A'*C
 #undef SCALAR_4
 
 mp_limb_t
-nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
+nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
  {
   #define p_deg_k pp.p_deg_k
   slong negate_det=0,dim;

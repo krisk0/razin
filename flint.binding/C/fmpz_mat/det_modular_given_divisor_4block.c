@@ -15,7 +15,7 @@
 #include "../ulong_extras/ulong_extras_.h"
 #include <assert.h>
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
-mp_limb_t nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
+mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
 
 static __inline__ void
 max_degree(p_k_pk_t* s)
@@ -53,7 +53,7 @@ select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor)
  }
 
 void 
-fmpz_mat_det_modular_given_divisor_3arg(fmpz_t det,const fmpz_mat_t A,
+fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   fmpz_t divisor)
  {
   fmpz_t bound, prod, x, xnew;
@@ -80,7 +80,7 @@ fmpz_mat_det_modular_given_divisor_3arg(fmpz_t det,const fmpz_mat_t A,
    {
     divisor_inv=select_prime_and_degree( &pp, &Amod->mod, divisor );
     fmpz_mat_get_nmod_mat(Amod, A);
-    xmod=nmod_mat_det_mod_pk(Amod,pp,scratch);
+    xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
     xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
      
     fmpz_CRT_ui(xnew, x, prod, xmod, pp.p_deg_k, 1);

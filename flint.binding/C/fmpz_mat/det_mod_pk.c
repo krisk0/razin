@@ -6,11 +6,11 @@
 #include <flint/fmpz_mat.h>
 #include <flint/nmod_mat.h>
 
-mp_limb_t nmod_mat_det_mod_pk(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
+mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
 
 mp_limb_t
-fmpz_mat_det_mod_pk(fmpz_mat_t M,nmod_mat_t Mmod,const p_k_pk_t pp,
+fmpz_mat_det_mod_pk_4block(fmpz_mat_t M,nmod_mat_t Mmod,const p_k_pk_t pp,
   mp_limb_t* scrtch)
 /*
 M: square of dimension >= 1
@@ -22,7 +22,7 @@ modify Mmod and scrtch
   Mmod->mod.n <<= Mmod->mod.norm;  // make sure mod.n has higher bit set
   Mmod->mod.norm = 0;              // now normalizer is zero
   fmpz_mat_get_nmod_mat(Mmod, M);
-  return nmod_mat_det_mod_pk(Mmod,pp,scrtch);
+  return nmod_mat_det_mod_pk_4block(Mmod,pp,scrtch);
  }
 
 mp_limb_t
@@ -35,7 +35,7 @@ fmpz_mat_det_mod_pk_3arg(fmpz_mat_t M,mp_limb_t p,ulong k)
    scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
   nmod_mat_t Mmod;
   nmod_mat_init_square_2arg(Mmod, dim);
-  mp_limb_t r=fmpz_mat_det_mod_pk(M,Mmod,pp,scratch);
+  mp_limb_t r=fmpz_mat_det_mod_pk_4block(M,Mmod,pp,scratch);
   nmod_mat_clear(Mmod);
   if(dim>4)
    flint_free(scratch);
