@@ -14,6 +14,7 @@
 #include <flint/flint.h>
 #include "../ulong_extras/ulong_extras_.h"
 #include <assert.h>
+#define NDEBUG 1
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
 mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
 
@@ -59,7 +60,7 @@ fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   fmpz_t bound, prod, x, xnew;
   mp_limb_t xmod;
   mp_limb_t divisor_inv; // stands for n_invmod(fmpz_fdiv_ui(d, p)
-  p_k_pk_t pp; pp.p=2;
+  p_k_pk_t pp; pp.p=100;
   nmod_mat_t Amod; Amod->mod.norm=0;
   slong dim = A->r;
   mp_limb_t* scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
@@ -96,3 +97,5 @@ fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   fmpz_clear(bound);
   flint_free(scratch);
  }
+
+#undef NDEBUG
