@@ -169,3 +169,14 @@
              for big and fat matrix. For instance, with 1000-bit entries and 
              dimension 221, my subroutine is 50% faster; the relative speed 
              appears to monotonically grow as dimension grows
+
+15 Jul 2014 for bits=1000, dim=300 the pedestal looks this way:
+                  4blck  1.99e+02
+                  FLINT  3.04e+02
+             Sage padic  4.34e+02
+             Sage   NTL  Time-out
+             Sage  pari  Time-out
+ 
+            My determinant calculation is the fastest open-source subroutine
+            (for big and fat matrix)
+            
