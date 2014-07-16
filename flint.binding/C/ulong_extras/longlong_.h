@@ -1,3 +1,18 @@
+// This program is part of RAZIN
+/*
+   Copyright 1991, 1992, 1993, 1994, 1996, 1997, 1999, 2000, 2001, 2002, 2003,
+   2004, 2005 Free Software Foundation, Inc.
+
+   Copyright 2009 William Hart
+   Copyright 2011 Fredrik Johansson
+*/
+// Copyright Денис Крыськов 2014
+// Licence: GNU General Public License (GPL)
+
+// This file contains modified fragment of FLINT longlong.h, owned by W.Hart 
+//  and F.Johansson
+
+
 #ifndef LONGLONG__H
 #define LONGLONG__H
 

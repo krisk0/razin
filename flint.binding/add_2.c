@@ -1,3 +1,7 @@
+// This program is part of RAZIN
+// Copyright Денис Крыськов 2014
+// Licence: GNU General Public License (GPL)
+
 #include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
@@ -10,7 +14,7 @@
 This program tests macro add_sssaaa0aa
 
 To compile:
-gcc add_2.c -O2 -lm -IC/ulong_extras
+gcc add_2.c -march=native -O2 -lm -IC/ulong_extras
 #endif
 
 #define size 100
