@@ -80,6 +80,7 @@ fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   while(fmpz_cmp(prod, bound) <= 0)
    {
     divisor_inv=select_prime_and_degree( &pp, &Amod->mod, divisor );
+    // TODO: optimize fmpz_mat_get_nmod_mat()
     fmpz_mat_get_nmod_mat(Amod, A);
     xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
     xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
