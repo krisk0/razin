@@ -9,7 +9,7 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-// This file contains modified fragment of FLINT longlong.h, owned by W.Hart 
+// This file contains a modified fragment of FLINT longlong.h, owned by W.Hart 
 //  and F.Johansson
 
 
