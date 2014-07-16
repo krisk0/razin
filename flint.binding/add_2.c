@@ -46,7 +46,7 @@ void slow_way(uint64_t* r,uint64_t* s,uint64_t siz)
 void fast_way(uint64_t* r,uint64_t* s,uint64_t siz)
  {
   r[0]=r[1]=r[2]=0;
-  uint64_t i,j,z=0;
+  uint64_t i,j;
   for(i=0;i<siz;i++)
    {
     j=2*i;
