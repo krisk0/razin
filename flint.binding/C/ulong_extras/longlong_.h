@@ -12,12 +12,12 @@
 // This file contains a modified fragment of FLINT longlong.h, owned by W.Hart 
 //  and F.Johansson
 
-
 #ifndef LONGLONG__H
 #define LONGLONG__H
 
 #if (GMP_LIMB_BITS == 64 && defined (__amd64__))
 
+// slim version of add_sssaaaaaa macro found in FLINT longlong.h
 #define add_sssaaa0aa(sh, sm, sl, ah, am, al,    bm, bl)  \
   __asm__ ("addq %8,%q2\n\tadcq %6,%q1\n\tadcq %4,%q0"     \
        : "=r" (sh), "=r" (sm), "=&r" (sl)                  \
