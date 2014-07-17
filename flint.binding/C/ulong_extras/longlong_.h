@@ -110,7 +110,12 @@ mp_limb_t NMOD_RED3_pk_func(
  if( a_me > n )                                     \
   a_me -= n;                                       \
  NMOD_RED2_pk( a_me,a_lo, t0,t1, n,ninv); 
- 
+
+// like count_leading_zeros(), but don't define new variables
+#define count_leading_zeros_opt(count, x)                          \
+    __asm__ ("bsrq %1,%0" : "=r" (count) : "rm" ((mp_limb_t)(x)));  \
+    count ^= (mp_limb_t) 63;                               
+
 #endif
 
 #endif
