@@ -26,14 +26,18 @@ void max_degree(p_k_pk_t* s)
 // Initialize k and p_deg_k fields of argument, selecting max possible k
  {
   mp_limb_t p=s->p;
-  // TODO: get rid of division
-  mp_limb_t b=UWORD_MAX / p;
-  s->k=1;
-  s->p_deg_k=p;
-  while( s->p_deg_k <= b )
+  mp_limb_t H,L,p_deg_k=p,k=1;
+  while(1)
    {
-    s->p_deg_k *= p;
-    ++s->k;
+    umul_ppmm( H,L, p_deg_k,p );
+    if(H)
+     {
+      s->k=k;
+      s->p_deg_k=p_deg_k;
+      return;
+     }
+    ++k;
+    p_deg_k=L;
    }
  }
 
