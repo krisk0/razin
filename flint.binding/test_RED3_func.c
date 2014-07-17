@@ -11,7 +11,7 @@
 #include "C/ulong_extras/ulong_extras_.h"
 
 #if 0
-This program tests function NMOD_RED3_pk_func and macro NMOD_RED3_pk against 
+This program tests function NMOD_RED3_pk_func() and macro NMOD_RED3_pk against
  macro NMOD_RED3
 #endif
 
