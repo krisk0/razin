@@ -50,6 +50,14 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
     return (r < n ? r : r - n);
  }
 
+#define NMOD_RED2_pk( p,r, q1,q0, n,ninv ) \
+    umul_ppmm(q1, q0, ninv, p);             \
+    add_ssaaaa(q1, q0, q1, q0, p, r);       \
+    r -= (q1 + 1) * n;                      \
+    if (r >= q0)                            \
+     r += n;                                \
+    return (r < n ? r : r - n);
+ 
 static __inline__ 
 mp_limb_t NMOD_RED3_pk_func(
   mp_limb_t a_hi,mp_limb_t a_me,mp_limb_t a_lo, 
@@ -73,8 +81,13 @@ mp_limb_t NMOD_RED3_pk_func(
   // Now result equals 2**64 * a_me + a_lo modulo n
   if( a_me > mod.n )
    a_me -= mod.n;
-  r=NMOD_RED2_pk_func( a_me, a_lo, mod.n, mod.ninv );
-  return r;
+  #if 0
+   r=NMOD_RED2_pk_func( a_me,a_lo, mod.n,mod.ninv );
+   return r;
+  #else
+   NMOD_RED2_pk( a_me,a_lo, t0,t1, mod.n,mod.ninv);
+   return a_lo;
+  #endif
  }
 
 #endif
