@@ -32,16 +32,14 @@
        : "0"  (( ???                                                 \
          "1"  ((mp_limb_t)(am)), "rme" ((mp_limb_t)(bm)),  \
          "2"  ((mp_limb_t)(al)), "rme" ((mp_limb_t)(bl)))  \
-// add_sss0aa0aa untested
 */
 
 static __inline__
-mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,const nmod_t mod)
+mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
  {
-  mp_limb_t n=mod.n;
   mp_limb_t q1,q0;
 
-    umul_ppmm(q1, q0, mod.ninv, p);
+    umul_ppmm(q1, q0, ninv, p);
     add_ssaaaa(q1, q0, q1, q0, p, r);
 
     r -= (q1 + 1) * n;
@@ -75,7 +73,7 @@ mp_limb_t NMOD_RED3_pk_func(
   // Now result equals 2**64 * a_me + a_lo modulo n
   if( a_me > mod.n )
    a_me -= mod.n;
-  r=NMOD_RED2_pk_func( a_me, a_lo, mod);
+  r=NMOD_RED2_pk_func( a_me, a_lo, mod.n, mod.ninv );
   return r;
  }
 
