@@ -92,7 +92,7 @@ mp_limb_t NMOD_RED3_pk_func(
   #endif
  }
 
-// result in a_lo
+// result in a_lo. Should be faster than NMOD_RED3
 #define NMOD_RED3_pk( a_hi,a_me,a_lo, n,ninv,two_128_mod_n ) \
  mp_limb_t t0,t1;                                             \
  if(a_hi>1)                                                   \
