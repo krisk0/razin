@@ -26,6 +26,7 @@ void max_degree(p_k_pk_t* s)
 // Initialize k and p_deg_k fields of argument, selecting max possible k
  {
   mp_limb_t p=s->p;
+  // TODO: get rid of division
   mp_limb_t b=UWORD_MAX / p;
   s->k=1;
   s->p_deg_k=p;
@@ -34,6 +35,17 @@ void max_degree(p_k_pk_t* s)
     s->p_deg_k *= p;
     ++s->k;
    }
+ }
+
+static __inline__
+void init__p_k_pk__and__nmod(p_k_pk_t* s,nmod_t* m)
+// Initialize all fields of s and m, based on s->p
+ {
+  mp_limb_t t;
+  max_degree(s);
+  count_leading_zeros( t, s->p_deg_k );
+  m->n = s->p_deg_k << t;
+  m->ninv = n_preinvert_limb(m->n);
  }
 
 #endif
