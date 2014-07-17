@@ -50,13 +50,15 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
     return (r < n ? r : r - n);
  }
 
+// result in r
 #define NMOD_RED2_pk( p,r, q1,q0, n,ninv ) \
     umul_ppmm(q1, q0, ninv, p);             \
     add_ssaaaa(q1, q0, q1, q0, p, r);       \
     r -= (q1 + 1) * n;                      \
     if (r >= q0)                            \
      r += n;                                \
-    return (r < n ? r : r - n);
+    if(r>=n)                                \
+     r -= n;
  
 static __inline__ 
 mp_limb_t NMOD_RED3_pk_func(
@@ -89,6 +91,8 @@ mp_limb_t NMOD_RED3_pk_func(
    return a_lo;
   #endif
  }
+
+//#define NMOD_RED3_pk( 
 
 #endif
 
