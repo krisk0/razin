@@ -47,7 +47,7 @@ int main()
  {
   flint_randinit(st);
   test_prime(3);
-  test_prime(5);
+  //test_prime(5);     5 will be tested for i=2
   test_prime(0xFFFFFFFFFFFFFFC5);
   slong i;
   mp_limb_t one=1;
