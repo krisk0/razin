@@ -20,6 +20,7 @@ void
 test_prime(mp_limb_t p)
  {
   p_k_pk_t P;
+  P.p=p;
   nmod_t M0,M1;
   init__p_k_pk__and__nmod( &P, &M0 );
   memcpy( &M1, &M0, sizeof(M1) );
