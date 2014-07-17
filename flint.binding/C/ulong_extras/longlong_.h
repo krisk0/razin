@@ -52,13 +52,15 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
 
 // result in r
 #define NMOD_RED2_pk( p,r, q1,q0, n,ninv ) \
+ {                                          \
     umul_ppmm(q1, q0, ninv, p);             \
     add_ssaaaa(q1, q0, q1, q0, p, r);       \
     r -= (q1 + 1) * n;                      \
     if (r >= q0)                            \
      r += n;                                \
     if(r>=n)                                \
-     r -= n;
+     r -= n;                                \
+ }
  
 static __inline__ 
 mp_limb_t NMOD_RED3_pk_func(
@@ -94,27 +96,31 @@ mp_limb_t NMOD_RED3_pk_func(
 
 // result in a_lo. Should be faster than NMOD_RED3
 #define NMOD_RED3_pk( a_hi,a_me,a_lo, n,ninv,two_128_mod_n ) \
- mp_limb_t t0,t1;                                             \
- if(a_hi>1)                                                   \
-  {                                                           \
-   umul_ppmm( t0,t1, two_128_mod_n, a_hi );                   \
-   a_hi=0;                                                   \
-   add_sssaaa0aa( a_hi,a_me,a_lo, a_hi,a_me,a_lo, t0,t1 );  \
-  }                                                        \
- if( a_hi )                                               \
-  {                                                      \
-   if( a_me > n )                                       \
+ {                                                            \
+  mp_limb_t t0,t1;                                             \
+  if(a_hi>1)                                                   \
+   {                                                           \
+    umul_ppmm( t0,t1, two_128_mod_n, a_hi );                   \
+    a_hi=0;                                                   \
+    add_sssaaa0aa( a_hi,a_me,a_lo, a_hi,a_me,a_lo, t0,t1 );  \
+   }                                                        \
+  if( a_hi )                                               \
+   {                                                      \
+    if( a_me > n )                                       \
+     a_me -= n;                                         \
     a_me -= n;                                         \
-   a_me -= n;                                         \
-  }                                                  \
- if( a_me > n )                                     \
-  a_me -= n;                                       \
- NMOD_RED2_pk( a_me,a_lo, t0,t1, n,ninv); 
+   }                                                  \
+  if( a_me > n )                                     \
+   a_me -= n;                                       \
+  NMOD_RED2_pk( a_me,a_lo, t0,t1, n,ninv);        \
+ }
 
 // like count_leading_zeros(), but don't define new variables
 #define count_leading_zeros_opt(count, x)                          \
+   {                                                                \
     __asm__ ("bsrq %1,%0" : "=r" (count) : "rm" ((mp_limb_t)(x)));  \
-    count ^= (mp_limb_t) 63;                               
+    count ^= (mp_limb_t) 63;                                       \
+   }
 
 #endif
 
