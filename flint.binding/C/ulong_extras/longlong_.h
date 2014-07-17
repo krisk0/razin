@@ -56,7 +56,7 @@ mp_limb_t NMOD_RED3_pk_func(
   const nmod_t mod, 
   mp_limb_t two_128_mod_n)
  {
-  mp_limb_t t0,t1,t2,t3,r;
+  mp_limb_t t0,t1,r;
   if(a_hi>1)
    {
     umul_ppmm( t0,t1, two_128_mod_n, a_hi );
