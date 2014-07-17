@@ -18,21 +18,6 @@
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
 mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
 
-static __inline__ void
-max_degree(p_k_pk_t* s)
- {
-  mp_limb_t p=s->p;
-  mp_limb_t b=UWORD_MAX / p;
-  s->k=1;
-  s->p_deg_k=p;
-  while( s->p_deg_k <= b )
-   {
-    s->p_deg_k *= p;
-    ++s->k;
-   }
-  assert( 0 == s->p_deg_k % p );
- }
-
 static __inline__ mp_limb_t
 select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor)
  {
