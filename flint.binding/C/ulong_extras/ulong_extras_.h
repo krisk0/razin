@@ -7,11 +7,16 @@
 
 #include <flint/nmod_vec.h>
 
+#define SPEEDUP_NMOD_RED3 1
+
 typedef struct
  {
    mp_limb_t p;
    ulong k;
    mp_limb_t p_deg_k;
+   #if SPEEDUP_NMOD_RED3
+    mp_limb_t two_128_mod_n;
+   #endif
  } p_k_pk_t;
 
 mp_limb_t n_pow_speedup(mp_limb_t n, ulong exp);
@@ -50,6 +55,10 @@ void init__p_k_pk__and__nmod(p_k_pk_t* s,nmod_t* m)
   count_leading_zeros( t, s->p_deg_k );
   m->n = s->p_deg_k << t;
   m->ninv = n_preinvert_limb(m->n);
+  #if SPEEDUP_NMOD_RED3
+   t = - m->n;
+   m->norm = n_mulmod_preinv_4arg( t,t, m->n,m->ninv );
+  #endif
  }
 
 #endif
