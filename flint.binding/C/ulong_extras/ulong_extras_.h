@@ -21,8 +21,8 @@ mp_limb_t inv_mod_pk(mp_limb_t a,mp_limb_t p,ulong t,
   mp_limb_t p_deg_t,mp_limb_t p_deg_t_norm,mp_limb_t p_deg_t_inv);
 mp_limb_t inv_mod_pk_3arg(mp_limb_t a,const p_k_pk_t pp,const nmod_t nn);
 
-static __inline__ void
-max_degree(p_k_pk_t* s)
+static __inline__
+void max_degree(p_k_pk_t* s)
 // Initialize k and p_deg_k fields of argument, selecting max possible k
  {
   mp_limb_t p=s->p;
