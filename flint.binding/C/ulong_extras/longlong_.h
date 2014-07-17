@@ -92,8 +92,25 @@ mp_limb_t NMOD_RED3_pk_func(
   #endif
  }
 
-//#define NMOD_RED3_pk( 
-
+// result in a_lo
+#define NMOD_RED3_pk( a_hi,a_me,a_lo, n,ninv,two_128_mod_n ) \
+ mp_limb_t t0,t1;                                             \
+ if(a_hi>1)                                                   \
+  {                                                           \
+   umul_ppmm( t0,t1, two_128_mod_n, a_hi );                   \
+   a_hi=0;                                                   \
+   add_sssaaa0aa( a_hi,a_me,a_lo, a_hi,a_me,a_lo, t0,t1 );  \
+  }                                                        \
+ if( a_hi )                                               \
+  {                                                      \
+   if( a_me > n )                                       \
+    a_me -= n;                                         \
+   a_me -= n;                                         \
+  }                                                  \
+ if( a_me > n )                                     \
+  a_me -= n;                                       \
+ NMOD_RED2_pk( a_me,a_lo, t0,t1, n,ninv); 
+ 
 #endif
 
 #endif
