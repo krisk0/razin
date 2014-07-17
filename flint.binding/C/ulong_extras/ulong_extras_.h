@@ -51,7 +51,7 @@ void init__p_k_pk__and__nmod(p_k_pk_t* s,nmod_t* m)
   max_degree(s);
   count_leading_zeros( t, s->p_deg_k );
   m->n = s->p_deg_k << t;
-  m->ninv = n_preinvert_limb(m->n);
+  invert_limb(m->ninv, m->n);
   #if SPEEDUP_NMOD_RED3
    t = - m->n;
    m->norm = n_mulmod_preinv_4arg( t,t, m->n,m->ninv );
