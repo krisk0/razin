@@ -51,7 +51,10 @@ int main()
   test_prime(0xFFFFFFFFFFFFFFC5);
   slong i;
   mp_limb_t one=1;
-  for(i=3;i<63;i++)
-   test_prime( n_nextprime( one << i, 0) );
+  for(i=2;i<63;i++)
+   {
+    test_prime( n_nextprime( one << i,         0) );
+    test_prime( n_nextprime( n_randbits(st,i), 0) );
+   }
   flint_printf("Test passed\n");
  }
