@@ -3,14 +3,15 @@
    Copyright 1991, 1992, 1993, 1994, 1996, 1997, 1999, 2000, 2001, 2002, 2003,
    2004, 2005 Free Software Foundation, Inc.
 
-   Copyright 2009 William Hart
+   Copyright 2009, 2010, 2012 William Hart
    Copyright 2011 Fredrik Johansson
 */
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL) version 2.1 or later
 
 // This file contains a modified fragment of FLINT longlong.h, owned by W.Hart 
-//  and F.Johansson
+//  and F.Johansson, and a modified fragment of FLINT mulmod_preinv.c, owned by
+//  W.Hart
 
 #ifndef LONGLONG__H
 #define LONGLONG__H
@@ -36,18 +37,16 @@
 
 static __inline__
 mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
+// this function is a piece of n_mulmod_preinv_4arg() which is a modification
+//  of FLINT n_mulmod_preinv()
  {
   mp_limb_t q1,q0;
-
-    umul_ppmm(q1, q0, ninv, p);
-    add_ssaaaa(q1, q0, q1, q0, p, r);
-
-    r -= (q1 + 1) * n;
-
-    if (r >= q0)
-     r += n;
-
-    return (r < n ? r : r - n);
+  umul_ppmm(q1, q0, ninv, p);
+  add_ssaaaa(q1, q0, q1, q0, p, r);
+  r -= (q1 + 1) * n;
+  if (r >= q0)
+   r += n;
+  return (r < n ? r : r - n);
  }
 
 // result in r
