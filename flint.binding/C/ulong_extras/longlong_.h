@@ -26,16 +26,12 @@
        : "=r" (sh), "=r" (sm), "=&r" (sl)                  \
        : "0"  ((mp_limb_t)(ah)), "N"   (0x0),              \
          "1"  ((mp_limb_t)(am)), "rme" ((mp_limb_t)(bm)),  \
-         "2"  ((mp_limb_t)(al)), "rme" ((mp_limb_t)(bl)))  \
+         "2"  ((mp_limb_t)(al)), "rme" ((mp_limb_t)(bl)))  
 
-/*
-#define add_sss0aa0aa(sh, sm, sl,     am, al,    bm, bl)  \
-  __asm__ ("addq %6,%q2\n\tadcq %4,%q1\n\tadcq $0x0,%q0"     \
-       : "=r" (sh), "=&r" (sm), "=&r" (sl)                  \
-       : "0"  (( ???                                                 \
-         "1"  ((mp_limb_t)(am)), "rme" ((mp_limb_t)(bm)),  \
-         "2"  ((mp_limb_t)(al)), "rme" ((mp_limb_t)(bl)))  \
-*/
+#define add_sssaa(sh, sm, sl,                bm, bl)  \
+  __asm__ ("addq %4,%q2\n\tadcq %3,%q1\n\tadcq $0x0,%q0"    \
+       : "+r" (sh), "+r" (sm), "+r" (sl)                      \
+       : "rme" ((mp_limb_t)(bm)), "rme" ((mp_limb_t)(bl))) 
 
 static __inline__
 mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)

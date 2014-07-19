@@ -11,7 +11,7 @@
 #include "longlong_.h"
 
 #if 0
-This program tests macro add_sssaaa0aa
+This program tests macro add_sssaaa0aa and add_sssaa
 
 To compile:
 gcc add_2.c -march=native -O2 -lm -IC/ulong_extras
@@ -21,6 +21,7 @@ gcc add_2.c -march=native -O2 -lm -IC/ulong_extras
 uint64_t A[size];
 uint64_t R0[3];
 uint64_t R1[3];
+uint64_t R2[3];
 
 void 
 random_fill(uint64_t* t,uint64_t siz,uint64_t seed)
@@ -58,6 +59,17 @@ void fast_way(uint64_t* r,uint64_t* s,uint64_t siz)
    }
  }
 
+void fazt_way(uint64_t* r,uint64_t* s,uint64_t siz)
+ {
+  r[0]=r[1]=r[2]=0;
+  uint64_t i,j;
+  for(i=0;i<siz;i++)
+   {
+    j=2*i;
+    add_sssaa    ( r[2],r[1],r[0],                    s[j], s[j+1] );
+   }
+ }
+
 int main()
  {
   int i;
@@ -67,6 +79,9 @@ int main()
     slow_way(R0,A,size/2);
     fast_way(R1,A,size/2);
     if( (R0[0] != R1[0]) || (R0[1] != R1[1]) || (R0[2] != R1[2]) )
+     assert(0);
+    fazt_way(R2,A,size/2);
+    if( (R0[0] != R2[0]) || (R0[1] != R2[1]) || (R0[2] != R2[2]) )
      assert(0);
    }
   printf("Test passed\n");
