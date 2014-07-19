@@ -120,20 +120,19 @@ mp_limb_t NMOD_RED3_pk_func(
    }
 
 #if 0
-
 z=n_addmod(x,y,n) unrolls into 7 lines without branches:
 
-                                       %r12 = n
-                                       %rbp = x
-                                       %rbx = y
+                         %r12 = n
+                         %rbp = x
+                         %rbx = y
 
-  40063a:	4c 89 e0             	mov    %r12,%rax      rax=n
-  40063d:	48 29 d8             	sub    %rbx,%rax      rax=n-y
-  400640:	48 01 eb             	add    %rbp,%rbx      rbx=x+y
-  400643:	48 89 de             	mov    %rbx,%rsi      rsi=x+y
-  400646:	4c 29 e6             	sub    %r12,%rsi      rsi=x+y-n
-  400649:	48 39 c5             	cmp    %rax,%rbp
-  40064c:	48 0f 42 f3          	cmovb  %rbx,%rsi      if condition holds, rsi=x+y
+           	mov    %r12,%rax      rax=n
+           	sub    %rbx,%rax      rax=n-y
+           	add    %rbp,%rbx      rbx=x+y
+           	mov    %rbx,%rsi      rsi=x+y
+           	sub    %r12,%rsi      rsi=x+y-n
+           	cmp    %rax,%rbp
+           	cmovb  %rbx,%rsi      if condition holds, rsi=x+y
                                                       else leave rsi be x+y-n
 #endif
 
