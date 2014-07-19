@@ -34,7 +34,7 @@ select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor)
      {
       count_leading_zeros( t, pp->p_deg_k );
       mod->n = pp->p_deg_k << t;
-      mod->ninv = n_preinvert_limb(mod->n);
+      invert_limb(mod->ninv, mod->n);
       // TODO: save 44 ticks by re-using r % pp->p
       return inv_mod_pk_3arg(r,pp[0],mod[0]);
      }
