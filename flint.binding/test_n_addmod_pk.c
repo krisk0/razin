@@ -26,8 +26,6 @@ test_triple(mp_limb_t a,mp_limb_t b,mp_limb_t n)
   if( x == r )
    return;
   flint_printf("\n(%wu + %wu) mod %wu = %wu != %wu\n",a,b,n,x,r);
-  assert(x<n);
-  assert(r<n);
   assert(0);
  }
 
