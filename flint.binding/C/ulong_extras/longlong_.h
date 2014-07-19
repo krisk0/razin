@@ -16,6 +16,8 @@
 #ifndef LONGLONG__H
 #define LONGLONG__H
 
+#include <flint/nmod_vec.h>
+
 #if (GMP_LIMB_BITS == 64 && defined (__amd64__))
 
 // slim version of add_sssaaaaaa macro found in FLINT longlong.h
@@ -120,6 +122,38 @@ mp_limb_t NMOD_RED3_pk_func(
     __asm__ ("bsrq %1,%0" : "=r" (count) : "rm" ((mp_limb_t)(x)));  \
     count ^= (mp_limb_t) 63;                                       \
    }
+
+#if 0
+
+z=n_addmod(x,y,n) unrolls into 7 lines without branches:
+
+                                       %r12 = n
+                                       %rbp = x
+                                       %rbx = y
+
+  40063a:	4c 89 e0             	mov    %r12,%rax      rax=n
+  40063d:	48 29 d8             	sub    %rbx,%rax      rax=n-y
+  400640:	48 01 eb             	add    %rbp,%rbx      rbx=x+y
+  400643:	48 89 de             	mov    %rbx,%rsi      rsi=x+y
+  400646:	4c 29 e6             	sub    %r12,%rsi      rsi=x+y-n
+  400649:	48 39 c5             	cmp    %rax,%rbp
+  40064c:	48 0f 42 f3          	cmovb  %rbx,%rsi      if condition holds, rsi=x+y
+                                                      else leave rsi be x+y-n
+#endif
+
+// 2 conditional jumps and two addition-like operators:
+#define n_addmod_pk(t,y,n)                             \
+  __asm__                                              \
+   (                                                   \
+    "addq %1,%q0\n\t"                                  \
+    "jc 1f\n\t"                                        \
+    "cmpq %2,%0\n\t"                                   \
+    "jb 2f\n"                                          \
+    "1:subq %2,%0\n"                                   \
+    "2:"                                               \
+    : "+r" (t)                                         \
+    : "rm"( (mp_limb_t)(y) ),"rm" ( (mp_limb_t)(n) )   \
+   );
 
 #endif
 
