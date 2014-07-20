@@ -16,6 +16,7 @@
 #ifndef LONGLONG__H
 #define LONGLONG__H
 
+#include <flint/flint.h>
 #include <flint/nmod_vec.h>
 
 #if (GMP_LIMB_BITS == 64 && defined (__amd64__))
@@ -28,7 +29,7 @@
          "1"  ((mp_limb_t)(am)), "rme" ((mp_limb_t)(bm)),  \
          "2"  ((mp_limb_t)(al)), "rme" ((mp_limb_t)(bl)))  
 
-#define add_sssaa(sh, sm, sl,                bm, bl)  \
+#define     add_sssaa(sh, sm, sl,                bm, bl)  \
   __asm__ ("addq %4,%q2\n\tadcq %3,%q1\n\tadcq $0x0,%q0"    \
        : "+r" (sh), "+r" (sm), "+r" (sl)                      \
        : "rme" ((mp_limb_t)(bm)), "rme" ((mp_limb_t)(bl))) 
