@@ -142,8 +142,7 @@ z=n_addmod(x,y,n) unrolls into 7 lines without branches:
            	mov    %rbx,%rsi      rsi=x+y
            	sub    %r12,%rsi      rsi=x+y-n
            	cmp    %rax,%rbp
-           	cmovb  %rbx,%rsi      if condition holds, rsi=x+y
-                                                      else leave rsi be x+y-n
+           	cmovb  %rbx,%rsi      maybe change rsi
 #endif
 
 // 2 conditional jumps and two addition-like operators:
