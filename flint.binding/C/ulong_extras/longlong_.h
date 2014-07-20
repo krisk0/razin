@@ -113,6 +113,15 @@ mp_limb_t NMOD_RED3_pk_func(
   NMOD_RED2_pk( a_me,a_lo, t0,t1, n,ninv);        \
  }
 
+#define NMOD_RED3_pk_5arg( a_hi,a_me,a_lo, n,ninv )  \
+ {                                                    \
+  mp_limb_t t0,t1;                                    \
+  NMOD_RED2_pk( a_hi,a_me, t0,t1, n,ninv);            \
+  if( a_me > n )                                     \
+   a_me -= n;                                       \
+  NMOD_RED2_pk( a_me,a_lo, t0,t1, n,ninv);        \
+ }
+
 // like count_leading_zeros(), but don't define new variables
 #define count_leading_zeros_opt(count, x)                          \
    {                                                                \

@@ -28,18 +28,21 @@ test_prime(mp_limb_t p)
   assert(M0.norm);
   M0.norm=0;
   slong i,j;
-  mp_limb_t S0[3],S1[3],S2[3];
+  mp_limb_t S0[3],S1[3],S2[3],S3[3];
   mp_limb_t r;
   for(i=100;i--;)
    {
     for(j=3;j--;)
-     S2[j]=S1[j]=S0[j]=n_randlimb(st);
+     S3[j]=S2[j]=S1[j]=S0[j]=n_randlimb(st);
+    S3[2] %= M1.n;
     NMOD_RED( S0[2], S0[2], M0 );
     NMOD_RED3( S0[0], S0[2], S0[1], S0[0], M0 );
-    r = NMOD_RED3_pk_func( S1[2], S1[1], S1[0], M1, M1.norm );
+    r = NMOD_RED3_pk_func( S1[2],S1[1],S1[0], M1,M1.norm );
     assert( r==S0[0] );
-    NMOD_RED3_pk( S2[2], S2[1], S2[0], M1.n,M1.ninv,M1.norm );
+    NMOD_RED3_pk( S2[2],S2[1],S2[0], M1.n,M1.ninv,M1.norm );
     assert( r==S2[0] );
+    NMOD_RED3_pk_5arg( S3[2],S3[1],S3[0], M1.n,M1.ninv );
+    assert( r==S3[0] );
    }
  }
  
