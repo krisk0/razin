@@ -62,7 +62,6 @@ int main()
   test_p(3); test_p(5);
   mp_limb_t one=1,i;
   for(i=2;i<63;i++)
-  
    test_p(one << i);
   flint_printf("Test passed\n");
  }
