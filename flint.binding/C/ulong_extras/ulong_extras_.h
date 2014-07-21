@@ -51,6 +51,8 @@ void init__p_k_pk__and__nmod(p_k_pk_t* s,nmod_t* m)
  {
   mp_limb_t t;
   max_degree(s);
+  // looks like count_leading_zeros() makes into same code as 
+  //  count_leading_zeros_opt()
   count_leading_zeros_opt( t, s->p_deg_k );
   m->n = s->p_deg_k << t;
   invert_limb(m->ninv, m->n);
