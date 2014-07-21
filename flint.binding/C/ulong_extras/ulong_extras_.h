@@ -7,7 +7,9 @@
 
 #include <flint/nmod_vec.h>
 
-#define SPEEDUP_NMOD_RED3 1
+#if !defined(SPEEDUP_NMOD_RED3)
+ #define SPEEDUP_NMOD_RED3 1
+#endif
 
 typedef struct
  {
