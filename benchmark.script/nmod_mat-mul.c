@@ -148,7 +148,7 @@ int main()
   #define BENCHMARK nmod_mat_multiplication_test_benchmark
 
   BENCHMARK( 4,4,100, 3, VOL );
-  BENCHMARK( 4,4,100, 3, VOL );
+  BENCHMARK( 100,4,4, 3, VOL );
 
   BENCHMARK( 4,4,100, 5, VOL );
   BENCHMARK( 100,4,4, 5, VOL );
@@ -156,3 +156,13 @@ int main()
   BENCHMARK( 4,4,100, BIG_P, VOL );
   BENCHMARK( 100,4,4, BIG_P, VOL );
  }
+
+#if 0
+result for my core-i5:
+2**0 * 3**40 | 4 4 100: 4830000 1910000
+2**0 * 3**40 | 100 4 4: 5480000 1980000
+2**1 * 5**27 | 4 4 100: 3710000 2350000
+2**1 * 5**27 | 100 4 4: 4380000 2190000
+2**0 * 18446744073709551557**1 | 4 4 100: 4830000 2650000
+2**0 * 18446744073709551557**1 | 100 4 4: 5530000 2590000
+#endif
