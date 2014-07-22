@@ -71,7 +71,7 @@ mp_limb_t NMOD_RED3_pk_func(
    {
     umul_ppmm( t0,t1, two_128_mod_n, a_hi );
     a_hi=0;
-    add_sssaaa0aa( a_hi,a_me,a_lo, a_hi,a_me,a_lo, t0,t1 );
+    add_sssaa( a_hi,a_me,a_lo, t0,t1 );
    }
   // Now a_hi is either 0 or 1
   if( a_hi )
@@ -100,7 +100,7 @@ mp_limb_t NMOD_RED3_pk_func(
    {                                                           \
     umul_ppmm( t0,t1, two_128_mod_n, a_hi );                   \
     a_hi=0;                                                   \
-    add_sssaaa0aa( a_hi,a_me,a_lo, a_hi,a_me,a_lo, t0,t1 );  \
+    add_sssaa( a_hi,a_me,a_lo, t0,t1 );                      \
    }                                                        \
   if( a_hi )                                               \
    {                                                      \
