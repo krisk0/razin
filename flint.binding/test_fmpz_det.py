@@ -5,13 +5,12 @@
 # Copyright Денис Крыськов 2014
 
 '''
-This program tests subroutine fmpz_mat_det_Kryskov()
+This program tests subroutine fmpz_mat_det_4block()
 '''
 
 import sage.all
 import flint_sage as flint,sys
 
-randint=sage.all.randint
 identity_matrix=sage.all.identity_matrix
 ZZ=sage.all.ZZ
 
