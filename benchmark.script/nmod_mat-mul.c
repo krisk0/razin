@@ -3,7 +3,7 @@
 // Licence: GNU General Public License (GPL)
 
 /*
-This program tests/benchmarks RAZIN-specific subroutine nmod_mat_mul_pk_classical() 
+This program tests/benchmarks RAZIN subroutine nmod_mat_mul_pk_classical() 
  against FLINT nmod_mat_mul()
 */
 
