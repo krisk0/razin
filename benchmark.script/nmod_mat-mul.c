@@ -146,6 +146,8 @@ int main()
   #define BIG_P 0xFFFFFFFFFFFFFFc5
   #define BENCHMARK nmod_mat_multiplication_test_benchmark
 
+  flint_randinit(st);
+
   BENCHMARK( 4,4,100, 3, VOL );
   BENCHMARK( 100,4,4, 3, VOL );
 
