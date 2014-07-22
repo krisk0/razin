@@ -911,6 +911,8 @@ nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
     c=n_mulmod_preinv_4arg( c, result, mod.n, mod.ninv );
     M->r=M->c;
    }
+  if( mod.n & 1 )
+   return c;
   return c % p_deg_k;
   #undef p_deg_k
  }
