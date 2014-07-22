@@ -23,8 +23,7 @@ This program tests/benchmarks RAZIN-specific subroutine nmod_mat_mul_pk_classica
 #define DIM_EQUAL(alpha,betta) ( (alpha->r==betta->r) && (alpha->c==betta->c) )
 
 // multiply matrix 2*(v+1) times, put result into R1
-#define CHAIN_MULT(v, f, A, B, R0, R1)   \
-  nmod_mat_init_3arg( R0, R1->r, R1->c ); \
+#define CHAIN_MULT(v, f, A, B, R0, R1)    \
   update_me=R1->rows[0];                    \
   if( DIM_EQUAL(A,R1) )                      \
    {                                          \
