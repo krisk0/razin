@@ -247,6 +247,7 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
     epsln=n_mulmod_preinv_4arg( gamma, alpha_inv_by_beta, mod.n, mod.ninv );
     epsln=n_submod( delta, epsln, mod.n );
     //flint_printf("i=%ld epsilon=%wu\n",i,epsln%p_deg_k);
+    //TODO: reuse epsln % pp.p
     if(epsln % pp.p)
      {
       if(i != dim_minus_2)
@@ -395,6 +396,7 @@ otherwise find best element, put it into lower-right corner, return 1
   // find less spoilt element
   for(i=dim;i--;)
    {
+    // TODO: optimize for huge p
     e=rows[i][shi] % pp.p_deg_k;
     if(e)
      {
@@ -435,7 +437,9 @@ void
 nmod_invert_2x2(mp_limb_t* s0,mp_limb_t* s1,const nmod_t mod,const p_k_pk_t pp)
  {
   mp_limb_t delta,gamma,betta,alpha=s1[1];
-  mp_limb_t epsil,zetta,theta; 
+  mp_limb_t epsil,zetta,theta;
+  // TODO: optimize for huge p
+  // TODO: reuse alpha % pp.p
   if(alpha % pp.p)
    {
     betta=s1[0];
