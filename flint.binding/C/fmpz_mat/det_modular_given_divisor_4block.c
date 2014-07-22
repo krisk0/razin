@@ -21,7 +21,7 @@ mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* s
 static __inline__ mp_limb_t
 select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor)
  {
-  mp_limb_t r,t;
+  mp_limb_t r,t,r_mod_p;
   while(1)
    {
     pp->p = n_nextprime(pp->p, 0); // in FLINT 2.4.4 this is prime
@@ -30,13 +30,14 @@ select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor)
     // TODO: fmpz_fdiv_ui() calls flint_mpz_fdiv_ui() which chooses not to use
     //  function mpz_fdiv_ui() and instead goes a hard way. Why?
     r=fmpz_fdiv_ui( divisor, pp->p_deg_k );
-    if(r % pp->p)
+    r_mod_p=r % pp->p;
+    if(r_mod_p)
      {
       count_leading_zeros( t, pp->p_deg_k );
       mod->n = pp->p_deg_k << t;
       invert_limb(mod->ninv, mod->n);
       // TODO: save 44 ticks by re-using r % pp->p
-      return inv_mod_pk_3arg(r,pp[0],mod[0]);
+      return inv_mod_pk_4arg(r,r_mod_p,pp[0],mod[0]);
      }
    }
  }
