@@ -145,7 +145,7 @@ z=n_addmod(x,y,n) unrolls into 7 lines without branches:
            	cmovb  %rbx,%rsi      maybe change rsi
 #endif
 
-// 2 conditional jumps and two addition-like operators:
+// 2 conditional jumps and two addition-like operators, total 5 statements:
 #define n_addmod_pk(t,y,n)                             \
   __asm__                                              \
    (                                                   \
