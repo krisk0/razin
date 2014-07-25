@@ -134,14 +134,20 @@ use same algorithm as nmod_mat_det_dim4()
   return r;
  }
 
-#define DIM2_DET( rez, n, i, r0, r1 )     \
-  rez=          MUL( r0[0], r1[1], n, i ); \
-  rez=n_submod( rez,                       \
-                MUL( r0[1], r1[0], n, i ), \
-            n );
+#if defined(WX_MINUS_YZ)
+ #define DIM2_DET( rez, r0, r1 ) \
+  WX_MINUS_YZ( rez, r0[0],r1[1], r0[1],r1[0], n,i,two_128_mod_n );
+#else
+ #define DIM2_DET( rez, r0, r1 )          \
+   rez=          MUL( r0[0], r1[1], n, i ); \
+   rez=n_submod( rez,                       \
+                 MUL( r0[1], r1[0], n, i ), \
+             n );
+#endif
 
 static __inline__ mp_limb_t
 nmod_mat_det_dim3(const nmod_mat_t A)
+//TODO: optimize DIM2_DET()
  {
   const mp_limb_t** const rows=A->rows;
   const mp_limb_t* r0=rows[0];
@@ -149,13 +155,20 @@ nmod_mat_det_dim3(const nmod_mat_t A)
   const mp_limb_t* r2=rows[2];
   const mp_limb_t n=A->mod.n;
   const mp_limb_t i=A->mod.ninv;
+  #if defined(WX_MINUS_YZ)
+   #if SPEEDUP_NMOD_RED3
+   #else
+    #error "can't compile this: need 2**128 modulo n"
+   #endif
+   const mp_limb_t two_128_mod_n=A->mod.norm;
+  #endif
   mp_limb_t rez,t;
-  DIM2_DET( rez, n, i, r0, r1 );
+  DIM2_DET( rez, r0, r1 );
   rez=MUL( rez, r2[2], n, i );
-  DIM2_DET( t, n, i, r0, r2 );
+  DIM2_DET( t, r0, r2 );
   t=MUL( t, r1[2], n, i );
   rez=n_submod( rez, t, n);
-  DIM2_DET( t, n, i, r1, r2 );
+  DIM2_DET( t, r1, r2 );
   t=MUL( t, r0[2], n, i );
   return n_addmod( rez, t, n);
  }
@@ -167,8 +180,11 @@ nmod_mat_det_dim2(const nmod_mat_t A)
   const mp_limb_t* r1=A->rows[1];
   const mp_limb_t n=A->mod.n;
   const mp_limb_t i=A->mod.ninv;
+  #if defined(WX_MINUS_YZ)
+   const mp_limb_t two_128_mod_n=A->mod.norm;
+  #endif
   mp_limb_t rez;
-  DIM2_DET( rez, n, i, r0, r1 );
+  DIM2_DET( rez, r0, r1 );
   return rez;
  }
 
