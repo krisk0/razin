@@ -113,6 +113,21 @@ mp_limb_t NMOD_RED3_pk_func(
   NMOD_RED2_pk( a_me,a_lo, t0,t1, n,ninv);        \
  }
 
+// same as NMOD_RED3_pk, but a_hi<=1
+#define NMOD_RED3_pk_easy( a_hi,a_me,a_lo, n,ninv,two_128_mod_n ) \
+ {                                                            \
+  mp_limb_t t0,t1;                                          \
+  if( a_hi )                                               \
+   {                                                      \
+    if( a_me > n )                                       \
+     a_me -= n;                                         \
+    a_me -= n;                                         \
+   }                                                  \
+  if( a_me > n )                                     \
+   a_me -= n;                                       \
+  NMOD_RED2_pk( a_me,a_lo, t0,t1, n,ninv);        \
+ }
+
 #define NMOD_RED3_pk_5arg( a_hi,a_me,a_lo, n,ninv )  \
  {                                                    \
   mp_limb_t t0,t1;                                    \
@@ -165,17 +180,16 @@ z=n_addmod(x,y,n) unrolls into 7 lines without branches:
 
 // r := w*x-y*z modulo n, n >= 2**63
 #define WX_MINUS_YZ(r, w,x,y,z, n,ninv,two_128_mod_n ) \
- {                                                     \
-  mp_limb_t _t0,_t1,_t2,_t3=0;                         \
-  umul_ppmm( _t0,r, w,x );                             \
-  umul_ppmm( _t1,_t2, y,z );                          \
-  n_negmod_opt(_t1,n);                               \
-  if(_t2 > n)                                        \
-   _t2 -= n;                                        \
-  n_negmod_opt(_t2,n);                              \
-  add_sssaa(_t3,_t0,r, _t1,_t2);                   \
-  NMOD_RED3_pk( _t3,_t0,r, n,ninv,two_128_mod_n ); \
- }
+ if(y==0)                                              \
+  r=n_mulmod_preinv_4arg(w,x, n,ninv);                 \
+ else                                                  \
+  {                                                    \
+   mp_limb_t _t0,_t1,_t2,_t3=0;                        \
+   umul_ppmm(_t1,_t2,n-y,z);                           \
+   umul_ppmm( _t0,r, w,x );                            \
+   add_sssaa(_t3,_t0,r, _t1,_t2);                       \
+   NMOD_RED3_pk_easy( _t3,_t0,r, n,ninv,two_128_mod_n ); \
+  }
 
 #endif
 
