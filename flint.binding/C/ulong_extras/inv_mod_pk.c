@@ -13,6 +13,7 @@ return inverse of a modulo p**t where p is odd prime and p**t < 2**64, p does
  not divide a
 */
  {
+  mp_limb_t r=n_invmod(a,p),q;
   #include "det_mod_pk.inc"
  }
 
@@ -24,7 +25,10 @@ inv_mod_pk_3arg(mp_limb_t a,const p_k_pk_t pp,const nmod_t nn)
   #define p_deg_t pp.p_deg_k
   #define p_deg_t_norm nn.n
   #define p_deg_t_inv nn.ninv
+
+  mp_limb_t r=n_invmod(a,p),q;
   #include "det_mod_pk.inc"
+
   #undef p
   #undef t 
   #undef p_deg_t
@@ -43,38 +47,7 @@ inv_mod_pk_4arg(mp_limb_t a,mp_limb_t a_mod_p,
   #define p_deg_t_inv nn.ninv
 
   mp_limb_t r=n_invmod(a_mod_p,p),q;
-  ulong k=1;
-  ulong t_div_2=t>>1;
-  mp_limb_t p_deg_k=p,p_deg_k_plus_m;
-  while(k <= t_div_2)
-   {
-    p_deg_k_plus_m=p_deg_k*p_deg_k;
-    if( p_deg_k_plus_m < UWORD(1)<<(FLINT_BITS/2) )
-     // can't overflow because a,r < p**(2*k) < 2**32
-     q=(a%p_deg_k_plus_m)*r % p_deg_k_plus_m - 1;
-    else
-     {
-      // TODO: is it faster to use n_mulmod2_preinv() instead?
-      q=n_mulmod_preinv_4arg(a,r,p_deg_t_norm,p_deg_t_inv); 
-      q = (q % p_deg_k_plus_m)-1;
-     }
-    q /= p_deg_k; // should divide exactly
-    q = q*r % p_deg_k; // no overflow because q,r < p**k < 2**32
-    r += p_deg_k * (p_deg_k-q);
-    assert(r < p_deg_t);
-    k <<= 1; p_deg_k = p_deg_k_plus_m;
-   }
-  if(k < t)
-   {
-    // TODO: is it faster to use n_mulmod2_preinv() instead?
-    q=(n_mulmod_preinv_4arg(a,r,p_deg_t_norm,p_deg_t_inv)-1) % p_deg_t; //
-    q /= p_deg_k; // should divide exactly
-    p_deg_k_plus_m = p_deg_t / p_deg_k;
-    // m < t/2 => p**m < 2**32, no overflow in next line
-    q = q * (r % p_deg_k_plus_m) % p_deg_k_plus_m;
-    r += p_deg_k*(p_deg_k_plus_m-q);
-   }
-  return r % p_deg_t;
+  #include "det_mod_pk.inc"
 
   #undef p
   #undef t 

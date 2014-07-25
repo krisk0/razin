@@ -2,7 +2,6 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-mp_limb_t r=n_invmod(a,p),q;
 ulong k=1;
 ulong t_div_2=t>>1;
 mp_limb_t p_deg_k=p,p_deg_k_plus_m;
