@@ -11,7 +11,7 @@ flint.binding/C        fast C code integer linear algebra (HNF, PLU,
 flint.binding/*.README  kinda documentation with installation instruction and
                          FAQ
 
-benchmark.script/       benchmark, test-benchmark and profile scripts
+benchmark.script/       benchmark, test-benchmark and profile programs
 
 
 A_by_B_mod_P.hacks/     Secret voodoo to calculate a*b mod p for small p on amd64 
