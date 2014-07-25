@@ -247,8 +247,7 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
     epsln=n_mulmod_preinv_4arg( gamma, alpha_inv_by_beta, mod.n, mod.ninv );
     epsln=n_submod( delta, epsln, mod.n );
     //flint_printf("i=%ld epsilon=%wu\n",i,epsln%p_deg_k);
-    //TODO: reuse epsln % pp.p
-    if(epsln % pp.p)
+    if(delta=epsln % pp.p)
      {
       if(i != dim_minus_2)
        {
@@ -256,7 +255,7 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
         MP_PTR_SWAP( rows[i], rows[dim_minus_2] );
        }
       invM[12]=epsln; // put the pivot into SW corner of invM
-      epsln=inv_mod_pk_3arg(epsln,pp,mod);
+      epsln=inv_mod_pk_4arg(epsln,delta,pp,mod);
       det_mod_pk_SE_2x2_invert( invM, M, alpha_inv, betta, epsln, gamma );
       return 1;
      }
@@ -439,13 +438,12 @@ nmod_invert_2x2(mp_limb_t* s0,mp_limb_t* s1,const nmod_t mod,const p_k_pk_t pp)
   mp_limb_t delta,gamma,betta,alpha=s1[1];
   mp_limb_t epsil,zetta,theta;
   // TODO: optimize for huge p
-  // TODO: reuse alpha % pp.p
-  if(alpha % pp.p)
+  if(betta=alpha % pp.p)
    {
+    alpha=inv_mod_pk_4arg(alpha,betta,pp,mod);
     betta=s1[0];
     delta=s0[0];
     gamma=s0[1];
-    alpha=inv_mod_pk_3arg(alpha,pp,mod);
     // epsil=delta-gamma*alpha'*betta
     epsil=n_mulmod_preinv_4arg(gamma,alpha,mod.n,mod.ninv);
     epsil=n_mulmod_preinv_4arg(epsil,betta,mod.n,mod.ninv);
