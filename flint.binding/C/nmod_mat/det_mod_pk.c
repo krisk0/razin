@@ -25,42 +25,37 @@
  #define SHOW_0TH_COL
 #endif
 
+#if defined(WX_MINUS_YZ)
+ #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) WX_MINUS_YZ( rez, w,x,y,z, n,i );
+#else
+ #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
+  rez=SUB_mod_n( MUL_mod_n(w,x), MUL_mod_n(y,z) );
+#endif
+
 //TODO: use better algorithm for vector dot product, in all subroutines
 
 #define MUL n_mulmod_preinv_4arg
 #define MUL_mod_n(x,y) n_mulmod_preinv_4arg(x,y,n,i)
 #define SUB_mod_n(x,y) n_submod(x,y,n)
 #define ADD_mod_n(x,y) n_addmod(x,y,n)
-#define DET_4x4                           \
- a=MUL_mod_n( r0[3],r1[2] );               \
- a=SUB_mod_n( a, MUL_mod_n( r0[2],r1[3] ) );\
- b=MUL_mod_n( r2[1],r3[0] );                 \
- b=SUB_mod_n( b, MUL_mod_n( r2[0],r3[1] ) ); \
- r=MUL_mod_n( a, b );                        \
- a=MUL_mod_n( r0[1],r1[3] );                 \
- a=SUB_mod_n( a, MUL_mod_n( r0[3],r1[1] ) ); \
- b=MUL_mod_n( r2[2],r3[0] );                 \
- b=SUB_mod_n( b, MUL_mod_n( r2[0],r3[2] ) ); \
- r=ADD_mod_n( r, MUL_mod_n(a,b) );           \
- a=MUL_mod_n( r0[2],r1[1] );                 \
- a=SUB_mod_n( a, MUL_mod_n( r0[1],r1[2] ) ); \
- b=MUL_mod_n( r2[3],r3[0] );                 \
- b=SUB_mod_n( b, MUL_mod_n( r2[0],r3[3] ) ); \
- r=ADD_mod_n( r, MUL_mod_n(a,b) );           \
- a=MUL_mod_n( r0[3],r1[0] );                 \
- a=SUB_mod_n( a, MUL_mod_n( r0[0],r1[3] ) ); \
- b=MUL_mod_n( r2[2],r3[1] );                 \
- b=SUB_mod_n( b, MUL_mod_n( r2[1],r3[2] ) ); \
- r=ADD_mod_n( r, MUL_mod_n(a,b) );           \
- a=MUL_mod_n( r0[0],r1[2] );                 \
- a=SUB_mod_n( a, MUL_mod_n( r0[2],r1[0] ) ); \
- b=MUL_mod_n( r2[3],r3[1] );                 \
- b=SUB_mod_n( b, MUL_mod_n( r2[1],r3[3] ) ); \
- r=ADD_mod_n( r, MUL_mod_n(a,b) );           \
- a=MUL_mod_n( r0[1],r1[0] );                 \
- a=SUB_mod_n( a, MUL_mod_n( r0[0],r1[1] ) ); \
- b=MUL_mod_n( r2[3],r3[2] );                 \
- b=SUB_mod_n( b, MUL_mod_n( r2[2],r3[3] ) ); \
+#define DET_4x4                               \
+ WX_MINUS_YZ_5arg(a, r0[3],r1[2], r0[2],r1[3]) \
+ WX_MINUS_YZ_5arg(b, r2[1],r3[0], r2[0],r3[1]) \
+ r=MUL_mod_n( a, b );                          \
+ WX_MINUS_YZ_5arg(a, r0[1],r1[3], r0[3],r1[1]) \
+ WX_MINUS_YZ_5arg(b, r2[2],r3[0], r2[0],r3[2]) \
+ r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+ WX_MINUS_YZ_5arg(a, r0[2],r1[1], r0[1],r1[2]) \
+ WX_MINUS_YZ_5arg(b, r2[3],r3[0], r2[0],r3[3]) \
+ r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+ WX_MINUS_YZ_5arg(a, r0[3],r1[0], r0[0],r1[3]) \
+ WX_MINUS_YZ_5arg(b, r2[2],r3[1], r2[1],r3[2]) \
+ r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+ WX_MINUS_YZ_5arg(a, r0[0],r1[2], r0[2],r1[0]) \
+ WX_MINUS_YZ_5arg(b, r2[3],r3[1], r2[1],r3[3]) \
+ r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+ WX_MINUS_YZ_5arg(a, r0[1],r1[0], r0[0],r1[1]) \
+ WX_MINUS_YZ_5arg(b, r2[3],r3[2], r2[2],r3[3]) \
  r=ADD_mod_n( r, MUL_mod_n(a,b) );
 
 static __inline__ mp_limb_t
@@ -154,6 +149,7 @@ nmod_mat_det_dim2(const nmod_mat_t A)
 #undef ADD_mod_n
 #undef SUB_mod_n
 #undef DET_4x4
+#undef WX_MINUS_YZ_5arg
 
 static __inline__ mp_limb_t
 det_mod_pk_SE_0th_row(nmod_mat_t M,slong* negate_det,mp_limb_t p)
