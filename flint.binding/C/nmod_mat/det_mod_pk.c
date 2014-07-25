@@ -10,6 +10,7 @@
 #include "nmod_mat_.h"
 #include <assert.h>
 #include "../ulong_extras/ulong_extras_.h"
+#include "../nmod_mat/nmod_mat_.h"
 
 #define NDEBUG 1
 #define LOUD_4x4_INVERT 0
@@ -38,25 +39,52 @@
 #define MUL_mod_n(x,y) n_mulmod_preinv_4arg(x,y,n,i)
 #define SUB_mod_n(x,y) n_submod(x,y,n)
 #define ADD_mod_n(x,y) n_addmod(x,y,n)
-#define DET_4x4                               \
- WX_MINUS_YZ_5arg(a, r0[3],r1[2], r0[2],r1[3]) \
- WX_MINUS_YZ_5arg(b, r2[1],r3[0], r2[0],r3[1]) \
- r=MUL_mod_n( a, b );                          \
- WX_MINUS_YZ_5arg(a, r0[1],r1[3], r0[3],r1[1]) \
- WX_MINUS_YZ_5arg(b, r2[2],r3[0], r2[0],r3[2]) \
- r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
- WX_MINUS_YZ_5arg(a, r0[2],r1[1], r0[1],r1[2]) \
- WX_MINUS_YZ_5arg(b, r2[3],r3[0], r2[0],r3[3]) \
- r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
- WX_MINUS_YZ_5arg(a, r0[3],r1[0], r0[0],r1[3]) \
- WX_MINUS_YZ_5arg(b, r2[2],r3[1], r2[1],r3[2]) \
- r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
- WX_MINUS_YZ_5arg(a, r0[0],r1[2], r0[2],r1[0]) \
- WX_MINUS_YZ_5arg(b, r2[3],r3[1], r2[1],r3[3]) \
- r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
- WX_MINUS_YZ_5arg(a, r0[1],r1[0], r0[0],r1[1]) \
- WX_MINUS_YZ_5arg(b, r2[3],r3[2], r2[2],r3[3]) \
- r=ADD_mod_n( r, MUL_mod_n(a,b) );
+#if defined(VECTOR_DOT_HEAD)
+ #if SPEEDUP_NMOD_RED3
+ #else
+  #error "can't compile this: need 2**128 modulo n"
+ #endif
+ #define DET_4x4                               \
+  WX_MINUS_YZ_5arg(a, r0[3],r1[2], r0[2],r1[3]) \
+  WX_MINUS_YZ_5arg(b, r2[1],r3[0], r2[0],r3[1]) \
+  VECTOR_DOT_HEAD(a,b);                         \
+  WX_MINUS_YZ_5arg(a, r0[1],r1[3], r0[3],r1[1]) \
+  WX_MINUS_YZ_5arg(b, r2[2],r3[0], r2[0],r3[2]) \
+  VECTOR_DOT_BODY(a,b);                         \
+  WX_MINUS_YZ_5arg(a, r0[2],r1[1], r0[1],r1[2]) \
+  WX_MINUS_YZ_5arg(b, r2[3],r3[0], r2[0],r3[3]) \
+  VECTOR_DOT_BODY(a,b);                         \
+  WX_MINUS_YZ_5arg(a, r0[3],r1[0], r0[0],r1[3]) \
+  WX_MINUS_YZ_5arg(b, r2[2],r3[1], r2[1],r3[2]) \
+  VECTOR_DOT_BODY(a,b);                         \
+  WX_MINUS_YZ_5arg(a, r0[0],r1[2], r0[2],r1[0]) \
+  WX_MINUS_YZ_5arg(b, r2[3],r3[1], r2[1],r3[3]) \
+  VECTOR_DOT_BODY(a,b);                         \
+  WX_MINUS_YZ_5arg(a, r0[1],r1[0], r0[0],r1[1]) \
+  WX_MINUS_YZ_5arg(b, r2[3],r3[2], r2[2],r3[3]) \
+  VECTOR_DOT_BODY(a,b);                         \
+  VECTOR_DOT_TAIL(r, n,i,M->mod.norm )
+#else
+ #define DET_4x4                               \
+  WX_MINUS_YZ_5arg(a, r0[3],r1[2], r0[2],r1[3]) \
+  WX_MINUS_YZ_5arg(b, r2[1],r3[0], r2[0],r3[1]) \
+  r=MUL_mod_n( a, b );                          \
+  WX_MINUS_YZ_5arg(a, r0[1],r1[3], r0[3],r1[1]) \
+  WX_MINUS_YZ_5arg(b, r2[2],r3[0], r2[0],r3[2]) \
+  r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+  WX_MINUS_YZ_5arg(a, r0[2],r1[1], r0[1],r1[2]) \
+  WX_MINUS_YZ_5arg(b, r2[3],r3[0], r2[0],r3[3]) \
+  r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+  WX_MINUS_YZ_5arg(a, r0[3],r1[0], r0[0],r1[3]) \
+  WX_MINUS_YZ_5arg(b, r2[2],r3[1], r2[1],r3[2]) \
+  r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+  WX_MINUS_YZ_5arg(a, r0[0],r1[2], r0[2],r1[0]) \
+  WX_MINUS_YZ_5arg(b, r2[3],r3[1], r2[1],r3[3]) \
+  r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+  WX_MINUS_YZ_5arg(a, r0[1],r1[0], r0[0],r1[1]) \
+  WX_MINUS_YZ_5arg(b, r2[3],r3[2], r2[2],r3[3]) \
+  r=ADD_mod_n( r, MUL_mod_n(a,b) );
+#endif
 
 static __inline__ mp_limb_t
 nmod_mat_det_dim4(const nmod_mat_t M)
