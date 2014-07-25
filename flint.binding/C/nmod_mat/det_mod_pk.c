@@ -147,7 +147,6 @@ use same algorithm as nmod_mat_det_dim4()
 
 static __inline__ mp_limb_t
 nmod_mat_det_dim3(const nmod_mat_t A)
-//TODO: optimize DIM2_DET()
  {
   const mp_limb_t** const rows=A->rows;
   const mp_limb_t* r0=rows[0];

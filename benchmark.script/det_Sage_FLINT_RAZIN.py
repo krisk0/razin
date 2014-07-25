@@ -20,7 +20,7 @@ standard ways to limit execution time do not work on Sage .determinant(), so use
 '''
 import sage.parallel
 
-dim=300
+dim=200
 experiments=3
 ways_desc='Sage NTL pari FLINT 4blck'
 ways=5
