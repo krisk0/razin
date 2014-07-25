@@ -163,14 +163,30 @@ nmod_mat_det_dim3(const nmod_mat_t A)
    const mp_limb_t two_128_mod_n=A->mod.norm;
   #endif
   mp_limb_t rez,t;
-  DIM2_DET( rez, r0, r1 );
-  rez=MUL( rez, r2[2], n, i );
-  DIM2_DET( t, r0, r2 );
-  t=MUL( t, r1[2], n, i );
-  rez=n_submod( rez, t, n);
-  DIM2_DET( t, r1, r2 );
-  t=MUL( t, r0[2], n, i );
-  return n_addmod( rez, t, n);
+  #if defined(VECTOR_DOT_HEAD)
+   DIM2_DET( t, r0, r1 );
+   VECTOR_DOT_HEAD( t, r2[2] );
+   DIM2_DET( t, r1, r2 );
+   VECTOR_DOT_BODY( t, r0[2] );
+   rez=r1[2];
+   if(rez)
+    {
+     rez=n-rez;
+     DIM2_DET( t, r0, r2 );
+     VECTOR_DOT_BODY( t, rez );
+    }
+   VECTOR_DOT_TAIL( t, n,i,two_128_mod_n );
+   return t;
+  #else
+   DIM2_DET( rez, r0, r1 );
+   rez=MUL( rez, r2[2], n, i );
+   DIM2_DET( t, r0, r2 );
+   t=MUL( t, r1[2], n, i );
+   rez=n_submod( rez, t, n);
+   DIM2_DET( t, r1, r2 );
+   t=MUL( t, r0[2], n, i );
+   return n_addmod( rez, t, n);
+  #endif
  }
 
 static __inline__ mp_limb_t
