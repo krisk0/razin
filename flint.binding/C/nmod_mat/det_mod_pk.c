@@ -28,7 +28,7 @@
 
 #if defined(WX_MINUS_YZ)
  #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
-  WX_MINUS_YZ( rez, w,x,y,z, n,i,M->mod.norm );
+  WX_MINUS_YZ( rez, w,x,y,z, n,i );
 #else
  #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
   rez=SUB_mod_n( MUL_mod_n(w,x), MUL_mod_n(y,z) );
@@ -136,7 +136,7 @@ use same algorithm as nmod_mat_det_dim4()
 
 #if defined(WX_MINUS_YZ)
  #define DIM2_DET( rez, r0, r1 ) \
-  WX_MINUS_YZ( rez, r0[0],r1[1], r0[1],r1[0], n,i,two_128_mod_n );
+  WX_MINUS_YZ( rez, r0[0],r1[1], r0[1],r1[0], n,i );
 #else
  #define DIM2_DET( rez, r0, r1 )          \
    rez=          MUL( r0[0], r1[1], n, i ); \
@@ -195,9 +195,6 @@ nmod_mat_det_dim2(const nmod_mat_t A)
   const mp_limb_t* r1=A->rows[1];
   const mp_limb_t n=A->mod.n;
   const mp_limb_t i=A->mod.ninv;
-  #if defined(WX_MINUS_YZ)
-   const mp_limb_t two_128_mod_n=A->mod.norm;
-  #endif
   mp_limb_t rez;
   DIM2_DET( rez, r0, r1 );
   return rez;
@@ -363,6 +360,8 @@ det_mod_pk_mul_2x2(
   #endif
  } 
 
+// For some reason, replacing VECTOR_DOT_TAIL_sub() with
+//  VECTOR_DOT_TAIL_sub_easy() slows down the code below
 static void
 det_mod_pk_mul_sub_2x2(
   mp_limb_t* eps0,mp_limb_t* eps1,
@@ -406,7 +405,7 @@ delta is at sou0,sou1, gamma at sou0+2,sou1+2
   #endif
  }
 
-#if defined(WX_MINUS_YZ) && 1
+#if defined(WX_MINUS_YZ)
  #define ROW_23( i, j )                                                \
   cand_0=rows[i]+dim_minus_4;                                            \
   cand_1=rows[j]+dim_minus_4;                                             \
@@ -414,7 +413,7 @@ delta is at sou0,sou1, gamma at sou0+2,sou1+2
   PRINTF("i=%w j=%w epsi=%wu %wu | %wu %wu\n",i,j,                          \
    invM[0],invM[1],epsi1[0],epsi1[1]);                                     \
   WX_MINUS_YZ( ok, invM[0],epsi1[1], invM[1],epsi1[0],                    \
-   mod.n,mod.ninv,mod.norm );                                            \
+   mod.n,mod.ninv );                                                     \
   if(0 == ok % p )                                                      \
    ok=0;
 #else
@@ -429,6 +428,8 @@ delta is at sou0,sou1, gamma at sou0+2,sou1+2
    ok=0;
 #endif
 
+// time varies strangely with det_mod_pk_mul_sub_2x2(), det_mod_pk_mul_sub_2x2()
+//  and ROW_23()
 static __inline__ mp_limb_t 
 det_mod_pk_SE_row_23(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,mp_limb_t p)
 /*

@@ -26,10 +26,22 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
    rez=Vlo;                                             \
   }
 
+ #define VECTOR_DOT_TAIL_easy(rez, n,ninv,two_128_mod_n)  \
+  {                                                        \
+   NMOD_RED3_pk_easy( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );  \
+   rez=Vlo;                                                \
+  }
+
  // r=s-dot result
  #define VECTOR_DOT_TAIL_sub(r, s, n,ninv,two_128_mod_n)  \
   {                                                      \
    NMOD_RED3_pk( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );   \
+   r=n_submod( s,Vlo, n );                             \
+  }
+ 
+ #define VECTOR_DOT_TAIL_sub_easy(r, s, n,ninv,two_128_mod_n)  \
+  {                                                      \
+   NMOD_RED3_pk_easy( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );   \
    r=n_submod( s,Vlo, n );                             \
   }
  
