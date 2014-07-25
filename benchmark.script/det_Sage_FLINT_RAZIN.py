@@ -136,30 +136,31 @@ for x in range(experiments):
 
 pretty_print_result()
 '''
-experiments=3 dim=200:
-         time
------ ---------
- Sage  2.00e+02
-  NTL  1.39e+02
- pari  Time-out
-FLINT  7.38e+01
-4blck  6.82e+01
-
-experiments=3 dim=250:
-         time
------ ---------
- Sage  3.06e+02
-  NTL  3.11e+02
- pari  Time-out
-FLINT  1.60e+02
-4blck  1.22e+02
-
-experiments=3 dim=300:
-         time
------ ---------
- Sage  4.34e+02
-  NTL  Time-out
- pari  Time-out
-FLINT  3.04e+02
-4blck  1.99e+02
+with stupid naive vector dot multiplication results were:
+ experiments=3 dim=200:
+          time
+ ----- ---------
+  Sage  2.00e+02
+   NTL  1.39e+02
+  pari  Time-out
+ FLINT  7.38e+01
+ 4blck  6.82e+01
+ 
+ experiments=3 dim=250:
+          time
+ ----- ---------
+  Sage  3.06e+02
+   NTL  3.11e+02
+  pari  Time-out
+ FLINT  1.60e+02
+ 4blck  1.22e+02
+ 
+ experiments=3 dim=300:
+          time
+ ----- ---------
+  Sage  4.34e+02
+   NTL  Time-out
+  pari  Time-out
+ FLINT  3.04e+02
+ 4blck  1.99e+02
 '''
