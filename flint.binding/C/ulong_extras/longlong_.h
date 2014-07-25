@@ -163,7 +163,7 @@ z=n_addmod(x,y,n) unrolls into 7 lines without branches:
  if(t)                    \
   t=n-t;                  \
 
-// r := w*x-y*z modulo n
+// r := w*x-y*z modulo n, n >= 2**63
 #define WX_MINUS_YZ(r, w,x,y,z, n,ninv,two_128_mod_n ) \
  {                                                     \
   mp_limb_t _t0,_t1,_t2,_t3=0;                         \

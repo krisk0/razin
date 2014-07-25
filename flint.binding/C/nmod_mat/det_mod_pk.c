@@ -237,8 +237,9 @@ return the pivot element on success, 0 on failure
  }
 
 static __inline__ void 
-det_mod_pk_SE_2x2_invert(mp_limb_t* invM,nmod_mat_t M,mp_limb_t alpha_inv,mp_limb_t betta,
-  mp_limb_t epsln_inv, mp_limb_t gamma)
+det_mod_pk_SE_2x2_invert(mp_limb_t* invM,nmod_mat_t M,
+ mp_limb_t alpha_inv,mp_limb_t betta,
+ mp_limb_t epsln_inv, mp_limb_t gamma)
 /*
 X=2x2 matrice in lower-right corner of M,
 
@@ -325,21 +326,47 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
 
 static void 
 det_mod_pk_mul_2x2( 
-  mp_limb_t* r0,mp_limb_t* r1,
-  const mp_limb_t* a0,const mp_limb_t* a1,
-  const mp_limb_t* b0,const mp_limb_t* b1,
-  const nmod_t mod)
+   mp_limb_t* r0,mp_limb_t* r1,
+   const mp_limb_t* a0,const mp_limb_t* a1,
+   const mp_limb_t* b0,const mp_limb_t* b1,
+   const nmod_t mod)
  {
-  r0[0]=ADD( MUL(a0[0],b0[0]), MUL(a0[1],b1[0]) );
-  r0[1]=ADD( MUL(a0[0],b0[1]), MUL(a0[1],b1[1]) );
-  r1[0]=ADD( MUL(a1[0],b0[0]), MUL(a1[1],b1[0]) );
-  r1[1]=ADD( MUL(a1[0],b0[1]), MUL(a1[1],b1[1]) );
- }
+  #if defined(VECTOR_DOT_HEAD)
+   register const mp_limb_t n=mod.n;
+   register const mp_limb_t i=mod.ninv;
+   register const mp_limb_t t=mod.norm;
+   {
+    VECTOR_DOT_HEAD(a0[0],b0[0]);
+    VECTOR_DOT_BODY(a0[1],b1[0]);
+    VECTOR_DOT_TAIL(r0[0], n,i,t );
+   }
+   {
+    VECTOR_DOT_HEAD(a0[0],b0[1]);
+    VECTOR_DOT_BODY(a0[1],b1[1]);
+    VECTOR_DOT_TAIL(r0[1], n,i,t);
+   }
+   {
+    VECTOR_DOT_HEAD(a1[0],b0[0]);
+    VECTOR_DOT_BODY(a1[1],b1[0]);
+    VECTOR_DOT_TAIL(r1[0], n,i,t);
+   }
+   {
+    VECTOR_DOT_HEAD(a1[0],b0[1]);
+    VECTOR_DOT_BODY(a1[1],b1[1]);
+    VECTOR_DOT_TAIL(r1[1], n,i,t);
+   }
+  #else
+   r0[0]=ADD( MUL(a0[0],b0[0]), MUL(a0[1],b1[0]) );
+   r0[1]=ADD( MUL(a0[0],b0[1]), MUL(a0[1],b1[1]) );
+   r1[0]=ADD( MUL(a1[0],b0[0]), MUL(a1[1],b1[0]) );
+   r1[1]=ADD( MUL(a1[0],b0[1]), MUL(a1[1],b1[1]) );
+  #endif
+ } 
 
-static __inline__ void 
+static void
 det_mod_pk_mul_sub_2x2(
-  mp_limb_t* eps0,mp_limb_t* eps1,   
-  mp_limb_t* sou0,mp_limb_t* sou1,   
+  mp_limb_t* eps0,mp_limb_t* eps1,
+  mp_limb_t* sou0,mp_limb_t* sou1,
   mp_limb_t* zet0,mp_limb_t* zet1,
   const nmod_t mod)
 /*
@@ -347,21 +374,60 @@ set epsilon=delta-gamma*zeta
 delta is at sou0,sou1, gamma at sou0+2,sou1+2
 */
  {
-  eps0[0]=SUB( sou0[0], ADD( MUL(sou0[2],zet0[0]), MUL(sou0[3],zet1[0]) ) );
-  eps0[1]=SUB( sou0[1], ADD( MUL(sou0[2],zet0[1]), MUL(sou0[3],zet1[1]) ) );
-  eps1[0]=SUB( sou1[0], ADD( MUL(sou1[2],zet0[0]), MUL(sou1[3],zet1[0]) ) );
-  eps1[1]=SUB( sou1[1], ADD( MUL(sou1[2],zet0[1]), MUL(sou1[3],zet1[1]) ) );
+  #if defined(VECTOR_DOT_HEAD)
+   register const mp_limb_t n=mod.n;
+   register const mp_limb_t i=mod.ninv;
+   register const mp_limb_t t=mod.norm;
+   {
+    VECTOR_DOT_HEAD(sou0[2],zet0[0]);
+    VECTOR_DOT_BODY(sou0[3],zet1[0]);
+    VECTOR_DOT_TAIL_sub( eps0[0],sou0[0], n,i,t );
+   }
+   {
+    VECTOR_DOT_HEAD(sou0[2],zet0[1]);
+    VECTOR_DOT_BODY(sou0[3],zet1[1]);
+    VECTOR_DOT_TAIL_sub( eps0[1],sou0[1], n,i,t );
+   }
+   {
+    VECTOR_DOT_HEAD(sou1[2],zet0[0]);
+    VECTOR_DOT_BODY(sou1[3],zet1[0]);
+    VECTOR_DOT_TAIL_sub( eps1[0],sou1[0], n,i,t );
+   }
+   {
+    VECTOR_DOT_HEAD(sou1[2],zet0[1]);
+    VECTOR_DOT_BODY(sou1[3],zet1[1]);
+    VECTOR_DOT_TAIL_sub( eps1[1],sou1[1], n,i,t );
+   }
+  #else
+   eps0[0]=SUB( sou0[0], ADD( MUL(sou0[2],zet0[0]), MUL(sou0[3],zet1[0]) ) );
+   eps0[1]=SUB( sou0[1], ADD( MUL(sou0[2],zet0[1]), MUL(sou0[3],zet1[1]) ) );
+   eps1[0]=SUB( sou1[0], ADD( MUL(sou1[2],zet0[0]), MUL(sou1[3],zet1[0]) ) );
+   eps1[1]=SUB( sou1[1], ADD( MUL(sou1[2],zet0[1]), MUL(sou1[3],zet1[1]) ) );
+  #endif
  }
 
-#define ROW_23( i, j )                                          \
- cand_0=rows[i]+dim_minus_4;                                          \
- cand_1=rows[j]+dim_minus_4;                                              \
- det_mod_pk_mul_sub_2x2(invM,epsi1,   cand_0,cand_1,   zeta0,zeta1,   mod); \
- PRINTF("i=%w j=%w epsi=%wu %wu | %wu %wu\n",i,j,       \
-  invM[0],invM[1],epsi1[0],epsi1[1]);                   \
- ok=SUB( MUL(invM[0],epsi1[1]), MUL(invM[1],epsi1[0]) );                     \
- if(0 == ok % p )                                                             \
-  ok=0;
+#if defined(WX_MINUS_YZ) && 1
+ #define ROW_23( i, j )                                                \
+  cand_0=rows[i]+dim_minus_4;                                            \
+  cand_1=rows[j]+dim_minus_4;                                             \
+  det_mod_pk_mul_sub_2x2(invM,epsi1, cand_0,cand_1, zeta0,zeta1,  mod);    \
+  PRINTF("i=%w j=%w epsi=%wu %wu | %wu %wu\n",i,j,                          \
+   invM[0],invM[1],epsi1[0],epsi1[1]);                                     \
+  WX_MINUS_YZ( ok, invM[0],epsi1[1], invM[1],epsi1[0],                    \
+   mod.n,mod.ninv,mod.norm );                                            \
+  if(0 == ok % p )                                                      \
+   ok=0;
+#else
+ #define ROW_23( i, j )                                                \
+  cand_0=rows[i]+dim_minus_4;                                            \
+  cand_1=rows[j]+dim_minus_4;                                              \
+  det_mod_pk_mul_sub_2x2(invM,epsi1,   cand_0,cand_1,   zeta0,zeta1,   mod); \
+  PRINTF("i=%w j=%w epsi=%wu %wu | %wu %wu\n",i,j,                           \
+   invM[0],invM[1],epsi1[0],epsi1[1]);                                      \
+  ok=SUB( MUL(invM[0],epsi1[1]), MUL(invM[1],epsi1[0]) );                  \
+  if(0 == ok % p )                                                       \
+   ok=0;
+#endif
 
 static __inline__ mp_limb_t 
 det_mod_pk_SE_row_23(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,mp_limb_t p)

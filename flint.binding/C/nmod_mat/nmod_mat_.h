@@ -25,6 +25,13 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
    NMOD_RED3_pk( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );  \
    rez=Vlo;                                             \
   }
+
+ // r=s-dot result
+ #define VECTOR_DOT_TAIL_sub(r, s, n,ninv,two_128_mod_n)  \
+  {                                                      \
+   NMOD_RED3_pk( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );   \
+   r=n_submod( s,Vlo, n );                             \
+  }
  
  /*
   VECTOR_DOT_TAIL_3arg() is slower than VECTOR_DOT_TAIL
