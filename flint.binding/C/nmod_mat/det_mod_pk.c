@@ -27,7 +27,8 @@
 #endif
 
 #if defined(WX_MINUS_YZ)
- #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) WX_MINUS_YZ( rez, w,x,y,z, n,i );
+ #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
+  WX_MINUS_YZ( rez, w,x,y,z, n,i,M->mod.norm );
 #else
  #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
   rez=SUB_mod_n( MUL_mod_n(w,x), MUL_mod_n(y,z) );

@@ -159,6 +159,24 @@ z=n_addmod(x,y,n) unrolls into 7 lines without branches:
     : "rm"( (mp_limb_t)(y) ),"rm" ( (mp_limb_t)(n) )   \
    );
 
+#define n_negmod_opt(t,n) \
+ if(t)                    \
+  t=n-t;                  \
+
+// r := w*x-y*z modulo n
+#define WX_MINUS_YZ(r, w,x,y,z, n,ninv,two_128_mod_n ) \
+ {                                                     \
+  mp_limb_t _t0,_t1,_t2,_t3=0;                         \
+  umul_ppmm( _t0,r, w,x );                             \
+  umul_ppmm( _t1,_t2, y,z );                          \
+  n_negmod_opt(_t1,n);                               \
+  if(_t2 > n)                                        \
+   _t2 -= n;                                        \
+  n_negmod_opt(_t2,n);                              \
+  add_sssaa(_t3,_t0,r, _t1,_t2);                   \
+  NMOD_RED3_pk( _t3,_t0,r, n,ninv,two_128_mod_n ); \
+ }
+
 #endif
 
 #endif
