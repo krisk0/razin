@@ -22,22 +22,16 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
    umul_ppmm( Vmi,Vlo, alpha,betta );
 
  #define VECTOR_DOT_BODY(alpha, betta)  \
-  {                                      \
    umul_ppmm( V1,V0, alpha,betta );     \
-   add_sssaa( Vhi,Vmi,Vlo, V1,V0 );     \
-  }
+   add_sssaa( Vhi,Vmi,Vlo, V1,V0 );     
  
  #define VECTOR_DOT_TAIL(rez, n,ninv,two_128_mod_n)  \
-  {                                                   \
    NMOD_RED3_pk( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );  \
-   rez=Vlo;                                             \
-  }
+   rez=Vlo;                                             
 
  #define VECTOR_DOT_TAIL_easy(rez, n,ninv)                \
-  {                                                        \
    NMOD_RED3_pk_easy( Vhi,Vmi,Vlo, n,ninv );               \
-   rez=Vlo;                                                \
-  }
+   rez=Vlo;                                                
 
  // r=s-dot result
  #define VECTOR_DOT_TAIL_sub(r, s, n,ninv,two_128_mod_n)  \
