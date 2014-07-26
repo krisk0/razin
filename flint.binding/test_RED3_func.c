@@ -22,6 +22,7 @@ test_prime(mp_limb_t p)
  {
   p_k_pk_t P;
   P.p=p;
+  flint_printf("p=%wu\n",p);
   nmod_t M0,M1;
   init__p_k_pk__and__nmod( &P, &M0 );
   memcpy( &M1, &M0, sizeof(M1) );
@@ -30,14 +31,14 @@ test_prime(mp_limb_t p)
   slong i,j;
   mp_limb_t S0[3],S1[3],S2[3],S3[3];
   mp_limb_t r;
-  for(i=100;i--;)
+  for(i=33554432;i--;)
    {
     for(j=3;j--;)
      S3[j]=S2[j]=S1[j]=S0[j]=n_randlimb(st);
     S3[2] %= M1.n;
     NMOD_RED( S0[2], S0[2], M0 );
     NMOD_RED3( S0[0], S0[2], S0[1], S0[0], M0 );
-    r = NMOD_RED3_pk_func( S1[2],S1[1],S1[0], M1,M1.norm );
+    r = NMOD_RED3_pk_func( S1[2],S1[1],S1[0], M1 );
     assert( r==S0[0] );
     NMOD_RED3_pk( S2[2],S2[1],S2[0], M1.n,M1.ninv,M1.norm );
     assert( r==S2[0] );
@@ -49,6 +50,7 @@ test_prime(mp_limb_t p)
 int main()
  {
   flint_randinit(st);
+  test_prime( 4294967291 );
   test_prime(3);
   //test_prime(5);     5 will be tested for i=2
   test_prime(0xFFFFFFFFFFFFFFC5);

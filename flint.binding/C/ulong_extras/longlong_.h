@@ -68,13 +68,12 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
 static __inline__ 
 mp_limb_t NMOD_RED3_pk_func(
   mp_limb_t a_hi,mp_limb_t a_me,mp_limb_t a_lo, 
-  const nmod_t mod, 
-  mp_limb_t two_128_mod_n)
+  const nmod_t mod)
  {
   mp_limb_t t0,t1,r;
   if(a_hi>1)
    {
-    umul_ppmm( t0,t1, two_128_mod_n, a_hi );
+    umul_ppmm( t0,t1, mod.norm, a_hi );
     a_hi=0;
     add_sssaa( a_hi,a_me,a_lo, t0,t1 );
    }
@@ -98,6 +97,7 @@ mp_limb_t NMOD_RED3_pk_func(
  }
 
 // result in a_lo. Should be faster than NMOD_RED3
+// removing if(a_hi>1) results in a hard-to-catch error 
 #define NMOD_RED3_pk( a_hi,a_me,a_lo, n,ninv,two_128_mod_n ) \
  {                                                            \
   mp_limb_t t0,t1;                                             \
