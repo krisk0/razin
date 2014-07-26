@@ -180,3 +180,7 @@
             My determinant calculation is the fastest open-source subroutine
             (for big and fat matrix)
             
+25 Jul 2014 Optimizing nmod_mat/det_mod_pk.c, starting from top. Time varies
+             strangely. Replacing heavier macro NMOD_RED3_pk()
+             NMOD_RED3_pk_easy() brings slow-down, instead of speed-up. Is that
+             gcc fault? How do I replace gcc with clang or other compiler?
