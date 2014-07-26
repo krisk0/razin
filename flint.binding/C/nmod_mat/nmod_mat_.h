@@ -11,22 +11,33 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
 #if (GMP_LIMB_BITS == 64 && defined (__amd64__))
 
  #define VECTOR_DOT_HEAD(alpha, betta)  \
-   register mp_limb_t Vhi=0,Vmi,Vlo,V1,V0;  \
+   register mp_limb_t Vhi=0,Vmi,Vlo;     \
+   umul_ppmm( Vmi,Vlo, alpha,betta );        
+
+ #define VECTOR_DOT_BODY(alpha, betta) \
+   asm                                  \
+    (                                   \
+     "movq %q3,%%rax\n\t"                \
+     "mulq %q4\n\t"                      \
+     "addq %%rax,%q2\n\t"                  \
+     "adcq %%rdx,%q1\n\t"                   \
+     "adcq $0x0,%q0"                        \
+     : "+rm" (Vhi), "+rm" (Vmi), "+rm" (Vlo) \
+     : "rm" (alpha), "rm" (betta)             \
+     : "rax", "rdx"                          \
+    )
+  
+ #define VECTOR_DOT_HEAD_greedy(alpha, betta)  \
+   register mp_limb_t Vhi=0,Vmi,Vlo,V1,V0;    \
    umul_ppmm( Vmi,Vlo, alpha,betta );        \
-
- #define VECTOR_DOT_INIT                 \
-   register mp_limb_t Vhi,Vmi,Vlo,V1,V0; 
-
- #define VECTOR_DOT_STRT(alpha, betta)  \
-   Vhi=0;                              \
-   umul_ppmm( Vmi,Vlo, alpha,betta );
-
- #define VECTOR_DOT_BODY(alpha, betta)  \
-  {                                     \
-   umul_ppmm( V1,V0, alpha,betta );     \
-   add_sssaa( Vhi,Vmi,Vlo, V1,V0 );     \
-  }
  
+ 
+ #define VECTOR_DOT_BODY_greedy(alpha, betta)  \
+   {                                     \
+    umul_ppmm( V1,V0, alpha,betta );     \
+    add_sssaa( Vhi,Vmi,Vlo, V1,V0 );     \
+   }
+  
  #define VECTOR_DOT_TAIL(rez, n,ninv,two_128_mod_n)  \
   {                                                   \
    NMOD_RED3_pk( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );  \
