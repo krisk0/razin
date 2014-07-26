@@ -6,6 +6,7 @@
 #define ULONG_EXTRAS__H
 
 #include <flint/nmod_vec.h>
+#include "longlong_.h"
 
 #if !defined(SPEEDUP_NMOD_RED3)
  #define SPEEDUP_NMOD_RED3 1
