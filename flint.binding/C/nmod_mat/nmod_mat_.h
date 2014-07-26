@@ -13,7 +13,14 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
  #define VECTOR_DOT_HEAD(alpha, betta)  \
    register mp_limb_t Vhi=0,Vmi,Vlo,V1,V0;  \
    umul_ppmm( Vmi,Vlo, alpha,betta );        \
- 
+
+ #define VECTOR_DOT_INIT                 \
+   register mp_limb_t Vhi,Vmi,Vlo,V1,V0; 
+
+ #define VECTOR_DOT_STRT(alpha, betta)  \
+   Vhi=0;                              \
+   umul_ppmm( Vmi,Vlo, alpha,betta );
+
  #define VECTOR_DOT_BODY(alpha, betta)  \
   {                                      \
    umul_ppmm( V1,V0, alpha,betta );     \
@@ -26,9 +33,9 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
    rez=Vlo;                                             \
   }
 
- #define VECTOR_DOT_TAIL_easy(rez, n,ninv,two_128_mod_n)  \
+ #define VECTOR_DOT_TAIL_easy(rez, n,ninv)                \
   {                                                        \
-   NMOD_RED3_pk_easy( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );  \
+   NMOD_RED3_pk_easy( Vhi,Vmi,Vlo, n,ninv );               \
    rez=Vlo;                                                \
   }
 
@@ -39,10 +46,18 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
    r=n_submod( s,Vlo, n );                             \
   }
  
- #define VECTOR_DOT_TAIL_sub_easy(r, s, n,ninv,two_128_mod_n)  \
+ #define VECTOR_DOT_TAIL_sub_easy(r, s, n,ninv)           \
   {                                                      \
-   NMOD_RED3_pk_easy( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );   \
+   NMOD_RED3_pk_easy( Vhi,Vmi,Vlo, n,ninv          );   \
    r=n_submod( s,Vlo, n );                             \
+  }
+
+ // r=r+dot result, if r+dot result < 2**129
+ #define VECTOR_DOT_TAIL_add(r, n,ninv)     \
+  {                                           \
+   add_sssa(Vhi,Vmi,Vlo, r);                    \
+   NMOD_RED3_pk_easy( Vhi,Vmi,Vlo, n,ninv );     \
+   r=Vlo;                                       \
   }
  
  /*

@@ -34,6 +34,11 @@
        : "+r" (sh), "+r" (sm), "+r" (sl)                      \
        : "rme" ((mp_limb_t)(bm)), "rme" ((mp_limb_t)(bl))) 
 
+#define     add_sssa(sh, sm, sl,                    bl)  \
+  __asm__ ("addq %3,%q2\n\tadcq $0x0,%q1\n\tadcq $0x0,%q0"    \
+       : "+r" (sh), "+r" (sm), "+r" (sl)                      \
+       :                          "rme" ((mp_limb_t)(bl))) 
+
 static __inline__
 mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
 // this function is a piece of n_mulmod_preinv_4arg() which is a modification
@@ -114,8 +119,8 @@ mp_limb_t NMOD_RED3_pk_func(
  }
 
 // same as NMOD_RED3_pk, but a_hi<=1
-#define NMOD_RED3_pk_easy( a_hi,a_me,a_lo, n,ninv,two_128_mod_n ) \
- {                                                            \
+#define NMOD_RED3_pk_easy( a_hi,a_me,a_lo, n,ninv )           \
+ {                                                           \
   mp_limb_t t0,t1;                                          \
   if( a_hi )                                               \
    {                                                      \
