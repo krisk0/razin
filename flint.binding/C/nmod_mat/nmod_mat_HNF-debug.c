@@ -516,7 +516,7 @@ aka DomichKannanTrotter87.pdf
        {
         free(scratch);
         DKryskov_nmod_early_abort(A,i);
-        return;
+        return 0;
        }
       // success, diagonal is correct
       break;
@@ -583,7 +583,7 @@ aka DomichKannanTrotter87.pdf
      {
       free(scratch);
       DKryskov_nmod_early_abort(A,i);
-      return;
+      return 0;
      }
    }// main loop end
   free(scratch);
