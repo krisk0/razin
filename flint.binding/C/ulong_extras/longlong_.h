@@ -97,25 +97,24 @@ mp_limb_t NMOD_RED3_pk_func(
  }
 
 // result in a_lo. Should be faster than NMOD_RED3
-// removing if(a_hi>1) results in a hard-to-catch error 
 #define NMOD_RED3_pk( a_hi,a_me,a_lo, n,ninv,two_128_mod_n ) \
  {                                                            \
-  mp_limb_t t0,t1;                                             \
+  mp_limb_t RED3_t0,RED3_t1;                                   \
   if(a_hi>1)                                                   \
    {                                                           \
-    umul_ppmm( t0,t1, two_128_mod_n, a_hi );                   \
+    umul_ppmm( RED3_t0,RED3_t1, two_128_mod_n, a_hi );         \
     a_hi=0;                                                   \
-    add_sssaa( a_hi,a_me,a_lo, t0,t1 );                      \
+    add_sssaa( a_hi,a_me,a_lo, RED3_t0,RED3_t1 );            \
    }                                                        \
   if( a_hi )                                               \
    {                                                      \
     if( a_me > n )                                       \
      a_me -= n;                                         \
     a_me -= n;                                         \
-   }                                                  \
-  if( a_me > n )                                     \
-   a_me -= n;                                       \
-  NMOD_RED2_pk( a_me,a_lo, t0,t1, n,ninv);        \
+   }                                                   \
+  if( a_me > n )                                       \
+   a_me -= n;                                           \
+  NMOD_RED2_pk( a_me,a_lo, RED3_t0,RED3_t1, n,ninv);      \
  }
 
 // same as NMOD_RED3_pk, but a_hi<=1
