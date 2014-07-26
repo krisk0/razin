@@ -36,7 +36,11 @@ select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor)
       count_leading_zeros( t, pp->p_deg_k );
       mod->n = pp->p_deg_k << t;
       invert_limb(mod->ninv, mod->n);
-      // TODO: save 44 ticks by re-using r % pp->p
+      // save 44 ticks by re-using r % pp->p
+      #if SPEEDUP_NMOD_RED3
+       t = - mod->n;
+       mod->norm = n_mulmod_preinv_4arg( t,t, mod->n,mod->ninv );
+      #endif
       return inv_mod_pk_4arg(r,r_mod_p,pp[0],mod[0]);
      }
    }
@@ -50,7 +54,10 @@ fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   mp_limb_t xmod;
   mp_limb_t divisor_inv; // stands for n_invmod(fmpz_fdiv_ui(d, p)
   p_k_pk_t pp; pp.p=2;
-  nmod_mat_t Amod; Amod->mod.norm=0;
+  nmod_mat_t Amod;
+  #if !SPEEDUP_NMOD_RED3
+   Amod->mod.norm=0;
+  #endif
   slong dim = A->r;
   mp_limb_t* scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
   fmpz_init(bound);

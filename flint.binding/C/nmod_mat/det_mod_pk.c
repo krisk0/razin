@@ -845,8 +845,9 @@ D := D-C*A'*B
  }
 
 #if defined(ALIGN_inv_array)
+ // WTF? GCC silently ignored the 2 movdqa commands
  #define SWALLOW_sou            \
-  asm                            \
+  asm volatile                   \
    (                              \
     "movdqa %2,%0\n\tmovdqa %3,%1" \
     : "=x" (cont0), "=x" (cont1)     \
@@ -858,10 +859,10 @@ D := D-C*A'*B
 
 #define A_BY_B( Arow )        \
     tgt=scrtch+Arow;              \
-    sou=Ainv+4*Arow;                 \
-    SWALLOW_sou                       \
-    SCALAR_4(b0[0],b1[0],b2[0],b3[0]); \
-    for(j=1;j<dim_minus_4;j++)          \
+    sou=Ainv+4*Arow;                   \
+    SWALLOW_sou                          \
+    SCALAR_4(b0[0],b1[0],b2[0],b3[0]);   \
+    for(j=1;j<dim_minus_4;j++)           \
      {                                   \
       tgt += 4;                          \
       SCALAR_4(b0[j],b1[j],b2[j],b3[j]); \
@@ -872,8 +873,43 @@ SCALAR_4(x0,x1,x2,x3): tgt[0] := x0..x3 DOT sou[0]..sou[3]
  multiple DOT operations for single sou performed
 */
 
+#if defined(ALIGN_inv_array)
+#define SCALAR_4(x0,x1,x2,x3 )   \
+ {                                            \
+  register mp_limb_t t1,t2;                      \
+  asm                                              \
+   (                                                \
+    "pextrq $0,%3,%%rax\n\t"                         \
+    "mulq %q5\n\t"                                    \
+    "movq %%rax,%q2\n\t"                               \
+    "movq %%rdx,%q1\n\t"                                \
+    "xorq %q0,%q0\n\t"                                   \
+    "pextrq $1,%3,%%rax\n\t"                              \
+    "mulq %q6\n\t"                                         \
+    "addq %%rax,%q2\n\t"                                    \
+    "adcq %%rdx,%q1\n\t"                                     \
+    "adcq $0x0,%q0\n\t"                                       \
+    "pextrq $0,%4,%%rax\n\t"                                   \
+    "mulq %q7\n\t"                                              \
+    "addq %%rax,%q2\n\t"                                         \
+    "adcq %%rdx,%q1\n\t"                                          \
+    "adcq $0x0,%q0\n\t"                                           \
+    "pextrq $1,%4,%%rax\n\t"                                       \
+    "mulq %q8\n\t"                                                  \
+    "addq %%rax,%q2\n\t"                                             \
+    "adcq %%rdx,%q1\n\t"                                              \
+    "adcq $0x0,%q0\n\t"                                                \
+    : "=r" (t2), "=r" (t1), "=r" (t)                                   \
+    : "x" (cont0), "x" (cont1), "m" (x0), "m" (x1), "m" (x2), "m" (x3) \
+    : "rax", "rdx"                                                    \
+   );                                                                \
+  NMOD_RED3_pk(t2,t1,t, mod.n,mod.ninv,mod.norm);                  \
+  tgt[0]=t;                                                     \
+ }
+#endif
+
 #if VECTOR_DOT_IN_cutoff_4 && !defined(SCALAR_4)
- // Both variants work, same speed
+ // This SCALAR_4 and below has same speed
  #define SCALAR_4(b_0,b_1,b_2,b_3)            \
   {                                            \
    VECTOR_DOT_HEAD(sou[0],b_0);                 \
@@ -941,19 +977,10 @@ D := D-B*A'*C
     sou=tgt+dim_minus_4;
     so2=scrtch;
     #if 0
-     // no big difference
+     // attempt to cache in registers: no gain
      mp_limb_t sou0=sou[0];
      mp_limb_t sou1=sou[1];
-     mp_limb_t sou2=sou[2];
-     mp_limb_t sou3=sou[3];
-     for(j=dim_minus_4;j--;tgt++,so2 += 4)
-      {
-       t=tgt[0];
-       MUL_SUB(t, t, sou0,so2[0] );
-       MUL_SUB(t, t, sou1,so2[1] );
-       MUL_SUB(t, t, sou2,so2[2] );
-       MUL_SUB(tgt[0], t, sou3,so2[3] );
-      }
+     ...
     #else
      for(j=dim_minus_4;j--;tgt++,so2 += 4)
       {
