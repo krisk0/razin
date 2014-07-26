@@ -156,6 +156,7 @@ int main()
   
   BENCHMARK( 4,4,100, BIG_P, VOL );
   BENCHMARK( 100,4,4, BIG_P, VOL );
+  return 0;
  }
 
 #if 0
