@@ -27,6 +27,13 @@
  #define SHOW_0TH_COL
 #endif
 
+#if GMP_LIMB_BITS == 64 && defined (__amd64__)
+ #define ALIGN_inv_array 0x10
+ #include <xmmintrin.h> // need __m128i
+ #undef uint128_t
+ #define uint128_t __m128i
+#endif
+
 #if defined(WX_MINUS_YZ)
  #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
   WX_MINUS_YZ( rez, w,x,y,z, n,i );
@@ -837,9 +844,22 @@ D := D-C*A'*B
    }
  }
 
+#if defined(ALIGN_inv_array)
+ #define SWALLOW_sou            \
+  asm                            \
+   (                              \
+    "movdqa %2,%0\n\tmovdqa %3,%1" \
+    : "=x" (cont0), "=x" (cont1)     \
+    : "m" (sou[0]), "m" (sou[2])       \
+   );
+#else
+ #define SWALLOW_sou
+#endif
+
 #define A_BY_B( Arow )        \
     tgt=scrtch+Arow;              \
     sou=Ainv+4*Arow;                 \
+    SWALLOW_sou                       \
     SCALAR_4(b0[0],b1[0],b2[0],b3[0]); \
     for(j=1;j<dim_minus_4;j++)          \
      {                                   \
@@ -847,7 +867,12 @@ D := D-C*A'*B
       SCALAR_4(b0[j],b1[j],b2[j],b3[j]); \
      }
 
-#if VECTOR_DOT_IN_cutoff_4
+/*
+SCALAR_4(x0,x1,x2,x3): tgt[0] := x0..x3 DOT sou[0]..sou[3]
+ multiple DOT operations for single sou performed
+*/
+
+#if VECTOR_DOT_IN_cutoff_4 && !defined(SCALAR_4)
  // Both variants work, same speed
  #define SCALAR_4(b_0,b_1,b_2,b_3)            \
   {                                            \
@@ -857,7 +882,9 @@ D := D-C*A'*B
    VECTOR_DOT_BODY(sou[3],b_3);                    \
    VECTOR_DOT_TAIL(tgt[0],mod.n,mod.ninv,mod.norm); \
   }
-#else
+#endif
+
+#if !defined(SCALAR_4)
  #define SCALAR_4(b_0,b_1,b_2,b_3)                     \
   t=n_mulmod_preinv_4arg( sou[0],b_0, mod.n,mod.ninv ); \
   t=n_addmod(                                           \
@@ -894,6 +921,10 @@ D := D-B*A'*C
   const mp_limb_t* b3=rows[dim_minus_4+3];
   mp_limb_t* tgt;
   mp_limb_t* sou;
+  #if defined(ALIGN_inv_array)
+   register uint128_t cont0 asm("xmm0");
+   register uint128_t cont1 asm("xmm1");
+  #endif
   mp_limb_t* so2;
   const nmod_t mod=M->mod;
   slong i,j;
@@ -945,7 +976,11 @@ nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
  {
   #define p_deg_k pp.p_deg_k
   slong negate_det=0,dim;
-  mp_limb_t inv[16];
+  mp_limb_t inv[16]
+  #if defined(ALIGN_inv_array)
+   __attribute__((aligned(ALIGN_inv_array)))
+  #endif
+   ;
   mp_limb_t c,result=UWORD_MAX;
   const nmod_t mod=M->mod;
   // Reduce dimension
