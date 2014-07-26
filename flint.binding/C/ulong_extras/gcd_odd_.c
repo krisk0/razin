@@ -22,7 +22,7 @@ Inspired by division-free n_gcd() subroutine by Abhinav Baid
  {
   register mp_limb_t s;
   count_trailing_zeros(s, y);
-  y >> s;
+  y >>= s;
   while(x!=y)
    {
     if(x<y)
