@@ -34,12 +34,18 @@
  #define uint128_t __m128i
 #endif
 
-#if defined(WX_MINUS_YZ)
+#if defined(WX_MINUS_YZ) && 0
  #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
-  WX_MINUS_YZ( rez, w,x,y,z, n,i );
+  WX_MINUS_YZ_fast( rez, w,x,y,z, n,i );
 #else
  #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
   rez=SUB_mod_n( MUL_mod_n(w,x), MUL_mod_n(y,z) );
+#endif
+
+#if defined(MULADD_pk)
+ #define MULADD_3arg(r,a,b) MULADD_pk(r, a,b, n,i)
+#else
+ #define MULADD_3arg(r,a,b) r=ADD_mod_n(r, MUL_mod_n(a,b) )
 #endif
 
 //TODO: use better algorithm for vector dot product, in all subroutines
@@ -80,19 +86,19 @@
   r=MUL_mod_n( a, b );                          \
   WX_MINUS_YZ_5arg(a, r0[1],r1[3], r0[3],r1[1]) \
   WX_MINUS_YZ_5arg(b, r2[2],r3[0], r2[0],r3[2]) \
-  r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+  MULADD_3arg(r, a,b)                           \
   WX_MINUS_YZ_5arg(a, r0[2],r1[1], r0[1],r1[2]) \
   WX_MINUS_YZ_5arg(b, r2[3],r3[0], r2[0],r3[3]) \
-  r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+  MULADD_3arg(r, a,b)                           \
   WX_MINUS_YZ_5arg(a, r0[3],r1[0], r0[0],r1[3]) \
   WX_MINUS_YZ_5arg(b, r2[2],r3[1], r2[1],r3[2]) \
-  r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+  MULADD_3arg(r, a,b)                           \
   WX_MINUS_YZ_5arg(a, r0[0],r1[2], r0[2],r1[0]) \
   WX_MINUS_YZ_5arg(b, r2[3],r3[1], r2[1],r3[3]) \
-  r=ADD_mod_n( r, MUL_mod_n(a,b) );             \
+  MULADD_3arg(r, a,b)                           \
   WX_MINUS_YZ_5arg(a, r0[1],r1[0], r0[0],r1[1]) \
   WX_MINUS_YZ_5arg(b, r2[3],r3[2], r2[2],r3[3]) \
-  r=ADD_mod_n( r, MUL_mod_n(a,b) );
+  MULADD_3arg(r, a,b)
 #endif
 
 static __inline__ mp_limb_t

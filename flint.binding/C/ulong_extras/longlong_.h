@@ -53,6 +53,25 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
   return (r < n ? r : r - n);
  }
 
+// r += a*b modulo n
+#define MULADD_pk( r, a,b, n,ninv )         \
+ {                                           \
+  register mp_limb_t _mscr1 asm ("rdx");      \
+  register mp_limb_t _mscr0 asm ("rax");       \
+  mp_limb_t _mscr2;                              \
+  asm                                               \
+   (                                                     \
+    "mov %q5,%q1\n\t"                                        \
+    "mulq %q4\n\t"                                            \
+    "mov %q0,%q3\n\t"                                          \
+    "add %q1,%q2\n\t"                                          \
+    "adc $0,%q3\n\t"                                           \
+    : "=&d" (_mscr1), "=&a" (_mscr0), "+r" (r), "=r" (_mscr2)  \
+    : "rm" (a), "rm" (b)                                      \
+   );                                                        \
+  NMOD_RED2_pk_4arg( _mscr2,r, n,ninv );                    \
+ }
+
 // result in r, q*: scratch
 #define NMOD_RED2_pk( p,r, q1,q0, n,ninv ) \
  {                                          \
@@ -64,7 +83,32 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
     if(r>=n)                                \
      r -= n;                                \
  }
- 
+
+#define NMOD_RED2_pk_4arg( _p,_rez, n,ninv ) \
+ {                                           \
+  register mp_limb_t _scr1 asm ("rdx");      \
+  register mp_limb_t _scr0 asm ("rax");      \
+  asm                                       \
+   (                                        \
+    "mov %q5,%q1\n\t"                       \
+    "mulq %q3\n\t"                          \
+    "add %q2,%q1\n\t"                       \
+    "adc %q3,%q0\n\t"                       \
+    "inc %q0\n\t"                           \
+    "imul %q4,%q0\n\t"                      \
+    "sub %q0,%q2\n\t"                       \
+    "lea (%q2,%q4,1),%q0\n\t"               \
+    "cmp %q2,%q1\n\t"                       \
+    "cmovbe %q0,%q2\n\t"                    \
+    "mov %q2,%q1\n\t"                       \
+    "sub %q4,%q1\n\t"                        \
+    "cmp %q4,%q2\n\t"                        \
+    "cmovae %q1,%q2\n\t"                      \
+    : "=&d" (_scr1), "=&a" (_scr0), "+r" (_rez)  \
+    : "mr" (_p), "r" (n), "mr" (ninv )       \
+   );                                     \
+ }
+
 static __inline__ 
 mp_limb_t NMOD_RED3_pk_func(
   mp_limb_t a_hi,mp_limb_t a_me,mp_limb_t a_lo, 
@@ -99,9 +143,9 @@ mp_limb_t NMOD_RED3_pk_func(
 // result in a_lo. Should be faster than NMOD_RED3
 #define NMOD_RED3_pk( a_hi,a_me,a_lo, n,ninv,two_128_mod_n ) \
  {                                                            \
-  mp_limb_t RED3_t0,RED3_t1;                                   \
   if(a_hi>1)                                                   \
    {                                                           \
+    mp_limb_t RED3_t0,RED3_t1;                                 \
     umul_ppmm( RED3_t0,RED3_t1, two_128_mod_n, a_hi );         \
     a_hi=0;                                                   \
     add_sssaa( a_hi,a_me,a_lo, RED3_t0,RED3_t1 );            \
@@ -113,8 +157,8 @@ mp_limb_t NMOD_RED3_pk_func(
     a_me -= n;                                         \
    }                                                   \
   if( a_me > n )                                       \
-   a_me -= n;                                           \
-  NMOD_RED2_pk( a_me,a_lo, RED3_t0,RED3_t1, n,ninv);      \
+   a_me -= n;                                         \
+  NMOD_RED2_pk_4arg( a_me,a_lo, n,ninv);            \
  }
 
 // same as NMOD_RED3_pk, but a_hi<=1
@@ -201,6 +245,26 @@ z=n_addmod(x,y,n) unrolls into 7 lines without branches:
    if( _t0 > n )                                     \
     _t0 -= n;                                       \
    NMOD_RED2_pk( _t0,r, _t1,_t2, n,ninv);          \
+  }
+
+#define WX_MINUS_YZ_fast(_r, w,x,y,z, n,ninv )         \
+ if(y==0)                                              \
+  _r=n_mulmod_preinv_4arg(w,x, n,ninv);                 \
+ else                                                  \
+  {                                                    \
+   mp_limb_t _t0,_t1,_t2,_t3=0;                        \
+   umul_ppmm(_t1,_t2,n-y,z);                           \
+   umul_ppmm( _t0,_r, w,x );                           \
+   add_sssaa(_t3,_t0,_r, _t1,_t2);                      \
+   if( _t3 )                                             \
+    {                                                     \
+     if( _t0 > n )                                       \
+      _t0 -= n;                                         \
+     _t0 -= n;                                         \
+    }                                                 \
+   if( _t0 > n )                                     \
+    _t0 -= n;                                       \
+   NMOD_RED2_pk_4arg( _t0,_r, n,ninv);          \
   }
 
 #endif
