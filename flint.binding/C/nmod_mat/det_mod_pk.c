@@ -7,7 +7,6 @@
 
 #include <flint/flint.h>
 #include <flint/nmod_mat.h>
-#include "nmod_mat_.h"
 #include <assert.h>
 #include "../ulong_extras/ulong_extras_.h"
 #include "../nmod_mat/nmod_mat_.h"
@@ -214,6 +213,7 @@ nmod_mat_det_dim2(const nmod_mat_t A)
 #undef SUB_mod_n
 #undef DET_4x4
 #undef WX_MINUS_YZ_5arg
+#undef MULADD_3arg
 
 static __inline__ mp_limb_t
 det_mod_pk_SE_0th_row(nmod_mat_t M,slong* negate_det,mp_limb_t p)
@@ -271,8 +271,13 @@ Produce result modulo M->mod.n.
   invM[10]=epsln_inv;
   invM[11]=n_mulmod_preinv_4arg( epsln_inv, tempp, mod.n, mod.ninv);
   //invM[14]=zetta;
-  tempp=n_mulmod_preinv_4arg(tempp, zetta, mod.n, mod.ninv);
-  invM[15]=n_addmod( tempp, alpha_inv, mod.n );
+  #if 0
+   tempp=n_mulmod_preinv_4arg(tempp, zetta, mod.n, mod.ninv);
+   invM[15]=n_addmod( tempp, alpha_inv, mod.n );
+  #else
+   MULADD_pk( alpha_inv, tempp,zetta, mod.n, mod.ninv );
+   invM[15]=alpha_inv;
+  #endif
   #if LOUD_4x4_INVERT
    flint_printf("SE 2x2 corner inverse: %wu %wu | %wu %wu\n",
     invM[10],invM[11],invM[14],invM[15]);
@@ -326,6 +331,9 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
 #define MUL(x,y) n_mulmod_preinv_4arg(x,y,mod.n,mod.ninv)
 #define ADD(x,y) n_addmod(x,y,mod.n)
 #define SUB(x,y) n_submod(x,y,mod.n)
+#if defined(MULADD_pk)
+ #define MULADD_3arg(r,a,b) MULADD_pk(r, a,b, mod.n,mod.ninv)
+#endif
 
 static void 
 det_mod_pk_mul_2x2( 
@@ -351,10 +359,18 @@ det_mod_pk_mul_2x2(
    VECTOR_DOT_STRT(a1[0],b0[1]); VECTOR_DOT_BODY(a1[1],b1[1]);
    VECTOR_DOT_TAIL_easy(r1[1], n,i);
   #else
-   r0[0]=ADD( MUL(a0[0],b0[0]), MUL(a0[1],b1[0]) );
-   r0[1]=ADD( MUL(a0[0],b0[1]), MUL(a0[1],b1[1]) );
-   r1[0]=ADD( MUL(a1[0],b0[0]), MUL(a1[1],b1[0]) );
-   r1[1]=ADD( MUL(a1[0],b0[1]), MUL(a1[1],b1[1]) );
+   #if defined(MULADD_3arg)
+    mp_limb_t t;
+    t=MUL(a0[0],b0[0]); MULADD_3arg(t, a0[1],b1[0]); r0[0]=t;
+    t=MUL(a0[0],b0[1]); MULADD_3arg(t, a0[1],b1[1]); r0[1]=t;
+    t=MUL(a1[0],b0[0]); MULADD_3arg(t, a1[1],b1[0]); r1[0]=t;
+    t=MUL(a1[0],b0[1]); MULADD_3arg(t, a1[1],b1[1]); r1[1]=t;
+   #else
+    r0[0]=ADD( MUL(a0[0],b0[0]), MUL(a0[1],b1[0]) );
+    r0[1]=ADD( MUL(a0[0],b0[1]), MUL(a0[1],b1[1]) );
+    r1[0]=ADD( MUL(a1[0],b0[0]), MUL(a1[1],b1[0]) );
+    r1[1]=ADD( MUL(a1[0],b0[1]), MUL(a1[1],b1[1]) );
+   #endif
   #endif
  }
 
@@ -455,6 +471,7 @@ return 0 on failure, det on success
 #undef ADD
 #undef SUB
 #undef ROW_23
+#undef MULADD_pk
 
 static __inline__ mp_limb_t
 det_mod_pk_examine_last_column(nmod_mat_t M,slong* negate_det,

@@ -7,6 +7,8 @@
 #include "../ulong_extras/longlong_.h"
 #include "nmod_mat_.h"
 
+#define TINY_DOT 0
+
 /*
 clang miscompiles this subroutine: 4x4x100 multiplication takes 
 1.64 times longer under clang
@@ -23,7 +25,7 @@ nmod_mat_mul_pk_classical(nmod_mat_t R,nmod_mat_t A,nmod_mat_t B)
   mp_limb_t* betta;
   const mp_limb_t n=R->mod.n;
   const mp_limb_t ninv=R->mod.ninv;
-  #if SPEEDUP_NMOD_RED3
+  #if SPEEDUP_NMOD_RED3 && !TINY_DOT
    const mp_limb_t two_128_mod_n=R->mod.norm;
   #endif
   for(i=0;i<i_max;i++)
@@ -32,14 +34,21 @@ nmod_mat_mul_pk_classical(nmod_mat_t R,nmod_mat_t A,nmod_mat_t B)
     alpha=Arows[i];
     for(j=0;j<j_max;j++)
      {
-      VECTOR_DOT_HEAD_greedy( alpha[0], Brows[0][j] );
-      for(k=1;k<k_max;k++)
-       VECTOR_DOT_BODY_greedy( alpha[k], Brows[k][j] );
-      #if SPEEDUP_NMOD_RED3
-       VECTOR_DOT_TAIL( rho[j], n,ninv,two_128_mod_n );
+      #if TINY_DOT
+       VECTOR_DOT_HEAD_tiny(alpha[0],Brows[0][j], n,ninv);
+       for(k=1;k<k_max;k++)
+        VECTOR_DOT_BODY_tiny(alpha[k],Brows[k][j], n,ninv);
+       VECTOR_DOT_TAIL_tiny(rho[j]);
       #else
-                                               // for 4x4x100 multiplication,
-       VECTOR_DOT_TAIL_3arg( rho[j], n,ninv ); //  17% slower
+       VECTOR_DOT_HEAD_greedy( alpha[0], Brows[0][j] );
+       for(k=1;k<k_max;k++)
+        VECTOR_DOT_BODY_greedy( alpha[k], Brows[k][j] );
+       #if SPEEDUP_NMOD_RED3
+        VECTOR_DOT_TAIL( rho[j], n,ninv,two_128_mod_n );
+       #else
+                                                // for 4x4x100 multiplication,
+        VECTOR_DOT_TAIL_3arg( rho[j], n,ninv ); //  17% slower
+       #endif
       #endif
      }
    }

@@ -4,7 +4,7 @@
 
 #include <flint/fmpz_mat.h>
 #include <flint/nmod_mat.h>
-#include "../ulong_extras/longlong_.h"
+#include "../ulong_extras/ulong_extras_.h"
 
 void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
 
@@ -30,7 +30,6 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
  #define VECTOR_DOT_HEAD_greedy(alpha, betta)  \
    register mp_limb_t Vhi=0,Vmi,Vlo,V1,V0;    \
    umul_ppmm( Vmi,Vlo, alpha,betta );        \
- 
  
  #define VECTOR_DOT_BODY_greedy(alpha, betta)  \
    {                                     \
@@ -79,4 +78,13 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
    rez=Vlo;                                         \
   }
 
+ #define VECTOR_DOT_HEAD_tiny(alpha,betta, n,ninv) \
+  mp_limb_t Vt=n_mulmod_preinv_4arg(alpha,betta,n,ninv);
+ 
+ #define VECTOR_DOT_BODY_tiny(alpha,betta, n,ninv) \
+  MULADD_pk(Vt, alpha,betta, n,ninv);
+
+ #define VECTOR_DOT_TAIL_tiny(rez) \
+  rez=Vt;
+  
 #endif
