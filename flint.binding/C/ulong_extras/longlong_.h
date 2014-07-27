@@ -227,29 +227,9 @@ z=n_addmod(x,y,n) unrolls into 7 lines without branches:
   t=n-t;                  \
 
 // r := w*x-y*z modulo n, n >= 2**63
-#define WX_MINUS_YZ(r, w,x,y,z, n,ninv )              \
+#define WX_MINUS_YZ(_r, w,x,y,z, n,ninv )             \
  if(y==0)                                              \
-  r=n_mulmod_preinv_4arg(w,x, n,ninv);                 \
- else                                                  \
-  {                                                    \
-   mp_limb_t _t0,_t1,_t2,_t3=0;                        \
-   umul_ppmm(_t1,_t2,n-y,z);                           \
-   umul_ppmm( _t0,r, w,x );                            \
-   add_sssaa(_t3,_t0,r, _t1,_t2);                       \
-   if( _t3 )                                             \
-    {                                                     \
-     if( _t0 > n )                                       \
-      _t0 -= n;                                         \
-     _t0 -= n;                                         \
-    }                                                 \
-   if( _t0 > n )                                     \
-    _t0 -= n;                                       \
-   NMOD_RED2_pk( _t0,r, _t1,_t2, n,ninv);          \
-  }
-
-#define WX_MINUS_YZ_fast(_r, w,x,y,z, n,ninv )         \
- if(y==0)                                              \
-  _r=n_mulmod_preinv_4arg(w,x, n,ninv);                 \
+  _r=n_mulmod_preinv_4arg(w,x, n,ninv);                \
  else                                                  \
   {                                                    \
    mp_limb_t _t0,_t1,_t2,_t3=0;                        \

@@ -36,7 +36,7 @@
 
 #if defined(WX_MINUS_YZ) && 0
  #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
-  WX_MINUS_YZ_fast( rez, w,x,y,z, n,i );
+  WX_MINUS_YZ( rez, w,x,y,z, n,i );
 #else
  #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
   rez=SUB_mod_n( MUL_mod_n(w,x), MUL_mod_n(y,z) );
