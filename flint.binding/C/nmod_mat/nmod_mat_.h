@@ -8,7 +8,44 @@
 
 void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
 
-#if (GMP_LIMB_BITS == 64 && defined (__amd64__))
+#if GMP_LIMB_BITS == 64 && defined (__amd64__)
+
+ // allowing V2_me/V2_lo to be memory results in invalid code and crash
+ //  under gcc 4.7.4 and 4.8.3
+ #define VECTOR_DOT_2(tgt, x0,y0, x1,y1, mod)   \
+  {                                                    \
+   register mp_limb_t V2_dx asm ("rdx");                    \
+   register mp_limb_t V2_ax asm ("rax");                       \
+   mp_limb_t V2_me,V2_lo; /* 1 register for n + theese 2 = 3 */  \
+   register mp_limb_t n=mod.n;                                    \
+   asm                                                            \
+    (                                                             \
+        "mov  %q4,%q1\n\t"                                        \
+        "mulq %q5\n\t"                                            \
+        "mov  %q1,%q3\n\t"                                        \
+        "mov  %q0,%q2\n\t"                                        \
+        "mov  %q6,%q1\n\t"                                        \
+        "mulq %q7\n\t"                                            \
+        "add  %q1,%q3\n\t"                                        \
+        "adc  %q0,%q2\n\t"                                        \
+        "jnc  1f\n\t"                                             \
+        /* maybe subtract n from V2_me */                         \
+        "cmp  %q8,%q2\n\t"                                        \
+        "xor  %q1,%q1\n\t"                                        \
+        "cmovge %q8,%q1\n\t"   /* if V2_me >= n then ax=n */      \
+        "sub  %q1,%q2\n\t"                                        \
+        /* always subtract n from V2_me */                        \
+        "sub  %q8,%q2\n\t"                                        \
+     "1: xor  %q0,%q0\n\t"                                        \
+        "cmp  %q8,%q2\n\t"                                        \
+        "cmovge %q8,%q0\n\t"   /* if V2_me >= n then dx=n */      \
+        "sub %q2,%q0\n\t"                                         \
+     : "=&d" (V2_dx), "=&a" (V2_ax), "=&r" (V2_me), "=&r" (V2_lo) \
+     : "m" (x0),"m" (y0), "m" (x1),"m" (y1), "r" (n)             \
+    );                                                         \
+   NMOD_RED2_pk_4arg(V2_me,V2_lo, n,mod.ninv);               \
+   tgt=V2_lo;                                             \
+  }
 
  #define VECTOR_DOT_HEAD(alpha, betta)  \
    register mp_limb_t Vhi=0,Vmi,Vlo;     \
