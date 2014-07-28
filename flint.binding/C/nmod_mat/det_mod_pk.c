@@ -12,7 +12,7 @@
 #include "../nmod_mat/nmod_mat_.h"
 
 #define NDEBUG 1
-#define VECTOR_DOT_IN_cutoff_4 1
+#define VECTOR_DOT_IN_cutoff_4 0
 #define LOUD_4x4_INVERT 0
 #define BUG_IN_cutoff_4 0
 #define DUMP_cutoff_1_CALL 0
@@ -26,14 +26,14 @@
  #define SHOW_0TH_COL
 #endif
 
-#if GMP_LIMB_BITS == 64 && defined (__amd64__)
+#if GMP_LIMB_BITS == 64 && defined (__amd64__) && 1
  #define ALIGN_inv_array 0x10
  #include <xmmintrin.h> // need __m128i
  #undef uint128_t
  #define uint128_t __m128i
 #endif
 
-#if defined(WX_MINUS_YZ) && 0
+#if defined(WX_MINUS_YZ) && 1
  #define WX_MINUS_YZ_5arg( rez, w,x,y,z ) \
   WX_MINUS_YZ( rez, w,x,y,z, n,i );
 #else
@@ -41,10 +41,10 @@
   rez=SUB_mod_n( MUL_mod_n(w,x), MUL_mod_n(y,z) );
 #endif
 
-#if defined(MULADD_pk)
- #define MULADD_3arg(r,a,b) MULADD_pk(r, a,b, n,i)
+#if defined(MULADD_pk) && 1
+ #define MULADD_3arg(r,a,b) MULADD_pk(r, a,b, n,i);
 #else
- #define MULADD_3arg(r,a,b) r=ADD_mod_n(r, MUL_mod_n(a,b) )
+ #define MULADD_3arg(r,a,b) r=ADD_mod_n(r, MUL_mod_n(a,b) );
 #endif
 
 //TODO: use better algorithm for vector dot product, in all subroutines
@@ -147,7 +147,7 @@ use same algorithm as nmod_mat_det_dim4()
   return r;
  }
 
-#if defined(WX_MINUS_YZ)
+#if defined(WX_MINUS_YZ) && 0
  #define DIM2_DET( rez, r0, r1 ) \
   WX_MINUS_YZ( rez, r0[0],r1[1], r0[1],r1[0], n,i );
 #else
@@ -335,31 +335,20 @@ det_mod_pk_SE_1st_row(mp_limb_t* invM,nmod_mat_t M,slong* negate_det,
  #define MULADD_3arg(r,a,b) MULADD_pk(r, a,b, mod.n,mod.ninv)
 #endif
 
-static void 
+static __inline__ void 
 det_mod_pk_mul_2x2( 
   mp_limb_t* r0,mp_limb_t* r1,
   const mp_limb_t* a0,const mp_limb_t* a1,
   const mp_limb_t* b0,const mp_limb_t* b1,
   const nmod_t mod)
  {
-  #if defined(VECTOR_DOT_STRT) && 0
-   const register mp_limb_t n=mod.n;
-   const register mp_limb_t i=mod.ninv;
-   VECTOR_DOT_INIT;
-
-   VECTOR_DOT_STRT(a0[0],b0[0]); VECTOR_DOT_BODY(a0[1],b1[0]);
-   VECTOR_DOT_TAIL_easy(r0[0], n,i);
-
-   VECTOR_DOT_STRT(a0[0],b0[1]); VECTOR_DOT_BODY(a0[1],b1[1]);
-   VECTOR_DOT_TAIL_easy(r0[1], n,i);
-
-   VECTOR_DOT_STRT(a1[0],b0[0]); VECTOR_DOT_BODY(a1[1],b1[0]);
-   VECTOR_DOT_TAIL_easy(r1[0], n,i);
-
-   VECTOR_DOT_STRT(a1[0],b0[1]); VECTOR_DOT_BODY(a1[1],b1[1]);
-   VECTOR_DOT_TAIL_easy(r1[1], n,i);
+  #if defined(VECTOR_DOT_2)
+   VECTOR_DOT_2( r0[0], a0[0],b0[0], a0[1],b1[0], mod)
+   VECTOR_DOT_2( r0[1], a0[0],b0[1], a0[1],b1[1], mod)
+   VECTOR_DOT_2( r1[0], a1[0],b0[0], a1[1],b1[0], mod)
+   VECTOR_DOT_2( r1[1], a1[0],b0[1], a1[1],b1[1], mod)
   #else
-   #if defined(MULADD_3arg)
+   #if defined(MULADD_3arg) && 0
     mp_limb_t t;
     t=MUL(a0[0],b0[0]); MULADD_3arg(t, a0[1],b1[0]); r0[0]=t;
     t=MUL(a0[0],b0[1]); MULADD_3arg(t, a0[1],b1[1]); r0[1]=t;

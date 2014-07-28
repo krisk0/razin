@@ -62,7 +62,7 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
      : "+rm" (Vhi), "+rm" (Vmi), "+rm" (Vlo) \
      : "rm" (alpha), "rm" (betta)             \
      : "rax", "rdx"                          \
-    )
+    ); 
   
  #define VECTOR_DOT_HEAD_greedy(alpha, betta)  \
    register mp_limb_t Vhi=0,Vmi,Vlo,V1,V0;    \
