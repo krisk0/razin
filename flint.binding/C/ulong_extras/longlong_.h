@@ -224,7 +224,7 @@ z=n_addmod(x,y,n) unrolls into 7 lines without branches:
 
 #define n_negmod_opt(t,n) \
  if(t)                    \
-  t=n-t;                  \
+  t=n-t;
 
 // r := w*x-y*z modulo n, n >= 2**63
 #define WX_MINUS_YZ(_r, w,x,y,z, n,ninv )             \
