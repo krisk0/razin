@@ -56,7 +56,7 @@ nmod_mat_mul_pk_classical(nmod_mat_t R,nmod_mat_t A,nmod_mat_t B)
 
 /*
 asm code for this subroutine (made with gcc-4.7.3 -O3 -march=native) contains 
- lines that look like garbage to me
+ line that look like garbage to me: xchg   %ax,%ax
 0000000000400b20 <nmod_mat_mul_pk_classical>:
   400b20:	41 57                	push   %r15
   400b22:	41 56                	push   %r14
