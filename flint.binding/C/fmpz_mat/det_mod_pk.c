@@ -20,7 +20,12 @@ modify Mmod and scrtch
  {
   _nmod_mat_set_mod(Mmod, pp.p_deg_k);
   Mmod->mod.n <<= Mmod->mod.norm;  // make sure mod.n has higher bit set
-  Mmod->mod.norm = 0;              // now normalizer is zero
+  #if SPEEDUP_NMOD_RED3
+   mp_limb_t t= - Mmod->mod.n;
+   Mmod->mod.norm = n_mulmod_preinv_4arg( t,t, Mmod->mod.n,Mmod->mod.ninv );
+  #else
+   Mmod->mod.norm=0;
+  #endif
   fmpz_mat_get_nmod_mat(Mmod, M);
   return nmod_mat_det_mod_pk_4block(Mmod,pp,scrtch);
  }
