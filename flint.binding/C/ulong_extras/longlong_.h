@@ -94,7 +94,7 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
     "mulq %q3\n\t"                          \
     "add %q2,%q1\n\t"                       \
     "adc %q3,%q0\n\t"                       \
-    "inc %q0\n\t"                           \
+    "add $1,%q0\n\t"                        \
     "imul %q4,%q0\n\t"                      \
     "sub %q0,%q2\n\t"                       \
     "lea (%q2,%q4,1),%q0\n\t"               \
