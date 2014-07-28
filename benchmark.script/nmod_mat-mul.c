@@ -156,6 +156,9 @@ int main()
   
   BENCHMARK( 4,4,100, BIG_P, VOL );
   BENCHMARK( 100,4,4, BIG_P, VOL );
+
+  BENCHMARK( 4,4,100, n_nextprime(UWORD(1)<<32,0), VOL );
+  BENCHMARK( 4,4,100, n_nextprime(UWORD(1)<<63,0), VOL );
   return 0;
  }
 
