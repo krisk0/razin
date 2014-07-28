@@ -30,7 +30,7 @@ int main()
     w=R();  x=R();
     y=R();  z=R();
     WX_MINUS_YZ_slow(r0, w,x,y,z, M.n,M.ninv );
-    WX_MINUS_YZ(r1, w,x,y,z, M.n,M.ninv,M.norm );
+    WX_MINUS_YZ(r1, w,x,y,z, M.n,M.ninv );
     if(r0 != r1)
      {
       flint_printf("n=%wu\n",M.n);
