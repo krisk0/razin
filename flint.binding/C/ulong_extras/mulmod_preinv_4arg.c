@@ -21,7 +21,7 @@ n_mulmod_preinv_4arg(mp_limb_t a, mp_limb_t b, mp_limb_t n, mp_limb_t ninv)
    register mp_limb_t scr; // asm ("r8")
    asm 
     (
-     "mov %q0,%q4\n\t"
+     "mov %q0,%q4\n\t"      // %q4 := n
      "mov %q2,%q1\n\t"
      "mulq %q3\n\t"         // a,b no longer needed
      "mov %q0,%q3\n\t"
@@ -36,10 +36,10 @@ n_mulmod_preinv_4arg(mp_limb_t a, mp_limb_t b, mp_limb_t n, mp_limb_t ninv)
      "lea (%q2,%q4,1),%q0\n\t"
      "cmp %q2,%q1\n\t"
      "cmovbe %q0,%q2\n\t"
-     "mov %q2,%q1\n\t"
-     "sub %q4,%q1\n\t"
-     "cmp %q4,%q2\n\t"
-     "cmovb %q2,%q1\n\t"
+     "mov %q2,%q1\n\t"      // tgt = %q2
+     "sub %q4,%q1\n\t"      // tgt -= n
+     "cmp %q4,%q2\n\t"      // ? n > %q2
+     "cmovb %q2,%q1\n\t"    // if %q2 < n then tgt = %q2
      : "+d" (n), "=&a" (tgt), "+r" (a), "+r" (b), "=r" (scr)
      : "r" (ninv)
     );
