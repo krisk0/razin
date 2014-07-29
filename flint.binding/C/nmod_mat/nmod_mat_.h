@@ -136,12 +136,12 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
    r=n_submod( s,Vlo, n );                             \
   }
 
- // r=r+dot result, if r+dot result < 2**129
- #define VECTOR_DOT_TAIL_add(r, n,ninv)     \
-  {                                           \
-   add_sssa(Vhi,Vmi,Vlo, r);                    \
-   NMOD_RED3_pk_easy( Vhi,Vmi,Vlo, n,ninv );     \
-   r=Vlo;                                       \
+ // r=r+dot result
+ #define VECTOR_DOT_TAIL_add(r, n,ninv,two_128_mod_n) \
+  {                                                     \
+   add_sssa(Vhi,Vmi,Vlo, r);                             \
+   NMOD_RED3_pk( Vhi,Vmi,Vlo, n,ninv,two_128_mod_n );     \
+   r=Vlo;                                                \
   }
  
  /*

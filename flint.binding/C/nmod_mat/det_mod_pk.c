@@ -147,7 +147,7 @@ use same algorithm as nmod_mat_det_dim4()
   return r;
  }
 
-#if defined(WX_MINUS_YZ) && 0
+#if defined(WX_MINUS_YZ)
  #define DIM2_DET( rez, r0, r1 ) \
   WX_MINUS_YZ( rez, r0[0],r1[1], r0[1],r1[0], n,i );
 #else
@@ -168,7 +168,7 @@ nmod_mat_det_dim3(const nmod_mat_t A)
   const mp_limb_t n=A->mod.n;
   const mp_limb_t i=A->mod.ninv;
   mp_limb_t rez,t;
-  #if defined(VECTOR_DOT_HEAD) && defined(SPEEDUP_NMOD_RED3) && 0
+  #if defined(VECTOR_DOT_HEAD) && defined(SPEEDUP_NMOD_RED3)
    DIM2_DET( t, r0, r1 );
    VECTOR_DOT_HEAD( t, r2[2] );
    DIM2_DET( t, r1, r2 );
@@ -1046,21 +1046,36 @@ D := D-B*A'*C
     tgt=rows[i];
     sou=tgt+dim_minus_4;
     so2=scrtch;
-    #if 0
-     // attempt to cache in registers: no gain
-     mp_limb_t sou0=sou[0];
-     mp_limb_t sou1=sou[1];
-     ...
-    #else
-     for(j=dim_minus_4;j--;tgt++,so2 += 4)
-      {
+    /*
+     attempt to cache in registers: no gain
+      mp_limb_t sou0=sou[0];
+      mp_limb_t sou1=sou[1];
+      ...
+    */
+    for(j=dim_minus_4;j--;tgt++,so2 += 4)
+     {
+      #if defined(VECTOR_DOT_TAIL_add)
+       /*
+        this should be at shorter, since MUL_SUB is approximately 30
+         instructions, VECTOR_DOT_BODY is 5, VECTOR_DOT_TAIL_add is 3+???
+         ... hmm, don't know
+       */
+       VECTOR_DOT_HEAD(sou[0],so2[0]);
+       VECTOR_DOT_BODY(sou[1],so2[1]);
+       VECTOR_DOT_BODY(sou[2],so2[2]);
+       VECTOR_DOT_BODY(sou[3],so2[3]);
+       t=mod.n-tgt[0];
+       VECTOR_DOT_TAIL_add(t, mod.n,mod.ninv,mod.norm);
+       n_negmod_opt(t,mod.n);
+       tgt[0]=t;
+      #else
        t=tgt[0];
        MUL_SUB(t, t, sou[0],so2[0] );
        MUL_SUB(t, t, sou[1],so2[1] );
        MUL_SUB(t, t, sou[2],so2[2] );
        MUL_SUB(tgt[0], t, sou[3],so2[3] );
-      }
-    #endif
+      #endif
+     }
    }
  }
 
