@@ -476,7 +476,7 @@ return 0 on failure, det on success
 #undef ADD
 #undef SUB
 #undef ROW_23
-#undef MULADD_pk
+#undef MULADD_3arg
 
 static __inline__ mp_limb_t
 det_mod_pk_examine_last_column(nmod_mat_t M,slong* negate_det,
@@ -854,6 +854,12 @@ divide away degree of p from C
 D := D-C*A'*B 
 */
  {
+  /*
+   for non-static non-inline version of this subroutine length in instructions is
+    155+22*2*dim_minus_1 or
+    156+22*  dim_minus_1
+   (optimized version wins with a score 22*dim_minus_1-1)
+  */
   const slong dim_minus_1 = --M->r;
   #if DUMP_cutoff_1_CALL
    flint_printf("%x.",dim_minus_1);
@@ -875,22 +881,37 @@ D := D-C*A'*B
      rows[j][dim_minus_1] /= t;
     alpha_inv=inv_mod_pk_3arg(A,pp,mod);
    }
-  // scrtch[0..dim_minus_1-1] := column M[0..dim_minus_1-1][dim_minus_1]*A
-  for(j=dim_minus_1;j--;)
-   scrtch[j]=n_mulmod_preinv_4arg(rows[j][dim_minus_1],alpha_inv,
-    mod.n,mod.ninv);
-  // D := D - scrtch transposed * B
-  for(i=dim_minus_1;i--;)
-   {
-    t=scrtch[i];
-    D_ptr=rows[i];
-    B_ptr=B0_ptr;
-    for(j=dim_minus_1;j--;B_ptr++,D_ptr++)
-     D_ptr[0] = n_submod( 
-                 D_ptr[0],
-                 n_mulmod_preinv_4arg(t,B_ptr[0], mod.n,mod.ninv),
-                 mod.n);
-   }
+  #if defined(MULADD_pk_pointer)
+   //negate scrtch[] and use optimized mul-add instead of unoptimized mul-sub
+   A=mod.n-alpha_inv;
+   for(j=dim_minus_1;j--;)
+    scrtch[j]=n_mulmod_preinv_4arg(rows[j][dim_minus_1],A,mod.n,mod.ninv);
+   for(i=dim_minus_1;i--;)
+    {
+     t=scrtch[i];
+     D_ptr=rows[i];
+     B_ptr=B0_ptr;
+     for(j=dim_minus_1;j--;B_ptr++,D_ptr++)
+      MULADD_pk_pointer( D_ptr, t,B_ptr[0], mod.n,mod.ninv);
+    }
+  #else
+   // scrtch[0..dim_minus_1-1] := column M[0..dim_minus_1-1][dim_minus_1]*A
+   for(j=dim_minus_1;j--;)
+    scrtch[j]=n_mulmod_preinv_4arg(rows[j][dim_minus_1],alpha_inv,
+     mod.n,mod.ninv);
+   // D := D - scrtch transposed * B
+   for(i=dim_minus_1;i--;)
+    {
+     t=scrtch[i];
+     D_ptr=rows[i];
+     B_ptr=B0_ptr;
+     for(j=dim_minus_1;j--;B_ptr++,D_ptr++)
+      D_ptr[0] = n_submod( 
+                  D_ptr[0],
+                  n_mulmod_preinv_4arg(t,B_ptr[0], mod.n,mod.ninv),
+                  mod.n);
+    }
+  #endif
  }
 
 #if defined(ALIGN_inv_array)

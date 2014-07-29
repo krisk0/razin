@@ -72,6 +72,7 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
   NMOD_RED2_pk_4arg( _mscr2,r, n,ninv );                    \
  }
 
+// rp[0] += a*b modulo n
 #define MULADD_pk_pointer( rp, a,b, n,ninv ) \
  {                                           \
   register mp_limb_t _mscr3=*(rp);           \
