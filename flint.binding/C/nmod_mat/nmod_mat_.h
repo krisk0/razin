@@ -38,10 +38,49 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
         "sub  %q8,%q2\n\t"                                        \
      "1: xor  %q0,%q0\n\t"                                        \
         "cmp  %q2,%q8\n\t"                                        \
-        "cmovb %q8,%q0\n\t"   /* if V2_me >= n then dx=n */      \
+        "cmovb %q8,%q0\n\t"   /* if V2_me >= n then dx=n */       \
         "sub %q0,%q2\n\t"                                         \
      : "=&d" (V2_dx), "=&a" (V2_ax), "=&r" (V2_me), "=&r" (V2_lo) \
      : "m" (x0),"m" (y0), "m" (x1),"m" (y1), "r" (n)             \
+    );                                                         \
+   NMOD_RED2_pk_4arg(V2_me,V2_lo, n,mod.ninv);               \
+   tgt=V2_lo;                                             \
+  }
+
+ // tgt += x0*y0+x1*y1, tgt is memory, 2 instructions longer than 
+ //  VECTOR_DOT_2()
+ #define VECTOR_DOT_2_add(tgt, x0,y0, x1,y1, mod)  \
+  {                                                     \
+   register mp_limb_t V2_dx asm ("rdx");                    \
+   register mp_limb_t V2_ax asm ("rax");                       \
+   mp_limb_t V2_me,V2_lo; /* 1 register for n + theese 2 = 3 */  \
+   register mp_limb_t n=mod.n;                                    \
+   asm                                                            \
+    (                                                             \
+        "mov  %q4,%q1\n\t"                                        \
+        "mulq %q5\n\t"                                            \
+        "add  %q9,%q1\n\t"                                        \
+        "adc  $0,%q0\n\t"                                         \
+        "mov  %q1,%q3\n\t"                                        \
+        "mov  %q0,%q2\n\t"                                        \
+        "mov  %q6,%q1\n\t"                                        \
+        "mulq %q7\n\t"                                            \
+        "add  %q1,%q3\n\t"                                        \
+        "adc  %q0,%q2\n\t"                                        \
+        "jnc  1f\n\t"                                             \
+        /* maybe subtract n from V2_me */                         \
+        "xor  %q1,%q1\n\t"                                        \
+        "cmp  %q2,%q8\n\t"                                        \
+        "cmovb %q8,%q1\n\t"   /* if V2_me >= n then ax=n */       \
+        "sub  %q1,%q2\n\t"                                        \
+        /* always subtract n from V2_me */                        \
+        "sub  %q8,%q2\n\t"                                        \
+     "1: xor  %q0,%q0\n\t"                                        \
+        "cmp  %q2,%q8\n\t"                                        \
+        "cmovb %q8,%q0\n\t"   /* if V2_me >= n then dx=n */       \
+        "sub %q0,%q2\n\t"                                         \
+     : "=&d" (V2_dx), "=&a" (V2_ax), "=&r" (V2_me), "=&r" (V2_lo) \
+     : "m" (x0),"m" (y0), "m" (x1),"m" (y1), "r" (n), "m" (tgt)  \
     );                                                         \
    NMOD_RED2_pk_4arg(V2_me,V2_lo, n,mod.ninv);               \
    tgt=V2_lo;                                             \

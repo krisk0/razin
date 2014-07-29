@@ -388,7 +388,7 @@ delta is at sou0,sou1, gamma at sou0+2,sou1+2
    VECTOR_DOT_2(t, sou1[2],zet0[1], sou1[3],zet1[1], mod);
    eps1[1]=SUB( sou1[1], t );
   #else
-   // for non-inline version, 142+8*20=302 instructions
+   // for non-inline version, 142+8*22=318 instructions
    eps0[0]=SUB( sou0[0], ADD( MUL(sou0[2],zet0[0]), MUL(sou0[3],zet1[0]) ) );
    eps0[1]=SUB( sou0[1], ADD( MUL(sou0[2],zet0[1]), MUL(sou0[3],zet1[1]) ) );
    eps1[0]=SUB( sou1[0], ADD( MUL(sou1[2],zet0[0]), MUL(sou1[3],zet1[0]) ) );
@@ -595,22 +595,31 @@ det_mod_pk_mul_negate_gamma_alphaINV(
   mp_limb_t g01=n_negmod( gam0[1], mod.n );
   mp_limb_t g10=n_negmod( gam1[0], mod.n );
   mp_limb_t g11=n_negmod( gam1[1], mod.n );
-  gam0[0] = n_addmod(
-   n_mulmod_preinv_4arg( g00, alf0[0], mod.n, mod.ninv ),
-   n_mulmod_preinv_4arg( g01, alf1[0], mod.n, mod.ninv ),
-   mod.n );
-  gam0[1] = n_addmod(
-   n_mulmod_preinv_4arg( g00, alf0[1], mod.n, mod.ninv ),
-   n_mulmod_preinv_4arg( g01, alf1[1], mod.n, mod.ninv ),
-   mod.n );
-  gam1[0] = n_addmod(
-   n_mulmod_preinv_4arg( g10, alf0[0], mod.n, mod.ninv ),
-   n_mulmod_preinv_4arg( g11, alf1[0], mod.n, mod.ninv ),
-   mod.n );
-  gam1[1] = n_addmod(
-   n_mulmod_preinv_4arg( g10, alf0[1], mod.n, mod.ninv ),
-   n_mulmod_preinv_4arg( g11, alf1[1], mod.n, mod.ninv ),
-   mod.n );
+  #if defined(VECTOR_DOT_2)
+   // non-inline det_mod_pk_mul_negate_gamma_alphaINV(): 170 instrucrions
+   VECTOR_DOT_2(gam0[0], g00,alf0[0], g01,alf1[0], mod);
+   VECTOR_DOT_2(gam0[1], g00,alf0[1], g01,alf1[1], mod);
+   VECTOR_DOT_2(gam1[0], g10,alf0[0], g11,alf1[0], mod);
+   VECTOR_DOT_2(gam1[1], g10,alf0[1], g11,alf1[1], mod);
+  #else
+   // non-inline det_mod_pk_mul_negate_gamma_alphaINV(): 121+8*22=297 instrucrions
+   gam0[0] = n_addmod(
+    n_mulmod_preinv_4arg( g00, alf0[0], mod.n, mod.ninv ),
+    n_mulmod_preinv_4arg( g01, alf1[0], mod.n, mod.ninv ),
+    mod.n );
+   gam0[1] = n_addmod(
+    n_mulmod_preinv_4arg( g00, alf0[1], mod.n, mod.ninv ),
+    n_mulmod_preinv_4arg( g01, alf1[1], mod.n, mod.ninv ),
+    mod.n );
+   gam1[0] = n_addmod(
+    n_mulmod_preinv_4arg( g10, alf0[0], mod.n, mod.ninv ),
+    n_mulmod_preinv_4arg( g11, alf1[0], mod.n, mod.ninv ),
+    mod.n );
+   gam1[1] = n_addmod(
+    n_mulmod_preinv_4arg( g10, alf0[1], mod.n, mod.ninv ),
+    n_mulmod_preinv_4arg( g11, alf1[1], mod.n, mod.ninv ),
+    mod.n );
+  #endif
  }
 
 void
@@ -621,38 +630,50 @@ det_mod_pk_mul_add_2x2(
   const nmod_t mod)
 // tgt := tgt + rho * eta
  {
-  tgt0[0] = n_addmod( tgt0[0],
-    n_mulmod_preinv_4arg(rho0[0],eta0[0], mod.n, mod.ninv),
-    mod.n
-   );
-  tgt0[0] = n_addmod( tgt0[0],
-    n_mulmod_preinv_4arg(rho0[1],eta1[0], mod.n, mod.ninv),
-    mod.n
-   );
-  tgt0[1] = n_addmod( tgt0[1],
-    n_mulmod_preinv_4arg(rho0[0],eta0[1], mod.n, mod.ninv),
-    mod.n
-   );
-  tgt0[1] = n_addmod( tgt0[1],
-    n_mulmod_preinv_4arg(rho0[1],eta1[1], mod.n, mod.ninv),
-    mod.n
-   );
-  tgt1[0] = n_addmod( tgt1[0],
-    n_mulmod_preinv_4arg(rho1[0],eta0[0], mod.n, mod.ninv),
-    mod.n
-   );
-  tgt1[0] = n_addmod( tgt1[0],
-    n_mulmod_preinv_4arg(rho1[1],eta1[0], mod.n, mod.ninv),
-    mod.n
-   );
-  tgt1[1] = n_addmod( tgt1[1],
-    n_mulmod_preinv_4arg(rho1[0],eta0[1], mod.n, mod.ninv),
-    mod.n
-   );
-  tgt1[1] = n_addmod( tgt1[1],
-    n_mulmod_preinv_4arg(rho1[1],eta1[1], mod.n, mod.ninv),
-    mod.n
-   );
+  #if defined(VECTOR_DOT_2)
+   // 152 instructions
+   register mp_limb_t t;
+   #define DOT2(tgt, x0,y0, x1,y1)  VECTOR_DOT_2_add(tgt, x0,y0, x1,y1, mod)
+   DOT2(tgt0[0], rho0[0],eta0[0], rho0[1],eta1[0]);
+   DOT2(tgt0[1], rho0[0],eta0[1], rho0[1],eta1[1]);
+   DOT2(tgt1[0], rho1[0],eta0[0], rho1[1],eta1[0]);
+   DOT2(tgt1[1], rho1[0],eta0[1], rho1[1],eta1[1]);
+   #undef DOT2
+  #else
+   // 139+8*22=315 instructions
+   tgt0[0] = n_addmod( tgt0[0],
+     n_mulmod_preinv_4arg(rho0[0],eta0[0], mod.n,mod.ninv),
+     mod.n
+    );
+   tgt0[0] = n_addmod( tgt0[0],
+     n_mulmod_preinv_4arg(rho0[1],eta1[0], mod.n,mod.ninv),
+     mod.n
+    );
+   tgt0[1] = n_addmod( tgt0[1],
+     n_mulmod_preinv_4arg(rho0[0],eta0[1], mod.n,mod.ninv),
+     mod.n
+    );
+   tgt0[1] = n_addmod( tgt0[1],
+     n_mulmod_preinv_4arg(rho0[1],eta1[1], mod.n,mod.ninv),
+     mod.n
+    );
+   tgt1[0] = n_addmod( tgt1[0],
+     n_mulmod_preinv_4arg(rho1[0],eta0[0], mod.n,mod.ninv),
+     mod.n
+    );
+   tgt1[0] = n_addmod( tgt1[0],
+     n_mulmod_preinv_4arg(rho1[1],eta1[0], mod.n,mod.ninv),
+     mod.n
+    );
+   tgt1[1] = n_addmod( tgt1[1],
+     n_mulmod_preinv_4arg(rho1[0],eta0[1], mod.n,mod.ninv),
+     mod.n
+    );
+   tgt1[1] = n_addmod( tgt1[1],
+     n_mulmod_preinv_4arg(rho1[1],eta1[1], mod.n,mod.ninv),
+     mod.n
+    );
+  #endif
  }
 
 #define SHOW_VECTOR_4(i)                               \
