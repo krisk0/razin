@@ -348,7 +348,7 @@ det_mod_pk_mul_2x2(
    VECTOR_DOT_2( r1[0], a1[0],b0[0], a1[1],b1[0], mod)
    VECTOR_DOT_2( r1[1], a1[0],b0[1], a1[1],b1[1], mod)
   #else
-   #if defined(MULADD_3arg) && 0
+   #if defined(MULADD_3arg)
     mp_limb_t t;
     t=MUL(a0[0],b0[0]); MULADD_3arg(t, a0[1],b1[0]); r0[0]=t;
     t=MUL(a0[0],b0[1]); MULADD_3arg(t, a0[1],b1[1]); r0[1]=t;
@@ -362,6 +362,8 @@ det_mod_pk_mul_2x2(
    #endif
   #endif
  }
+
+#undef MULADD_3arg
 
 static __inline__ void 
 det_mod_pk_mul_sub_2x2(
