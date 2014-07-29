@@ -374,10 +374,24 @@ set epsilon=delta-gamma*zeta
 delta is at sou0,sou1, gamma at sou0+2,sou1+2
 */
  {
-  eps0[0]=SUB( sou0[0], ADD( MUL(sou0[2],zet0[0]), MUL(sou0[3],zet1[0]) ) );
-  eps0[1]=SUB( sou0[1], ADD( MUL(sou0[2],zet0[1]), MUL(sou0[3],zet1[1]) ) );
-  eps1[0]=SUB( sou1[0], ADD( MUL(sou1[2],zet0[0]), MUL(sou1[3],zet1[0]) ) );
-  eps1[1]=SUB( sou1[1], ADD( MUL(sou1[2],zet0[1]), MUL(sou1[3],zet1[1]) ) );
+  #if defined(VECTOR_DOT_2)
+   // for non-inline version, 170 instructions
+   mp_limb_t t;
+   VECTOR_DOT_2(t, sou0[2],zet0[0], sou0[3],zet1[0], mod);
+   eps0[0]=SUB( sou0[0], t );
+   VECTOR_DOT_2(t, sou0[2],zet0[1], sou0[3],zet1[1], mod);
+   eps0[1]=SUB( sou0[1], t );
+   VECTOR_DOT_2(t, sou1[2],zet0[0], sou1[3],zet1[0], mod);
+   eps1[0]=SUB( sou1[0], t );
+   VECTOR_DOT_2(t, sou1[2],zet0[1], sou1[3],zet1[1], mod);
+   eps1[1]=SUB( sou1[1], t );
+  #else
+   // for non-inline version, 142+8*20=302 instructions
+   eps0[0]=SUB( sou0[0], ADD( MUL(sou0[2],zet0[0]), MUL(sou0[3],zet1[0]) ) );
+   eps0[1]=SUB( sou0[1], ADD( MUL(sou0[2],zet0[1]), MUL(sou0[3],zet1[1]) ) );
+   eps1[0]=SUB( sou1[0], ADD( MUL(sou1[2],zet0[0]), MUL(sou1[3],zet1[0]) ) );
+   eps1[1]=SUB( sou1[1], ADD( MUL(sou1[2],zet0[1]), MUL(sou1[3],zet1[1]) ) );
+  #endif
  }
 
 #define ROW_23( i, j )                                          \
