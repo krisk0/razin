@@ -32,7 +32,7 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
         /* maybe subtract n from V2_me */                         \
         "xor  %q1,%q1\n\t"                                        \
         "cmp  %q2,%q8\n\t"                                        \
-        "cmovb %q8,%q1\n\t"   /* if V2_me >= n then ax=n */      \
+        "cmovb %q8,%q1\n\t"   /* if V2_me >= n then ax=n */       \
         "sub  %q1,%q2\n\t"                                        \
         /* always subtract n from V2_me */                        \
         "sub  %q8,%q2\n\t"                                        \
