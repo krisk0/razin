@@ -630,10 +630,10 @@ det_mod_pk_mul_add_2x2(
   const nmod_t mod)
 // tgt := tgt + rho * eta
  {
-  #if defined(VECTOR_DOT_2)
+  #if defined(VECTOR_DOT_2_add)
    // 152 instructions
    register mp_limb_t t;
-   #define DOT2(tgt, x0,y0, x1,y1)  VECTOR_DOT_2_add(tgt, x0,y0, x1,y1, mod)
+   #define DOT2(tgt, x0,y0, x1,y1) VECTOR_DOT_2_add(tgt, x0,y0, x1,y1, mod)
    DOT2(tgt0[0], rho0[0],eta0[0], rho0[1],eta1[0]);
    DOT2(tgt0[1], rho0[0],eta0[1], rho0[1],eta1[1]);
    DOT2(tgt1[0], rho1[0],eta0[0], rho1[1],eta1[0]);
