@@ -4,7 +4,7 @@ PYTHON_COMPAT=( python2_7 ) # ?
 
 inherit distutils-r1
 
-DESCRIPTION="Python wrapper for part of eigin"
+DESCRIPTION="Python wrapper for part of eigen"
 HOMEPAGE="https://pypi.python.org/pypi/$PN"
 MD5=883c251c6a85fd78a32a76c13d2e9828
 fn=$P-1.tar.gz
