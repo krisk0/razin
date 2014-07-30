@@ -142,9 +142,11 @@ nmod_mat_multiplication_test_benchmark(
 
 int main()
  {
-  #define VOL 1<<18
+  #define VOL (1<<18)
   #define BIG_P 0xFFFFFFFFFFFFFFc5
   #define BENCHMARK nmod_mat_multiplication_test_benchmark
+  mp_limb_t bits_63=n_nextprime(UWORD(1)<<63,0);
+  mp_limb_t bits_32=n_nextprime(UWORD(1)<<32,0);
 
   flint_randinit(st);
 
@@ -157,17 +159,17 @@ int main()
   BENCHMARK( 4,4,100, BIG_P, VOL );
   BENCHMARK( 100,4,4, BIG_P, VOL );
 
-  BENCHMARK( 4,4,100, n_nextprime(UWORD(1)<<32,0), VOL );
-  BENCHMARK( 4,4,100, n_nextprime(UWORD(1)<<63,0), VOL );
+  BENCHMARK( 4,4,100, bits_32, VOL );
+  BENCHMARK( 4,4,100, bits_63, VOL );
+
+  BENCHMARK( 4,4,4, bits_63, VOL*25 );
+  BENCHMARK( 4,4,4, 3, VOL*25 );
+  BENCHMARK( 4,4,4, BIG_P, VOL*25 );
+
   return 0;
  }
 
 #if 0
 result for my core-i5:
-2**0 * 3**40 | 4 4 100: 4810000 1910000
-2**0 * 3**40 | 100 4 4: 4870000 1990000
-2**1 * 5**27 | 4 4 100: 3790000 2330000
-2**1 * 5**27 | 100 4 4: 3780000 2200000
-2**0 * 18446744073709551557**1 | 4 4 100: 4870000 2620000
-2**0 * 18446744073709551557**1 | 100 4 4: 4920000 2580000
+
 #endif
