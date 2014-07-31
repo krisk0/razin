@@ -113,7 +113,7 @@ sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat/nmod_mat_HNF-debug.c' )
 p0=osE('EPREFIX')
 p1='/usr/share/sage/src'
 p2=osE('MY_SAGE_IS_HERE')
-include_0=find_sage_include_dir( p0, p1, p2 ) # under Gentoo they are at 
+include_0=find_sage_include_dir( p0, p1, p2 )
 p4='/usr/include/csage/' # Sage .h should be in $EPREFIX/usr/include/csage/
 include_1=find_sage_include_dir( p0, p4, None )
 
