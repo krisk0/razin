@@ -184,3 +184,12 @@
              strangely. Replacing heavier macro NMOD_RED3_pk()
              NMOD_RED3_pk_easy() brings slow-down, instead of speed-up. Is that
              gcc fault? How do I replace gcc with clang or other compiler?
+
+31 Jul 2014 Optimized nmod_mat/det_mod_pk.c, executable code became smaller,
+             time of det calculation unchanged. This is probably due to the fact
+             that finding det divisor takes long time. Let us say I re-learnt
+             SSE asm and gcc inline asm voodoo.
+
+            Clang producess beautiful error messages but awfully sloooooow code
+             (out of my genial vector dot multiplication macros). GCC 4.8.3
+             gives slightly better code than GCC 4.7.3. Long live GCC.
