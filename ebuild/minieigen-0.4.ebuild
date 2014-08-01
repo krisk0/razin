@@ -1,13 +1,16 @@
+# Copyright 2014 Денис Крыськов
+
 EAPI=5
 
 PYTHON_COMPAT=( python2_7 ) # ?
 
 inherit distutils-r1
 
-DESCRIPTION="Python wrapper for part of eigen"
+DESCRIPTION="Python wrapper for a small part of eigen"
 HOMEPAGE="https://pypi.python.org/pypi/$PN"
 MD5=883c251c6a85fd78a32a76c13d2e9828
 fn=$P-1.tar.gz
+#TODO: find less scaring dl url
 SRC_URI="https://pypi.python.org/packages/source/m/$PN/$fn#md5=$MD5 -> $fn"
 
 LICENSE=LGPL-3
