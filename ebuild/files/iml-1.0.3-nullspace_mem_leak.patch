@@ -1,0 +1,31 @@
+diff -ur iml-1.0.3/src/nullspace.c iml-1.0.4/src/nullspace.c
+--- iml-1.0.3/src/nullspace.c	2008-06-16 02:26:25.000000000 +0400
++++ iml-1.0.4/src/nullspace.c	2014-07-23 14:00:43.000000000 +0400
+@@ -109,7 +109,7 @@
+ 	    for (i = 0; i < m; i++) {
+ 		for (j = 0; j < m; j++)
+ 		    mpz_init_set_ui(mp_N[i * m + j], 0);
+-		mpz_init_set_ui(mp_N[i * m + i], 1);
++		mpz_set_ui(mp_N[i * m + i], 1);
+ 	    }
+ 	    *mp_N_pass = mp_N;
+ 	} else {		/* r>0 and s>0 */
+@@ -253,7 +253,7 @@
+ 	    for (i = 0; i < m; i++) {
+ 		for (j = 0; j < m; j++)
+ 		    mpz_init_set_ui(mp_N[i * m + j], 0);
+-		mpz_init_ui(mp_N[i * m + i], 1);
++		mpz_set_ui(mp_N[i * m + i], 1);
+ 	    }
+ 	    *mp_N_pass = mp_N;
+ 	} else {		/* r>0 and s>0 */
+@@ -400,7 +400,7 @@
+ 	    for (i = 0; i < m; i++) {
+ 		for (j = 0; j < m; j++)
+ 		    mpz_init_set_ui(mp_N[i * m + j], 0);
+-		mpz_init_set_ui(mp_N[i * m + i], 1);
++		mpz_set_ui(mp_N[i * m + i], 1);
+ 	    }
+ 	    *mp_N_pass = mp_N;
+ 	} else {		/* r>0 and s>0 */
+diff -ur iml-1.0.3/tests/Makefile.in iml-1.0.4/tests/Makefile.in
