@@ -17,7 +17,7 @@ SRC_URI="https://pypi.python.org/packages/source/m/$PN/$fn#md5=$MD5 -> $fn"
 LICENSE=LGPL-3
 SLOT=0
 
-KEYWORDS="amd64"
+KEYWORDS=amd64
 RESTRICT=mirror
 #TODO: specify DEPEND and RDEPEND
 #DEPEND="dev-cpp/eigen ?boost
