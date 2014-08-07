@@ -68,7 +68,7 @@ fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   
   /* bound = 2 * max abs det(A) / divisor */
   // TODO: use sum of logarithms instead of big number product
-  // TODO: don't calculate det bound twice. 1st time was in fmpz_mat_det_divisor()
+  // TODO: don't re-calculate det bound. 1st time was in fmpz_mat_det_divisor()
   fmpz_mat_det_bound(bound, A);
   fmpz_mul_ui(bound, bound, UWORD(2));
   fmpz_cdiv_q(bound, bound, divisor);
