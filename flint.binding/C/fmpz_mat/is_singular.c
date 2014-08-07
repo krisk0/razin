@@ -25,7 +25,7 @@ _call_solve_Dixon(const fmpz_mat_t A)
   slong i,n=A->r;
   int success;
   fmpz_mat_t B,X;
-  fmpz_mat_init(B, n, 1); B->entries[0]=1;
+  fmpz_mat_init(B, n, 1); fmpz_set_ui( B->entries, UWORD(1) );
   fmpz_mat_init(X, n, 1);
   fmpz_t mod; fmpz_init(mod);
   
