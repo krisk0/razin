@@ -61,8 +61,7 @@ fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   slong dim = A->r;
   mp_limb_t* scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
   fmpz_init(bound);
-  // TODO: check if line below brings in useless branch
-  fmpz_init_set_ui( prod, UWORD(1) );
+  fmpz_init_set_ui( prod, UWORD(1) ); // this is just movq $1,(rsp...), good
   fmpz_init(x);
   fmpz_init(xnew);
   nmod_mat_init_square_2arg(Amod,dim);
