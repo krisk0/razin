@@ -69,8 +69,7 @@ fmpz_mat_is_singular(const fmpz_mat_t A)
      Amod->mod.norm = n_mulmod_preinv_4arg( t,t, pp.p,Amod->mod.ninv );
     #endif
     fmpz_mat_get_nmod_mat(Amod, A);
-    t=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
-    if(t)
+    if( nmod_mat_det_mod_pk_4block(Amod,pp,scratch) )
      {
       j=0;
       break;
