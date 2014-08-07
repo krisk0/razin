@@ -12,12 +12,12 @@
 
 // Licence: GNU General Public License (GPL)
 
-#if GMP_LIMB_BITS == 64
 #include <flint/flint.h>
+
+#if GMP_LIMB_BITS == 64
 #include "../ulong_extras/ulong_extras_.h"
 
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
-mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
 
 slong __inline__ static
 _call_solve_Dixon(const fmpz_mat_t A)
@@ -62,7 +62,7 @@ fmpz_mat_is_singular(const fmpz_mat_t A)
   // test 10 biggest primes
   for(i=10;i--;)
    {
-    pp.p=pp.p_deg_k=Amod->mod.n=pr[i] ^ 0xFFFFFFFFFFFFFE00;
+    pp.p=pp.p_deg_k=Amod->mod.n=pr[i] ^ UWORD(0xFFFFFFFFFFFFFE00);
     invert_limb(Amod->mod.ninv, Amod->mod.n);
     #if SPEEDUP_NMOD_RED3
      t = - pp.p;
