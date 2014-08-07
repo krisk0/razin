@@ -63,7 +63,7 @@ fmpz_mat_is_singular(const fmpz_mat_t A)
   for(i=10;i--;)
    {
     pp.p=pp.p_deg_k=Amod->mod.n=pr[i] ^ UWORD(0xFFFFFFFFFFFFFE00);
-    invert_limb(Amod->mod.ninv, Amod->mod.n);
+    invert_limb(Amod->mod.ninv, pp.p);
     #if SPEEDUP_NMOD_RED3
      t = - pp.p;
      Amod->mod.norm = n_mulmod_preinv_4arg( t,t, pp.p,Amod->mod.ninv );
