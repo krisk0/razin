@@ -381,13 +381,10 @@ def random_data(dim,bits):
  returns random square non-singular matrice with entries
  uniformly distributed in the interval −2**bits .. 2**bits
  '''
+ m=1<<bits
  while 1:
-  a=sage.all.random_matrix( ZZ, dim, x=-1<<bits, y=1<<bits )
-  if quick_nonsigular_test( a ):
-   return a
-  # with non-zero probability matrice a is non-singular, so we do extra
-  #  check
-  if fmpz_mat(a).determinant():
+  a=sage.all.random_matrix( ZZ, dim, x=-m, y=m )
+  if not flint.fmpz_mat_is_singular_wr( fmpz_mat(a) ):
    return a
 
 def quick_nonsigular_test( m ):

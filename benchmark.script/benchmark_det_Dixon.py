@@ -30,25 +30,13 @@ mpir_ver_length=15
 def random_matrix(dim,bits):
  '''
  returns random square non-singular matrice with entries
-  uniformly distributed in the interval −2**bits .. 2**bits
+ uniformly distributed in the interval −2**bits .. 2**bits
  '''
+ m=1<<bits
  while 1:
-  a=sage.all.random_matrix( ZZ, dim, x=-1<<bits, y=1<<bits )
-  if quick_nonsigular_test( a ):
+  a=sage.all.random_matrix( ZZ, dim, x=-m, y=m )
+  if not flint.fmpz_mat_is_singular_wr( fmpz_mat(a) ):
    return a
-  # with non-zero probability matrice a is non-singular, but we just drop it
-
-def quick_nonsigular_test( m ):
- '''
- returns 1 iff determinant of m modulo p0*p1*p1*p3 if non-zero
-
- where p0...p3 are largest 64-bit primes
- '''
- primes_tail=[ 'C5', 'AD', 'A1', '4D' ]
- for x in primes_tail:
-  if flint.det_modulo_prime( m, Integer( (((1<<56)-1) << 8) ^ int(x,16) ) ):
-   return 1
- return 0
 
 det_mismatch=0
 
