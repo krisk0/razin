@@ -34,6 +34,9 @@ cdef extern from 'C/fmpz_mat/det_modular_given_divisor_4block.c':
 cdef extern from 'C/fmpz_mat/det.c':
  void fmpz_mat_det_4block(fmpz_t r, const fmpz_mat_t A)
 
+cdef extern from 'C/fmpz_mat/is_singular.c':
+ int fmpz_mat_is_singular(const fmpz_mat_t A)
+
 cdef class fmpz_mat:
 
  cdef fmpz_mat_t matr
@@ -329,5 +332,8 @@ def fmpz_mat_copy( fmpz_mat a ):
 
 def det_mod_pk_3arg( fmpz_mat a, p, k ):
  return fmpz_mat_det_mod_pk_3arg( a.matr, <mp_limb_t>p, <mp_limb_t>k )
+
+def fmpz_mat_is_singular_wr( fmpz_mat a ):
+ return fmpz_mat_is_singular(a.matr)
 
 # include 'fmpz_unimodular.pyx'
