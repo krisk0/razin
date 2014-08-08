@@ -104,6 +104,17 @@ def sed_and_perl__goodbye( oN, iN ):
   o.write( '\n#undef NDEBUG\n\n' )
   o.write( '/*'+tail_warning+'\n*/' )
 
+def copy_pyx_file( oN, iN, tail ):
+ with open( oN, 'wb' ) as o:
+  o.write('include "%s"' % iN)
+  o.write('\n\n' + tail + '\n')
+
+def fix_include( c, ii ):
+ assert os.path.isfile(c)
+ p='''sed -e 's:#include "%s.h":#include "flint/%s.h":' -i %s'''
+ for i in ii:
+  os.system( p % (i,i,c) )
+
 sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat/nmod_mat_HNF-debug.c' )
 
 '''
@@ -147,11 +158,47 @@ if my_so != None:
 print 'shared libraries:',libraries
 print 'static libraries:',extra_objects
 
+def define_extern(f, p, e):
+ os.system( "sed -e 's:%s:&\\n%s;\\n:' -i %s" % (p,e,f) )
+
+'''
+I don't want RAZIN to contain unmodified code from another repository.
+
+I don't want to replace official version of FLINT such as flint-2.4.4.tar.gz 
+ with contents of some experimental repository (such as Alex Best's 
+ https://github.com/alexjbest/flint2).
+
+However I want to optionally wrap some experimental functions (such as Alex
+ Best implementaion of Pernet-Stein double det HNF).
+ 
+Dirty hack below optionally replaces flint.pyx with another file; removes the
+ new file after compilation
+''' 
+
+FLINT_PYX="flint.pyx"
+FLINT_PYX_copied=0
+EXTRA_0="C/fmpz_mat/hnf_pernet_stein.c"
+if os.path.isfile(EXTRA_0):
+ EXTRA_1="C/fmpz_mat/hnf_modular.c"
+ EXTRA_2="C/fmpz_mat/hnf_xgcd.c"
+ # patch 3 files EXTRA_?
+ fix_include(EXTRA_0, ['fmpz_mat','fmpq_mat','perm'] )
+ define_extern(EXTRA_0, 'perm.h"',
+  'void @_hnf_modular(@_t,const @_t,const fmpz_t)'.replace('@','fmpz_mat') )
+ define_extern(EXTRA_0, 'perm.h"',
+  'void @_hnf_xgcd(@_t,const @_t)'.replace('@','fmpz_mat') )
+ fix_include(EXTRA_1, ['fmpz_mat'] )
+ fix_include(EXTRA_2, ['fmpz_mat'] )
+ FLINT_PYX_copied=1
+ FLINT_PYX="remove_me.pyx"
+ copy_pyx_file( FLINT_PYX, "flint.pyx", 'include "wrap_HNF_pernet_stein.pyx"' )
+
+# dirty hack to optionally include experimental code such as Alex Best HNF
 ext_modules = \
  [
   Extension
    (
-    "flint_sage", ["flint.pyx"], 
+    "flint_sage", [FLINT_PYX], 
     include_dirs=[include_0,include_1],
     libraries=libraries, 
     extra_objects=extra_objects,
@@ -178,3 +225,6 @@ setup\
   license = 'GPL',
   classifiers=['Topic :: Scientific/Engineering :: Mathematics']
  )
+
+if FLINT_PYX_copied:
+ os.remove(FLINT_PYX)
