@@ -5,7 +5,7 @@
 # Copyright Денис Крыськов 2014
 
 '''
-This program benchmarks subroutine fmpz_mat_det_Kryskov() against FLINT 
+This program benchmarks my subroutine fmpz_mat_det_4block() against FLINT 
  fmpz_mat_det()
 '''
 
