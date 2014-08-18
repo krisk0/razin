@@ -29,13 +29,13 @@ Subroutines I am proud of:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 C file name              test program                   comment
--------------------+---------------------------------+-----------------------------------------------
-nmod_mat_HNF.c     |  benchmark_nmod_mat_HNF-sage    | for dim=200, my code is 4.30/1.65 times faster
+-------------------+---------------------------------+---------------------------------------------------
+nmod_mat_HNF.c     |  benchmark_nmod_mat_HNF-sage    | for dim=200, my code is 4.30/1.65=2.6 times faster
 
                    |  benchmark_Sage_hnf_square      | my re-implementation is slightly faster 
                    |                                 |  (by 11% for dim=3000)
 
-tmod_mat/*          |  test_tmod_mat                  | for matrice over Z/(2**64*Z), find PLU 
+tmod_mat/*          |  test_tmod_mat                  | for matrice over ring Z/(2**64*Z), find PLU 
                      |                                 |  decomposition and inverse
 
 fmpz_mat/window_unsh.c | test_benchmark_invert_triU-4ways | my specialized subroutine to invert HNF
