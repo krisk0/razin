@@ -24,7 +24,7 @@ Matrices to test are generated as in test_benchmark_invert_triU-3ways.py
  For instance, when fmpq_mat_inv() runs first, fmpz_triU_inverse_smallDet()
   is 4.9 times faster; running fmpz_triU_inverse_smallDet() first reduces this
   ratio to 4.5
- This version of program runs fmpz_triU_inverse_smallDet(), so ratio is
+ This version of program runs fmpz_triU_inverse_smallDet() first, so ratio is
   as in table below:
    10: 4.5
    20: 11.3
