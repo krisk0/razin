@@ -42,6 +42,9 @@ fmpz_mat/window_unsh.c | test_benchmark_invert_triU-4ways | my specialized subro
                        |                                  |  matrice with small determinant is faster
                        |                                  |  than Sage or FLINT general subroutine
 
-fmpz_mat/det.c         | benchmark_fmpz_det               | my subroutine is 30% faster for dim=200, 
-                       |                                  |                  53%                225
-                       |                                  |                  73%                250
+fmpz_mat/det.c          | benchmark_fmpz_det               | my subroutine is 30% faster for dim=200, 
+                        |                                  |                  53%                225
+                        |                                  |                  73%                250
+
+nmod_mat/mul_pk_classical.c | nmod_mat-mul.c               | my subroutine multiplies 4x4 matrix modulo
+                            |                              |  3**40 150% (2.5 times) faster than FLINT
