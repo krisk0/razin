@@ -25,8 +25,6 @@ write=sys.stdout.write
 
 from test_nmod_HNF import unimodular_triU
 
-max_det_divisor=2**64-1
-
 def test_with( m ):
  a=fmpz_mat(m)
  good=flint.fmpz_mat_inverse( a )
