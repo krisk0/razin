@@ -1,12 +1,13 @@
 cout/*.cout        Output of python script (usually benchmark or test result)
+
 *.py                Python script, usually benchmark or test, usually requires
                     flint_sage
 
 flint.binding/      Python binding for small piece of FLINT library, requires
                      sage. Installs as flint_sage. Tests in separate files test*
                         
-flint.binding/C        fast C code integer linear algebra (HNF, PLU, 
-                        triangular inversion)
+flint.binding/C        fast C code doing integer linear algebra (HNF, PLU, 
+                        triangular inversion, matrix multipliction, determinant)
 
 flint.binding/*.README  kinda documentation with installation instruction and
                          FAQ
@@ -18,6 +19,29 @@ A_by_B_mod_P.hacks/     Secret voodoo to calculate a*b mod p for small p on amd6
                          and GPU, public domain
 
 Changelog               History of bugs fixes and additions
+
 To.do                    Plan of changes
 
 ebuild/                 Useful ebuild scripts
+
+
+Subroutines I am proud of:
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+C file name              test program                   comment
+-------------------+---------------------------------+-----------------------------------------------
+nmod_mat_HNF.c     |  benchmark_nmod_mat_HNF-sage    | for dim=200, my code is 4.30/1.65 times faster
+
+                   |  benchmark_Sage_hnf_square      | my re-implementation is slightly faster 
+                   |                                 |  (by 11% for dim=3000)
+
+tmod_mat/*          |  test_tmod_mat                  | for matrice over Z/(2**64*Z), find PLU 
+                     |                                 |  decomposition and inverse
+
+fmpz_mat/window_unsh.c | test_benchmark_invert_triU-4ways | my specialized subroutine to invert HNF
+                       |                                  |  matrice with small determinant is faster
+                       |                                  |  than Sage or FLINT general subroutine
+
+fmpz_mat/det.c         | benchmark_fmpz_det               | my subroutine is 30% faster for dim=200, 
+                       |                                  |                  53%                225
+                       |                                  |                  73%                250
