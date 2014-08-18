@@ -8,8 +8,9 @@ For now, I offer
   b) PLU decomposition of a matrice modulo 2^64;
   c) inversion of a lower-triangular matrice modulo 2^64;
   d) inversion of an integer upper-triangular matrice with small determinant and positive diagonal;
-  e) Python binding to some methods of FLINT, called flint_sage;
-  f) some algorithms benchmarks (such as determinant, linear equations solver)
+  e) a fast(est in the open-source world) subroutine to count an integer matrice determinant;
+  f) Python binding to some methods of FLINT, called flint_sage;
+  g) some algorithms benchmarks (such as determinant, linear equations solver)
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
