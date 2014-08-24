@@ -5,8 +5,6 @@
 #ifndef FMPZ__H
 #define FMPZ__H
 
-#define PRINTF
-
 // s should be fmpz, s evaluated multiple times
 #define fmpz_get_mpfr_slave(r, s, rnd)    \
  if( COEFF_IS_MPZ(s) )                      \
