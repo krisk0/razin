@@ -2,6 +2,9 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
+#ifndef NMOD_MAT__H
+#define NMOD_MAT__H
+
 #include <flint/fmpz_mat.h>
 #include <flint/nmod_mat.h>
 #include "../ulong_extras/ulong_extras_.h"
@@ -163,4 +166,6 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou);
  #define VECTOR_DOT_TAIL_tiny(rez) \
   rez=Vt;
   
+#endif
+
 #endif
