@@ -9,19 +9,10 @@
 
 // s should be fmpz, s evaluated multiple times
 #define fmpz_get_mpfr_slave(r, s, rnd)    \
- PRINTF("fmpz_get_mpfr_slave() s=%X\n",(mp_limb_t)s); \
- asm volatile( "movdqa %%xmm0,%%xmm1" :::"memory" ); \
- if( COEFF_IS_MPZ(s) )                     \
-  { \
-   PRINTF("fmpz_get_mpfr_slave(): big num\n"); \
-   (void)mpfr_set_z(r, COEFF_TO_PTR(s), rnd);                            \
-  } \
- else                                        \
-  {\
-   PRINTF("fmpz_get_mpfr_slave(): small num\n"); \
-   mpfr_set_si(r, s, rnd);                   \
-   PRINTF("fmpz_get_mpfr_slave(): small num ok\n"); \
-  }
+ if( COEFF_IS_MPZ(s) )                      \
+   (void)mpfr_set_z(r, COEFF_TO_PTR(s), rnd); \
+ else                                         \
+   mpfr_set_si(r, s, rnd);                   
 
 // _s should be fmpz, _s evaluated once
 #define fmpz_get_mpfr_macro(r, _s, rnd) \
