@@ -6,7 +6,7 @@
 
 void
 fmpz_set_mpfr(fmpz_t r, const mpfr_t s, mpfr_rnd_t d)
-// TODO: if t is big then there is no need to copy of t, then deallocate it
+// TODO: if t is big then there is no need to copy t, then deallocate it
  {
   mpz_t t; mpz_init(t);
   mpfr_get_z(t, s, d);
