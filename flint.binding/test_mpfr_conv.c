@@ -4,6 +4,9 @@
 
 // This program tests subroutine fmpz_get_mpfr() and friends
 
+// to compile:
+//  CC FLAGGS test_mpfr_conv.c -lflint -lmpfr -lgmp
+
 #include <assert.h>
 #include <flint/flint.h>
 #include <flint/fmpz.h>
