@@ -136,7 +136,7 @@ main()
   fmpz_init_set_ui( two__64, UWORD(1)<<32 ); 
   fmpz_mul( two__64, two__64, two__64 );
   int i;
-  test_0( 0 );
+  test_0( WORD(0) );
   for(i=100;i--;)
    test_0( R() );
   fmpz_clear(two__64);
