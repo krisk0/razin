@@ -9,8 +9,7 @@ flint.binding/      Python binding for small piece of FLINT library, requires
 flint.binding/C        fast C code doing integer linear algebra (HNF, PLU, 
                         triangular inversion, matrix multipliction, determinant)
 
-flint.binding/*.README  kinda documentation with installation instruction and
-                         FAQ
+flint.binding/*.README  kinda documentation with installation instruction and FAQ
 
 benchmark.script/       benchmark, test-benchmark and profile programs
 
@@ -48,3 +47,5 @@ fmpz_mat/det.c          | benchmark_fmpz_det               | my subroutine is 30
 
 nmod_mat/mul_pk_classical.c | nmod_mat-mul.c               | my subroutine multiplies 4x4 matrix modulo
                             |                              |  3**40 150% (2.5 times) faster than FLINT
+                            
+             Hint: if         this column                   contains file name with no dot, then it is both .py and .cout
