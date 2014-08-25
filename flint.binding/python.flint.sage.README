@@ -83,5 +83,8 @@ A6. I meant to say that
      2) in my implemetation, the biggest change is using subroutines that are usually faster, for instance Sage .solve_right() is replaced by FLINT Dixon linear solver fmpq_mat_solve_dixon(), and Sage ._hnf_mod(2*g) by my more-than-twice faster subroutine fmpz_mat_hermite_form(W, g);
      3) since FLINT Dixon solver is not always faster than IML solver, my code SOMETIMES uses IML solver.
 
-Q7. Your project was started 2014, and github contains another project named razin started 2013.
-A7. I invented name RAZIN as russian echo of west european FLINT, spent lot of time for justifying the abbreviation, got some attention at flint-devel forum. Which is why I won't change the name. Hey, wait a minute. You said razin? Name of my project is RAZIN and it is CaZe-sEn$t1tIvE. No problem at all.
+Q7. Your project was started 2014, and ithub contains another project named razin started 2013.
+A7. I invented name RAZIN as Russian echo of west european FLINT, spent lot of time for justifying the abbreviation, got some attention at flint-devel forum. Which is why I won't change the name. Hey, wait a minute. You said razin? Name of my project is RAZIN and it is CaZe-sEn$t1tIvE. No problem at all.
+
+Q8. Can you make it so that your software compiles under <specific OS> with <specific compiler>? Can you write a documentation? a documentation in <specific language>?
+A8. I can do everything, if you hire me.
