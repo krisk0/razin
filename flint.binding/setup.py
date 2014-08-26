@@ -193,7 +193,6 @@ if os.path.isfile(EXTRA_0):
  FLINT_PYX="remove_me.pyx"
  copy_pyx_file( FLINT_PYX, "flint.pyx", 'include "wrap_HNF_pernet_stein.pyx"' )
 
-# dirty hack to optionally include experimental code such as Alex Best HNF
 ext_modules = \
  [
   Extension
