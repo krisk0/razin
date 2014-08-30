@@ -62,7 +62,7 @@ A0. GMP, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x; s
 
     Why Python2? Because I usually use Python2 and doubt that my software will work faster under Python3.
     
-    flint_sage is about speed, rather than complete support for everything or your convenience
+    flint_sage is about speed, rather than complete support for everything or your convenience.
 
 Q1. You write some words incorrectly.
 A1. No, I am using special rules: complex wordz such as un-shit, re-implement or bug-report have hyphen in them.
@@ -81,10 +81,10 @@ A3. No, my binding to fmpz_mat and fmpq_mat is beautiful
      a=numpy.resize( numpy.array( [], dtype=None ), 10 )
 
 Q4. The .zip file contains whole lot of everything, but no documentation for your Python package. Where do I find useful information about what functions are available and how to call them?
-A4. Ha, you just answered your question yourself. .py files (such as test_*.py and benchmark*.py) are samples/demo/test and .cout are captured output of relevant .py files (for instance benchmark_solve_right.cout is what benchmark_solve_right.py output on my desktop)
+A4. Ha, you just answered your question yourself. .py files (such as test_*.py and benchmark*.py) are samples/demo/test and .cout are captured output of relevant .py files (for instance benchmark_solve_right.cout is what benchmark_solve_right.py output on my desktop).
 
 Q5. Your Python interface is disorganized and inconsistent. Your files are a mess.
-A5. However, I am coming near to my mid-range target of modding W.Stein double-det algorithm. My re-implementation outruns his
+A5. However, I am coming near to my mid-range target of modding W.Stein double-det algorithm. My re-implementation outruns his.
 
 Q6. What is the meaning of phrase "W.Stein double-deteminant algorithm to compute HNF specialized for non-singular matrice and instructed to sometimes use faster low-level routines like FLINT Dixon lifting instead of Sage method is in ..."
 A6. I meant to say that 
