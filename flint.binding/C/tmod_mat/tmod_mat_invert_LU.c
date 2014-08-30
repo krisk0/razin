@@ -7,7 +7,7 @@
 void tmod_mat_mul_diag_tril( tmod_mat_t A, const mp_limb_t* D )
 // A := D*A, A square lower-triangular; D diagonal, represented by array
  {
-  slong m=A->r,i,j,k;
+  slong m=A->r,i,j;
   mp_limb_t d;
   mp_limb_t* e;
   mp_limb_t** a=A->rows;
@@ -17,8 +17,7 @@ void tmod_mat_mul_diag_tril( tmod_mat_t A, const mp_limb_t* D )
     if(d!=1)
      {
       e=a[i];
-      k=i+1;       // row contains this many non-zero entries (generally)
-      for(j=k;j--;e++)
+      for(j=i+1;j--;e++)
        *e *= d;    // access memory in ascending order
      }
    }
