@@ -123,3 +123,6 @@
 
 25 Aug 2014 ? or better speed-up my fastest in the open-world determinant 
              calculation?
+
+30 Aug 2014 Looks like my code has 0% chance to compile under Windoz-64. Must
+             get rid of 'long' type in many .pyx files (use 'slong' or 'ulong')
