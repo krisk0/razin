@@ -17,11 +17,7 @@ If results match, prints benchmarks table in the end
 
 import sage.all
 import sys,time,numpy
-try:
- import flint_sage as flint
-except:
- print 'you forgot to install flint_sage Python wrapper'
- sys.exit(1)
+import flint_sage as flint
 
 debug_mode=0
 benchmark_early_aborts=0
