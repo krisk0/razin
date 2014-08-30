@@ -28,14 +28,14 @@ from libc.string cimport strcpy
 include "sage/libs/ntl/decl.pxi"
 include "sage/ext/interrupt.pxi"
 
+cdef extern from 'flint/flint.h':
+ void* flint_malloc(unsigned size)
+ void flint_free(void* p)
+
 # numbers imported
 include "mp_limb_t.pyx"
 
 ctypedef __mpz_struct* mpz_ptr
-
-cdef extern from 'flint/flint.h':
- void* flint_malloc(long size)
- void flint_free(void* p)
 
 cdef extern from 'flint/fmpz.h':
  ctypedef long fmpz_t[1]
