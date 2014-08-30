@@ -19,3 +19,9 @@ cdef extern from 'C/fmpz_mat/hnf_modular.c':
 
 cdef extern from 'C/fmpz_mat/hnf_xgcd.c':
  void fmpz_mat_hnf_xgcd(fmpz_mat_t H, const fmpz_mat_t A)
+
+cdef extern from 'C/fmpz_mat/hnf_classical.c':
+ void fmpz_mat_hnf_classical(fmpz_mat_t H, const fmpz_mat_t A)
+ 
+cdef extern from 'C/fmpz_mat/hnf_minors.c':
+ void fmpz_mat_hnf_minors(fmpz_mat_t H, const fmpz_mat_t A)

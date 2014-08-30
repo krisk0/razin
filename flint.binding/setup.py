@@ -45,6 +45,10 @@ def find_sage_include_dir( prefix, suffix, user_set ):
  write('sage lives in '+r+'\n')
  return r
 
+def die(x):
+ print x
+ sys.exit(1)
+
 # perl/sed vile magic converted to Python
 def re_sub( d, sou, tgt ):
  e=re.compile(sou)
@@ -79,7 +83,7 @@ def sed_and_perl__goodbye( oN, iN ):
   code
  
  I fought sed and perl. I lost the fight and say goodbye to them. Let us say
-  RAZIN no longer depends on sed or perl caprice
+  RAZIN no longer depends on sed or perl caprice, and total code size decreased
  '''
  unwanted=re.compile( 'MPLUS|MMUL' )
  with open( oN, 'wb' ) as o, open( iN, 'rb' ) as i:
@@ -110,7 +114,7 @@ def copy_pyx_file( oN, iN, tail ):
   o.write('\n\n' + tail + '\n')
 
 def fix_include( c, ii ):
- assert os.path.isfile(c)
+ ext_file_exist( c )
  p='''sed -e 's:#include "%s.h":#include "flint/%s.h":' -i %s'''
  for i in ii:
   os.system( p % (i,i,c) )
@@ -152,14 +156,37 @@ if my_so != None:
   runtime_library_dirs=[ my_so ]
   bad_path=0
  if bad_path:
-  print 'no such file or directory',my_so
-  sys.exit(1)
+  die( 'no such file or directory '+my_so )
 
 print 'shared libraries:',libraries
 print 'static libraries:',extra_objects
 
+def ext_file_exist(x):
+ if not os.path.isfile(x):
+  die( 'ext source file not found: '+x )
+
 def define_extern(f, p, e):
- os.system( "sed -e 's:%s:&\\n%s;\\n:' -i %s" % (p,e,f) )
+ ext_file_exist(f)
+ if os.system( "sed -e 's:%s:&\\n%s;\\n:' -i %s" % (p,e,f) ):
+  die( 'failed to add definition %s to file %s' (e,f) )
+
+def copy_func( r, s, f ):
+ t=extract_func( s, f )
+ with open(r,'ab') as f:
+  f.write('\n'+t)
+
+def extract_func( i, n ):
+ ext_file_exist(i)
+ m=''
+ with open(i,'rb') as f:
+  for x in f.readlines():
+   m += x.rstrip()+'λ'    # zap trailling spaces
+ p0=m.find(n)
+ m=m[p0:]
+ # head cut-off, now find tail
+ p2=m.find( 'λ}λ' )
+ assert p2>0
+ return m[:p2+3].replace( 'λ', '\n' )
 
 '''
 I don't want RAZIN to contain unmodified code from another repository.
@@ -181,17 +208,32 @@ EXTRA_0="C/fmpz_mat/hnf_pernet_stein.c"
 if os.path.isfile(EXTRA_0):
  EXTRA_1="C/fmpz_mat/hnf_modular.c"
  EXTRA_2="C/fmpz_mat/hnf_xgcd.c"
- # patch 3 files EXTRA_?
+ EXTRA_3="C/fmpz_mat/hnf_classical.c"
+ EXTRA_4="C/fmpz_mat/hnf_minors.c"
+ # patch files EXTRA_?
  fix_include(EXTRA_0, ['fmpz_mat','fmpq_mat','perm'] )
  define_extern(EXTRA_0, 'perm.h"',
   'void @_hnf_modular(@_t,const @_t,const fmpz_t)'.replace('@','fmpz_mat') )
  define_extern(EXTRA_0, 'perm.h"',
   'void @_hnf_xgcd(@_t,const @_t)'.replace('@','fmpz_mat') )
+ define_extern(EXTRA_0, 'perm.h"',
+  'slong _nmod_mat_rref(nmod_mat_t A, slong* pivots_nonpivots)' )
+ define_extern(EXTRA_0, 'perm.h"',
+  'void @_hnf_classical(@_t H, const @_t A)'.replace('@','fmpz_mat') )
+ define_extern(EXTRA_0, 'perm.h"',
+  'void @_hnf_minors(@_t H, const @_t A)'.replace('@','fmpz_mat') )
  fix_include(EXTRA_1, ['fmpz_mat'] )
  fix_include(EXTRA_2, ['fmpz_mat'] )
+ fix_include(EXTRA_3, ['fmpz_mat'] )
+ fix_include(EXTRA_4, ['fmpz_mat'] )
  FLINT_PYX_copied=1
  FLINT_PYX="remove_me.pyx"
  copy_pyx_file( FLINT_PYX, "flint.pyx", 'include "wrap_HNF_pernet_stein.pyx"' )
+ #ImportError: /path/to/flint_sage.so: undefined symbol: _nmod_mat_rref
+ Ufunc='_nmod_mat_rref'
+ if 0 == os.system( 'grep -q %s %s' % (Ufunc,EXTRA_0) ):
+  copy_func( EXTRA_0, 'C/nmod_mat/rref.c', 'slongλ'+Ufunc )
+  os.system( ("sed -e 's-@-U@-g' -i"+EXTRA_0).replace('@',Ufunc) )
 
 ext_modules = \
  [
