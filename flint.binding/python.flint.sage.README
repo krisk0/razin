@@ -14,6 +14,9 @@ With portage package manager:
 Without portage:
  # python2 ./setup.py install
  
+ If compiler dislikes line 'ctypedef unsigned long mp_limb_t', this should be
+  fixed --- look into gmp.h for correct definition of mp_limb_t
+ 
  if sage include not found, read comments in setup.py, then
  
  # MY_SAGE_IS_HERE=... EPREFIX=... python2 ./setup.py install
@@ -45,7 +48,7 @@ FAQ
 Q0. What are the technical requirements of the package?
 A0. GMP, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x. 
 
-    FLINT versions known to work: 2.4.1 and 2.4.3.
+    FLINT versions known to work: 2.4.1, 2.4.3, 2.4.4.
 
     GMP versions known to work: 5.0.2, 6.0.0a. Use of MPIR instead of GMP should be possible, try this at your own risk. FLINT documentaition requires that you install MPIR in so-called 'gmp compatiblity mode' (--enable-gmpcompat).
     
