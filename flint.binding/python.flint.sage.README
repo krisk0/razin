@@ -29,7 +29,7 @@ Without portage:
 
 If you feel like optimizing, prepend compiler options:
 
- # CFLAGS='-O2 ... ' MY_SAGE_IS_HERE=... EPREFIX=... python2 ./setup.py install
+ # CC=gcc-super-new CFLAGS='-O2 ... ' MY_SAGE_IS_HERE=... EPREFIX=... python2 ./setup.py install
 
 If you want to try FLINT shared library installed in no-standard location (such as lmonade prefix/local/lib), prepend definition 
 
