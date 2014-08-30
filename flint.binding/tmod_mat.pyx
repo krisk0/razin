@@ -27,8 +27,8 @@ cdef extern from 'C/tmod_mat/tmod_mat.c':
  void tmod_mat_init(tmod_mat_t m, long rows, long cols)
  void tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols)
  void tmod_mat_clear(tmod_mat_t m)
- long tmod_mat_PLU_mod_machine_word(long* PR, tmod_mat_t S)
- void tmod_mat_solver_3arg( tmod_mat_t R, long* PD, const tmod_mat_t LU )
+ long tmod_mat_PLU_mod_machine_word(mp_limb_t* PR, tmod_mat_t S)
+ void tmod_mat_solver_3arg( tmod_mat_t R, mp_limb_t* PD, const tmod_mat_t LU )
 
 cdef mp_limb_t test_fmpz_to_t(fmpz_t n,flint_rand_t S,mp_bitcnt_t bits,
   long upto):
@@ -126,7 +126,7 @@ def tmod_mat_permute_fmpz_mat( agnostic_array p, fmpz_mat src ):
  cdef long i,j,c=tgt.c
  cdef long*      on_src_row
  cdef mp_limb_t* on_tgt_row
- cdef long* P=<long*>p.array
+ cdef mp_limb_t* P=<mp_limb_t*>p.array
  for i in range( tgt.r ):
   on_src_row = src.matr[0].rows[ P[i] ]
   on_tgt_row =         tgt.rows[   i  ]
@@ -213,7 +213,7 @@ def tmod_mat_PLU(fmpz_mat s):
  on error return None,None
  
  on success return pair PR,LU where 
-  PR is agnostic_array of long representing P and R:
+  PR is agnostic_array of mp_limb_t representing P and R:
    P: lower line of permutation that need to be applied to rows of s
    R: diagonal of U inverted
   LU: single matrice representing two matrices L and U, as 
@@ -229,8 +229,8 @@ def tmod_mat_PLU(fmpz_mat s):
  cdef tmod_mat_t m
  # delay Python object creation for m
  tmod_mat_set_fmpz_mat( m, s.matr )
- cdef void* PR=malloc( (m.r+m.c) * sizeof(long) )
- if( tmod_mat_PLU_mod_machine_word( <long*>PR, m ) ):
+ cdef void* PR=malloc( (m.r+m.c) * sizeof(mp_limb_t) )
+ if( tmod_mat_PLU_mod_machine_word( <mp_limb_t*>PR, m ) ):
   return wrap_agnostic_array( PR ),wrap_tmod_mat( m )
  # not unimodular matrice. Cleanup and return None
  tmod_mat_clear(m)
@@ -250,7 +250,7 @@ def tmod_mat_solver(agnostic_array PD, tmod_mat_single LU):
  cdef tmod_mat_t R
  cdef Py_ssize_t m=LU.matT[0].r
  tmod_mat_init_fast( R, m, m-1 )
- tmod_mat_solver_3arg( R, <long*>PD.array, LU.matT )
+ tmod_mat_solver_3arg( R, <mp_limb_t*>PD.array, LU.matT )
  return wrap_tmod_mat( R )
 
 def export_Wti( tmod_mat_single WL_ti ):

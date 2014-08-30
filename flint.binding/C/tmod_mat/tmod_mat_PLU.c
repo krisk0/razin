@@ -15,14 +15,14 @@ tmod_symm_abs( mp_limb_t y )
  }
 
 static __inline__ mp_limb_t 
-tmod_mat_PLU_find_nonzero(tmod_mat_t S, long* P, long col)
+tmod_mat_PLU_find_nonzero(tmod_mat_t S, mp_limb_t* P, slong col)
 /*
 put minimal in abs value element into S[col,col] by swapping rows
 on success return inverse of S[col,col]
 on failure return 0
 */
  {
-  long m=S->r, min_i=col;
+  slong m=S->r, min_i=col;
   mp_limb_t** a=S->rows;
   while(min_i<m)
    {
@@ -32,7 +32,7 @@ on failure return 0
    }
   if(min_i == m)
    return 0;
-  long i,min_s=tmod_symm_abs( a[min_i][col] );
+  slong i,min_s=tmod_symm_abs( a[min_i][col] );
   mp_limb_t c;
   for(i=min_i+1;i<m;i++)
    {
@@ -57,7 +57,7 @@ on failure return 0
  }
 
 static __inline__ void 
-tmod_vec_scalar_addmul( mp_limb_t* tgt, mp_limb_t* sou, long L, 
+tmod_vec_scalar_addmul( mp_limb_t* tgt, mp_limb_t* sou, slong L, 
  mp_limb_t Q )
  {
   while(L--)
@@ -65,8 +65,8 @@ tmod_vec_scalar_addmul( mp_limb_t* tgt, mp_limb_t* sou, long L,
  }
 
 // TODO: use block recursion for big m
-long 
-tmod_mat_PLU_mod_machine_word(long* PR, tmod_mat_t S)
+slong 
+tmod_mat_PLU_mod_machine_word(mp_limb_t* PR, tmod_mat_t S)
 /*
 S: matrice with m rows and n columns over residue ring modulo 2**64, m >= n
 
@@ -86,7 +86,7 @@ This subroutine is machine-dependent. Known to work on amd64, don't know what
  will happen on other arch
 */
  {
-  long m=S->r, n=S->c, i,row,row_plus_1,length;
+  slong m=S->r, n=S->c, i,row,row_plus_1,length;
   for(i=m;i--;)
    PR[i]=i;                // initialize permutation P
   mp_limb_t** a=S->rows;
@@ -97,7 +97,7 @@ This subroutine is machine-dependent. Known to work on amd64, don't know what
     d=tmod_mat_PLU_find_nonzero( S, PR, row );
     if( !d )
      return 0;    // failed to find invertible element in this column, goodbye
-    PR[m+row]=(long)d; // not good if mp_limb_t is larger than long
+    PR[m+row]=d; // not good if mp_limb_t is larger than long
     row_plus_1 = row + 1;
     length = n - row_plus_1;
     alpha = a[row] + row_plus_1;

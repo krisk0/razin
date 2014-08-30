@@ -138,7 +138,7 @@ input S = 4  ~  L = 4  1     L.I= -4  1          output R =  ?  2
  }
 
 void
-tmod_mat_solver_3arg( tmod_mat_t R, long* PD, const tmod_mat_t LU )
+tmod_mat_solver_3arg( tmod_mat_t R, mp_limb_t* PD, const tmod_mat_t LU )
 /*
  PD, LU: jammed PR, jammed LU as returned by tmod_mat_PLU(), with m rows
   and m-1 columns
@@ -184,5 +184,5 @@ tmod_mat_solver_3arg( tmod_mat_t R, long* PD, const tmod_mat_t LU )
      }
    }
   // invert lower W part
-  tmod_mat_invert_W_part( R, (mp_limb_t*) (PD+m) );
+  tmod_mat_invert_W_part( R, PD+m );
  }
