@@ -37,6 +37,8 @@ include "mp_limb_t.pyx"
 
 ctypedef __mpz_struct* mpz_ptr
 
+include "slong.pyx"
+
 cdef extern from 'flint/fmpz.h':
  ctypedef long fmpz_t[1]
  void fmpz_init(fmpz_t x)

@@ -65,7 +65,7 @@ A0. GMP, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x; s
     flint_sage is about speed, rather than complete support for everything or your convenience
 
 Q1. You write some words incorrectly.
-A1. No, I am using special rules: complex wordz such as un-shit, re-implement or bug-report have hyphen in them
+A1. No, I am using special rules: complex wordz such as un-shit, re-implement or bug-report have hyphen in them.
 
 Q2. Why Sage library is required?
 A2. Because mpz_t number need to be converted to/from a Python int, and plain Python does not support this. Therefore some Python wrapper for GMP library like gmpy, pycddlib or Sage required. Besides some fast algorithms doing certain tasks are part of Sage, which makes direct comparison possible.
@@ -95,8 +95,11 @@ A6. I meant to say that
 Q7. Your project was started 2014, and github contains another project named razin started 2013.
 A7. I invented name RAZIN as Russian echo of west european FLINT, spent lot of time for justifying the abbreviation, got some attention at flint-devel forum. Which is why I won't change the name. Hey, wait a minute. You said razin? Name of my project is RAZIN and it is CaZe-sEn$t1tIvE. No problem at all.
 
-Q8. How do I install your software on <your OS name>?
-A8. Use Unix-like shell and GNU C compiler. Install GMP and FLINT (CC=gcc CFLAGS='-O2 -march=native ...' ./configure); install Sage. Arrange it so gmp.h is in /usr/include/ or in $EPREFIX/usr/include. To install my software, use command CC=gcc CFLAGS=...  MY_SAGE_IS_HERE=... python2 ./setup.py install (might need EPREFIX, too). If you find it impossible without changing my setup.py, report this as error. Your bug-report should include exact whereabouts of your gmp.h, usr/share/sage/src and usr/include/csage/; gcc version; relevant error message in English.
+Q8. I successfully compiled flint_sage.so. How do I check which GMP/FLINT header/library was picked up?
+A8. Auto-generated files mp_limb_t.pyx/slong.pyx contain full path to GMP/FLINT header. 'ldd flint_sage.so' command will tell you which dynamic libraries are linked.
 
-Q9. Can you make it so that your software compiles under <specific OS> with <specific compiler>? Can you port your software to <specific platform>? Can you write a documentation? a documentation in <specific language>?
-A9. I can do everything, if you hire me. Of course, I will need access to that OS/platform, direct or command-line
+Q9. How do I install your software on <your OS name>?
+A9. Use Unix-like shell and GNU C compiler. Install GMP and FLINT (CC=gcc CFLAGS='-O2 -march=native ...' ./configure); install Sage. Arrange it so gmp.h is in /usr/include/ or in $EPREFIX/usr/include. To install my software, use command CC=gcc CFLAGS=...  MY_SAGE_IS_HERE=... python2 ./setup.py install (might need EPREFIX, too). If you find it impossible without changing my setup.py, report this as error. Your bug-report should include exact whereabouts of your gmp.h, usr/share/sage/src and usr/include/csage/; gcc version; relevant error message in English.
+
+Qa. Can you make it so that your software compiles under <specific OS> with <specific compiler>? Can you port your software to <specific platform>? Can you write a documentation? a documentation in <specific language>?
+Aa. I can do everything, if you hire me. Of course, I will need access to that OS/platform, direct or command-line
