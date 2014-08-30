@@ -29,9 +29,7 @@ include "sage/libs/ntl/decl.pxi"
 include "sage/ext/interrupt.pxi"
 
 # numbers imported
-cdef extern from 'gmp.h':
- ctypedef unsigned long mp_limb_t
- ctypedef unsigned long mp_bitcnt_t
+include "mp_limb_t.pyx"
 
 ctypedef __mpz_struct* mpz_ptr
 

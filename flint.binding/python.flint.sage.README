@@ -4,7 +4,7 @@ Installation
 With portage package manager: 
  download .zip (this is a push-button on https://github.com/krisk0/razin)
 
- unpack it
+ unpack the file
  
  put flint.binding/python-sage-flint-<ver>.ebuild into /your/private/overlay/dev-python/python-sage-flint
  
@@ -22,9 +22,6 @@ Without portage:
  # cd flint.binding/
  
  # python2 ./setup.py install
- 
- If compiler dislikes line 'ctypedef unsigned long mp_limb_t', this should be
-  fixed --- look into gmp.h for correct definition of mp_limb_t
  
  if sage include not found, read comments in setup.py, then
  
