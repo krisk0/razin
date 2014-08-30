@@ -239,7 +239,7 @@ if os.path.isfile(EXTRA_0):
 def mp_limb_t( p ):
  ' invoke C pre-processor to extract 2 type definitions from gmp.h '
  p=p+'/gmp.h'
- if not os.path.isfile(p):
+ if not os.path.isfile( p ):
   die('Failed to find gmp.h')
  CC=os.environ.get('CC','gcc')
  with open("mp_limb_t.pyx",'wb') as o:
