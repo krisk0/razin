@@ -2,16 +2,25 @@ Installation
 ============
 
 With portage package manager: 
- put python-sage-flint-20140310.ebuild into /your/private/overlay/dev-python/python-sage-flint
+ download .zip
+
+ unpack it
  
- move 2014xyzw-rv.zip to /distfiles/razin-2014xyzw-rv.zip, if you don't want to re-download the .zip from Github
+ put flint.binding/python-sage-flint-<ver>.ebuild into /your/private/overlay/dev-python/python-sage-flint
  
- # ebuild /your/private/o.../python-sage-flint-20140310.ebuild manifest
+ move .zip to /distfiles/razin-<ver>.zip
+ 
+ # ebuild /your/private/o.../python-sage-flint-<ver>.ebuild manifest
  
  # emerge dev-python/python-sage-flint
  
- 
 Without portage:
+ download .zip
+
+ unpack it
+ 
+ # cd flint.binding/
+ 
  # python2 ./setup.py install
  
  If compiler dislikes line 'ctypedef unsigned long mp_limb_t', this should be
