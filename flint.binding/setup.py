@@ -235,12 +235,16 @@ if os.path.isfile(EXTRA_0):
   copy_func( EXTRA_0, 'C/nmod_mat/rref.c', 'slongλ'+Ufunc )
   os.system( ("sed -e 's-@-U@-g' -i"+EXTRA_0).replace('@',Ufunc) )
 
+include_dirs=[include_0,include_1]
+if p0 != None:
+ include_dirs.append( p0+'/usr/include' )
+
 ext_modules = \
  [
   Extension
    (
     "flint_sage", [FLINT_PYX], 
-    include_dirs=[include_0,include_1],
+    include_dirs=include_dirs,
     libraries=libraries, 
     extra_objects=extra_objects,
     library_dirs=library_dirs,
