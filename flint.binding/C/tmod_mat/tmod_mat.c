@@ -4,24 +4,15 @@
 
 #include <gmp.h>
 #include <flint/flint.h>
-#include "flint/ulong_extras.h"
-#include "flint/fmpz.h"
+#include <flint/ulong_extras.h>
+#include <flint/fmpz.h>
 
 // Subroutines in this file are machine-dependent and known to work on amd64
 //  with FLINT ver 2.4.1 and 2.4.3
 
 // Some code borrowed from flint nmod_mat/*.c, data layout is different
 
-typedef struct
- {
-  slong r;
-  slong c;
-  mp_limb_t**   rows;
-  mp_limb_t*  entries;
- }
-tmod_mat_struct;
-typedef tmod_mat_struct tmod_mat_t[1];
-#define tmod_mat_entry(mat,i,j) ((mat)->rows[(i)][(j)])
+#include "tmod_mat_.h"
 
 void 
 tmod_mat_init(tmod_mat_t mat, long rows, long cols)

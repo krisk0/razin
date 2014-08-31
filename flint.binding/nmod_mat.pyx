@@ -265,25 +265,8 @@ def test_invert_4x4_corner(fmpz_mat A,p,k):
  return negate_det[0],r,Mi.export_nonnegative_fmpz_mat().export_sage(),\
   M.export_nonnegative_fmpz_mat().export_sage()
 
-cdef void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou):
- '''
- compute tgt := sou modulo 2**63
- 
- This subroutine is for amd64
- '''
- cdef slong rc=sou.r, cc=sou.c, i, j
- nmod_mat_init( tgt, rc, 0, 0x8000000000000000 )
- cdef mp_limb_t* e = <mp_limb_t*>flint_malloc( rc * cc * sizeof(mp_limb_t) )
- tgt.rows = <mp_limb_t**>flint_malloc( rc * sizeof(mp_limb_t*) )
- cdef fmpz* s
- tgt.entries = e
- tgt.c=cc
- for i in range(rc):
-  tgt.rows[i] = e
-  s=sou.rows[i]
-  for j in range(cc):
-   e[j] = fmpz_to_t( s+j ) & 0x7FFFFFFFFFFFFFFF
-  e += cc
+cdef extern from 'C/nmod_mat/mod_t_half.c':
+ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou)
 
 def nmod_mat_set_fmpz_mat_mod_thalf(fmpz_mat A):
  cdef nmod_mat r=nmod_mat.__new__( nmod_mat )
