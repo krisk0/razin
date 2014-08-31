@@ -70,17 +70,17 @@ cdef extern from 'flint/fmpq.h':
 # matrix imported
 cdef extern from 'flint/fmpz_mat.h':
  ctypedef struct fmpz_mat_struct:
-  long* entries
-  long r
-  long c
-  long** rows
+  fmpz* entries
+  slong r
+  slong c
+  fmpz** rows
  ctypedef fmpz_mat_struct fmpz_mat_t[1]
 
 cdef extern from 'flint/fmpq_mat.h':
  ctypedef struct fmpq_mat_struct:
   fmpq* entries
-  long r
-  long c
+  slong r
+  slong c
   fmpq** rows
  ctypedef fmpq_mat_struct fmpq_mat_t[1]
 
@@ -133,8 +133,8 @@ cdef extern from 'C/ulong_extras/ulong_extras_.h':
 cdef extern from 'flint/nmod_mat.h':
  ctypedef struct nmod_mat_struct:
   mp_limb_t* entries
-  long r
-  long c
+  slong r
+  slong c
   mp_limb_t** rows
   nmod_t mod
  ctypedef nmod_mat_struct nmod_mat_t[1]

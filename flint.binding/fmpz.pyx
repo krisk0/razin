@@ -44,9 +44,9 @@ def is_probabprime_BPSW(n):
 
 cdef extern from 'C/ulong_extras/big_primes_iterator.c':
  ctypedef struct n_primes_rev_struct:
-  long index
-  long allocated_size
-  long last_output_mod_30
+  slong index
+  slong allocated_size
+  slong last_output_mod_30
   mp_limb_t* numbers
  ctypedef n_primes_rev_struct n_primes_rev_t[1]
  mp_limb_t n_primes_rev_init(n_primes_rev_t i, mp_limb_t start)
