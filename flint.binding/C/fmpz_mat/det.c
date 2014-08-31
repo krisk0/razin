@@ -26,7 +26,10 @@ fmpz_mat_det_4block(fmpz_t r, const fmpz_mat_t A)
     // TODO: for big and fat matrice, use IML nonsingSolvLlhsMM() instead of
     //  fmpz_mat_solve_dixon()
     fmpz_mat_det_divisor(t, A);
-    fmpz_mat_det_modular_given_divisor_4block(r, A, t);
+    if(fmpz_is_zero(t))
+     fmpz_set_ui(r,0);
+    else
+     fmpz_mat_det_modular_given_divisor_4block(r, A, t);
     fmpz_clear(t);
    }
  }
