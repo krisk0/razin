@@ -4,17 +4,16 @@
 # Copyright Денис Крыськов 2014
 
 cdef extern from 'flint/fmpz_mat.h':
- #long* fmpz_mat_entry(fmpz_mat_t mat, long i, long j)
  void fmpz_mat_det(fmpz_t det, const fmpz_mat_t m)
  void fmpz_mat_det_modular(fmpz_t det, const fmpz_mat_t m,int proved)
  void fmpz_mat_print(fmpz_mat_t m)
  void fmpz_mat_clear(fmpz_mat_t m)
- void fmpz_mat_init(fmpz_mat_t m, long rows, long cols)
+ void fmpz_mat_init(fmpz_mat_t m, slong rows, slong cols)
  int fmpz_mat_solve(fmpz_mat_t X, fmpz_t den, const fmpz_mat_t A, const 
   fmpz_mat_t B)
  int fmpz_mat_equal(const fmpz_mat_t a,const fmpz_mat_t b)
- long fmpz_mat_rref(fmpz_mat_t res, fmpz_t den, const fmpz_mat_t A)
- long fmpz_mat_fflu(fmpz_mat_t B, fmpz_t den, long* perm, const fmpz_mat_t A,
+ slong fmpz_mat_rref(fmpz_mat_t res, fmpz_t den, const fmpz_mat_t A)
+ slong fmpz_mat_fflu(fmpz_mat_t B, fmpz_t den, slong* perm, const fmpz_mat_t A,
   int rank_check)
  void fmpz_mat_det_bound(fmpz_t bound, const fmpz_mat_t A)
  void fmpz_mat_det_divisor(fmpz_t d, const fmpz_mat_t A)
@@ -75,7 +74,7 @@ cdef class fmpz_mat:
   ' export self as sage Matrix_integer_dense '
   cdef Matrix_integer_dense r=Matrix( self.matr[0].r, self.matr[0].c )
   cdef Py_ssize_t i,j,k=0
-  cdef long* on_row
+  cdef slong* on_row
   for i in range(self.matr[0].r):
    on_row=self.matr[0].rows[i]
    for j in range(self.matr[0].c):
@@ -87,7 +86,7 @@ cdef class fmpz_mat:
   ' return flat list of entries converted to Python int '
   cdef Py_ssize_t i,j
   cdef Integer t
-  cdef long* on_row
+  cdef slong* on_row
   r,t=[],Integer(0)
   for i in range(self.matr[0].r):
    on_row=self.matr[0].rows[i]
@@ -152,7 +151,7 @@ cdef class fmpz_mat:
   fmpz_mat_init( r.matr, self.matr[0].r, self.matr[0].c )
   cdef fmpz_t den
   fmpz_init( den )
-  cdef long rank=fmpz_mat_rref(r.matr, den, self.matr )
+  cdef slong rank=fmpz_mat_rref(r.matr, den, self.matr )
   cdef Integer d=Integer(0)
   fmpz_get_mpz( d.value, den )
   fmpz_clear( den )
@@ -162,8 +161,8 @@ cdef class fmpz_mat:
   '''
   return triple (B, den, perm) as calculated by fmpz_mat_fflu()
   '''
-  cdef long* p=<long*>malloc(self.matr[0].r * sizeof(long))
-  cdef long i
+  cdef slong* p=<slong*>malloc(self.matr[0].r * sizeof(slong))
+  cdef slong i
   for i in range(self.matr[0].r):
    p[i]=i
   cdef fmpz_mat b=fmpz_mat.__new__( fmpz_mat )
@@ -266,17 +265,17 @@ cdef wrap_fmpz_mat(fmpz_mat_t a):
  A.matr.rows=a.rows
  return A
 
-cdef fmpz_mat_permute( long* P, fmpz_mat src ):
+cdef fmpz_mat_permute( slong* P, fmpz_mat src ):
  '''
  r=copy of src
  apply P to rows of r
  return r
  '''
  cdef fmpz_mat_t tgt
- cdef long i,j,c=src.matr[0].c
+ cdef slong i,j,c=src.matr[0].c
  fmpz_mat_init( tgt, src.matr[0].r, c )
- cdef long* on_src_row
- cdef long* on_tgt_row
+ cdef slong* on_src_row
+ cdef slong* on_tgt_row
  for i in range( tgt.r ):
   on_src_row = src.matr[0].rows[ P[i] ]
   on_tgt_row =         tgt.rows[   i  ]
@@ -290,7 +289,7 @@ def fmpz_mat_inverse( fmpz_mat A ):
  returns None,None if A is singular
  returns pair Ainv,den such that (Ainv / den) * A = identity
  '''
- cdef long t=A.matr[0].r
+ cdef slong t=A.matr[0].r
  cdef fmpz_mat_t Ainv
  fmpz_mat_init( Ainv, t, t )
  cdef fmpz_t den
@@ -312,7 +311,7 @@ def fmpz_triU_small_det_inverse( fmpz_mat A ):
  returns pair Ainv,den such that (Ainv / den) * A = identity
  den divides d
  '''
- cdef long t=A.matr[0].r
+ cdef slong t=A.matr[0].r
  if t < 4:
   return fmpz_mat_inverse( A )
  cdef fmpz_mat_t Ainv
