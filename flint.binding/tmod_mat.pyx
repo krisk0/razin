@@ -12,26 +12,25 @@ cdef extern from 'flint/flint.h':
  ctypedef flint_rand_s flint_rand_t[1]
  void flint_randinit(flint_rand_t state)
  void flint_randclear(flint_rand_t state)
- ctypedef unsigned long mp_bitcnt_t
  void fmpz_randbits(fmpz_t tgt, flint_rand_t state, mp_bitcnt_t bits)
  void fmpz_randtest(fmpz_t tgt, flint_rand_t state, mp_bitcnt_t bits)
 
 cdef extern from 'C/tmod_mat/tmod_mat.c':
  ctypedef struct tmod_mat_struct:
-  long r
-  long c
+  slong r
+  slong c
   mp_limb_t** rows
   mp_limb_t* entries
  ctypedef tmod_mat_struct tmod_mat_t[1]
  mp_limb_t fmpz_to_t(const fmpz_t f)
- void tmod_mat_init(tmod_mat_t m, long rows, long cols)
- void tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols)
+ void tmod_mat_init(tmod_mat_t m, slong rows, slong cols)
+ void tmod_mat_init_fast(tmod_mat_t mat, slong rows, slong cols)
  void tmod_mat_clear(tmod_mat_t m)
- long tmod_mat_PLU_mod_machine_word(mp_limb_t* PR, tmod_mat_t S)
+ int tmod_mat_PLU_mod_machine_word(mp_limb_t* PR, tmod_mat_t S)
  void tmod_mat_solver_3arg( tmod_mat_t R, mp_limb_t* PD, const tmod_mat_t LU )
 
 cdef mp_limb_t test_fmpz_to_t(fmpz_t n,flint_rand_t S,mp_bitcnt_t bits,
-  long upto):
+  int upto):
  ' return 0 iff test passes '
  if upto:
   fmpz_randtest(n,S,bits)
@@ -74,7 +73,7 @@ def check_fmpz_to_t():
  fmpz_init( t )
  cdef flint_rand_t S
  flint_randinit(S)
- cdef long i
+ cdef slong i
  cdef mp_bitcnt_t j
  for i in range(1000):
   for j in 32,62:
@@ -107,8 +106,8 @@ def take_mod_2_64(Integer x):
 
 cdef tmod_mat_set_fmpz_mat( tmod_mat_t tgt, fmpz_mat_t matr ):
  tmod_mat_init_fast( tgt, matr[0].r, matr[0].c )
- cdef long i,j,c=matr[0].c,k=0
- cdef long* on_row
+ cdef slong i,j,c=matr[0].c,k=0
+ cdef fmpz* on_row
  for i in range(matr[0].r):
   on_row=matr[0].rows[i]
   for j in range(c):
@@ -123,8 +122,8 @@ def tmod_mat_permute_fmpz_mat( agnostic_array p, fmpz_mat src ):
  '''
  cdef tmod_mat_t tgt
  tmod_mat_init( tgt, src.matr[0].r, src.matr[0].c )
- cdef long i,j,c=tgt.c
- cdef long*      on_src_row
+ cdef slong i,j,c=tgt.c
+ cdef fmpz*      on_src_row
  cdef mp_limb_t* on_tgt_row
  cdef mp_limb_t* P=<mp_limb_t*>p.array
  for i in range( tgt.r ):
@@ -308,7 +307,7 @@ def clean_dict( d, s ):
   for k in to_del:
    del d[k]
 
-def agnostic_array_export_big( agnostic_array A, long x, long y, mp_limb_t z ):
+def agnostic_array_export_big( agnostic_array A, slong x, slong y, mp_limb_t z ):
  '''
  treat A.array as array of mp_limb_t
  skip 1st x entries
@@ -320,7 +319,7 @@ def agnostic_array_export_big( agnostic_array A, long x, long y, mp_limb_t z ):
  '''
  cdef mp_limb_t* a=<mp_limb_t*>A.array
  a += x
- cdef long i
+ cdef slong i
  cdef mp_limb_t u
  r=dict()
  for i in range(y):

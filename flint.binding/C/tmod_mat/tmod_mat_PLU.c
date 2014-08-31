@@ -65,7 +65,7 @@ tmod_vec_scalar_addmul( mp_limb_t* tgt, mp_limb_t* sou, slong L,
  }
 
 // TODO: use block recursion for big m
-slong 
+int 
 tmod_mat_PLU_mod_machine_word(mp_limb_t* PR, tmod_mat_t S)
 /*
 S: matrice with m rows and n columns over residue ring modulo 2**64, m >= n
