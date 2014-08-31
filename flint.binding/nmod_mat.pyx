@@ -4,11 +4,11 @@
 # Copyright Денис Крыськов 2014
 
 cdef extern from 'flint/nmod_mat.h':
- void nmod_mat_init(nmod_mat_t tgt,long rows,long cols,mp_limb_t n)
+ void nmod_mat_init(nmod_mat_t tgt,slong rows,slong cols,mp_limb_t n)
  void nmod_mat_clear(nmod_mat_t mat)
- long nmod_mat_rref(nmod_mat_t A) 
+ slong nmod_mat_rref(nmod_mat_t A) 
  # unclear what nmod_mat_rref does. It appears to return spoilt HNF
- long nmod_mat_lu(long *P, nmod_mat_t A, int rank_check)
+ slong nmod_mat_lu(slong *P, nmod_mat_t A, int rank_check)
  mp_limb_t nmod_mat_det(nmod_mat_t A)
 
 cdef extern from 'C/tmod_mat/tmod_mat.c':
@@ -17,11 +17,11 @@ cdef extern from 'C/tmod_mat/tmod_mat.c':
 cdef extern from 'C/nmod_mat/det_mod_pk.c':
  mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,
   mp_limb_t* scratch)
- mp_limb_t det_mod_pk_fix_SE_corner(mp_limb_t* I,nmod_mat_t M,long* negate_det,
+ mp_limb_t det_mod_pk_fix_SE_corner(mp_limb_t* I,nmod_mat_t M,slong* negate_det,
   const p_k_pk_t pp)
 
 cdef extern from 'C/nmod_mat/init_square_2arg.c':
- void nmod_mat_init_square_2arg(nmod_mat_t mat, long dim)
+ void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim)
 
 cdef extern from 'flint/fmpz_mat.h':
  # these two functions undocumented, as of version 2.4.1
@@ -93,8 +93,7 @@ cdef class nmod_mat:
    because it does not preserve deteminant
   '''
   cdef Integer r=Integer(0)
-  cdef long rank
-  rank=nmod_mat_rref(self.matZn)
+  cdef slong rank=nmod_mat_rref(self.matZn)
   mpz_set_si(r.value,rank)
   return r
 
@@ -132,7 +131,7 @@ cdef nmod_mat_export_nonnegative_fmpz_mat_upper( nmod_mat_t s ):
  cdef fmpz_mat r=fmpz_mat.__new__(fmpz_mat)
  fmpz_mat_init( r.matr, rc, cc )
  cdef mp_limb_t* on_s_row
- cdef long* on_r_row
+ cdef fmpz* on_r_row
  for i in range(rc):
   on_s_row=s.rows[i]
   on_r_row=r.matr[0].rows[i]
@@ -142,14 +141,14 @@ cdef nmod_mat_export_nonnegative_fmpz_mat_upper( nmod_mat_t s ):
 
 cdef fmpz_mat_set_nmod_mat_upper(fmpz_mat_t tgt, nmod_mat_t sou):
  '''
- cc <= rc, tgt and sou has same dimenisions. 
+ cc <= rc, tgt and sou have same dimenisions. 
  Zero tgt, make it virgin, put upper part of sou into tgt 
  '''
  cdef Py_ssize_t i,j
  cdef Py_ssize_t cc=sou.c, rc=sou.r
  fmpz_mat_zero(tgt)
  cdef mp_limb_t* on_s_row
- cdef long* on_r_row=tgt.entries
+ cdef fmpz* on_r_row=tgt.entries
  for i in range(cc):
   on_s_row=sou.rows[i]
   tgt.rows[i]=on_r_row
@@ -185,9 +184,9 @@ cdef export_triU(fmpz_mat_t R, nmod_mat_t S):
  on exit R: square upper-trianglular, formed from upper part of S (lower part
   ignored)
  '''
- cdef long dim=S.c,i,j
+ cdef slong dim=S.c,i,j
  fmpz_mat_init( R, dim, dim )
- cdef long* on_tgt
+ cdef fmpz* on_tgt
  cdef mp_limb_t* on_src
  for i in range(dim):
   on_src = S.rows[i]+i
@@ -219,7 +218,7 @@ def plu_modulo_prime(fmpz_mat A,Integer M):
  return B,LU as fmpz_mat
  '''
  a=nmod_mat(A,M)
- cdef long* p=<long*>malloc(a.matZn[0].r * sizeof(long))
+ cdef slong* p=<slong*>malloc(a.matZn[0].r * sizeof(slong))
  nmod_mat_lu(p,a.matZn,<int>0)
  '''
  for matrice 5,5,3,2 modulo 10 nmod_mat_lu returns 5,5,3,7 
@@ -256,7 +255,7 @@ def test_invert_4x4_corner(fmpz_mat A,p,k):
  M=nmod_mat(A,p_deg_k_nrm)
  cdef nmod_mat Mi=nmod_mat.__new__( nmod_mat )
  nmod_mat_init( Mi.matZn, 4, 4, p_deg_k_nrm )
- cdef long negate_det[1]
+ cdef slong negate_det[1]
  negate_det[0]=0
  cdef mp_limb_t r=det_mod_pk_fix_SE_corner(Mi.matZn.entries,M.matZn,negate_det,
   pp)
@@ -272,11 +271,11 @@ cdef void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou):
  
  This subroutine is for amd64
  '''
- cdef long rc=sou.r, cc=sou.c, i, j
+ cdef slong rc=sou.r, cc=sou.c, i, j
  nmod_mat_init( tgt, rc, 0, 0x8000000000000000 )
  cdef mp_limb_t* e = <mp_limb_t*>flint_malloc( rc * cc * sizeof(mp_limb_t) )
  tgt.rows = <mp_limb_t**>flint_malloc( rc * sizeof(mp_limb_t*) )
- cdef long* s
+ cdef fmpz* s
  tgt.entries = e
  tgt.c=cc
  for i in range(rc):
