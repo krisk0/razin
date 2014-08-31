@@ -40,7 +40,7 @@ ctypedef __mpz_struct* mpz_ptr
 include "slong.pyx"
 
 cdef extern from 'flint/fmpz.h':
- ctypedef long fmpz_t[1]
+ ctypedef fmpz fmpz_t[1]
  void fmpz_init(fmpz_t x)
  void fmpz_clear(fmpz_t f)
  void fmpz_set_mpz(fmpz_t tgt, mpz_t sou)
@@ -54,8 +54,8 @@ cdef extern from 'flint/fmpz.h':
  
 cdef extern from 'flint/fmpq.h':
  ctypedef struct fmpq:
-  long num
-  long den
+  fmpz num
+  fmpz den
  ctypedef fmpq fmpq_t[1]
  void fmpq_init( fmpq_t x )
  void fmpq_clear( fmpq_t x )
