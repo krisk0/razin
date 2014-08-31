@@ -4,7 +4,7 @@
 # Copyright Денис Крыськов 2014
 
 cdef extern from 'flint/fmpq_mat.h':
- void fmpq_mat_init(fmpq_mat_t mat, long rows, long cols)
+ void fmpq_mat_init(fmpq_mat_t mat, slong rows, slong cols)
  void fmpq_mat_clear(fmpq_mat_t mat)
  int fmpq_mat_equal(const fmpq_mat_t a,const fmpq_mat_t b)
  void fmpq_mat_scalar_div_fmpz(fmpq_mat_t tgt,const fmpq_mat_t sou,
@@ -66,8 +66,8 @@ cdef class fmpq_mat:
      fmpz_clear( q )
    else:
     rows,cols,li=m
-    fmpq_mat_init(self.matQQ, <long>rows, <long>cols )
-    size = <long>rows * <long>cols
+    fmpq_mat_init(self.matQQ, <slong>rows, <slong>cols )
+    size = <slong>rows * <slong>cols
     try:
      if size>len(li):
       size=len(li)
@@ -97,7 +97,7 @@ cdef class fmpq_mat:
   '''
   cdef fmpz_mat i=fmpz_mat.__new__(fmpz_mat)  
   fmpz_mat_init( i.matr, self.matQQ[0].r, self.matQQ[0].c )
-  cdef long ok=fmpq_mat_get_fmpz_mat( i.matr, self.matQQ )
+  cdef int ok=fmpq_mat_get_fmpz_mat( i.matr, self.matQQ )
   if ok:
    return i
   print 'non-integral matrice:',self
@@ -120,7 +120,7 @@ cdef class fmpq_mat:
   ' export left-most column of self as Sage Vector_rational_dense '
   # TODO: the line below calls Python. How to stay inside Cython?
   cdef Vector_rational_dense r=vector( QQ, self.matQQ[0].r )
-  cdef long i
+  cdef slong i
   for i in range(self.matQQ[0].r):
    fmpq_get_mpq( r._entries[i], self.matQQ[0].rows[i] )
   return r
@@ -130,8 +130,8 @@ cdef class fmpq_mat:
   cdef Rational e=Rational(0)
   #fmpq_get_mpq( e.value, self.matQQ[0].rows[mpz_get_ui(i.value)]+
   # mpz_get_ui(j.value))
-  cdef long ii=<long>i
-  cdef long jj=<long>j
+  cdef slong ii=<slong>i
+  cdef slong jj=<slong>j
   fmpq_get_mpq( e.value, self.matQQ[0].rows[ii]+jj )
   return e
 
@@ -140,13 +140,13 @@ cdef class fmpq_mat:
   cdef Integer r=Integer(0)
   #fmpz_get_mpz( r.value, self.matQQ[0].rows[i][0].num )
   cdef fmpq* on_row=self.matQQ[0].rows[i]
-  fmpz_get_mpz( r.value, <long*>on_row ) # dirty trick to get .num field
+  fmpz_get_mpz( r.value, <slong*>on_row ) # dirty trick to get .num field
                                          # should be a better way to do this
   return r
- 
+
  def entry_div_Integer( self, i, Integer d ):
   ' changes self: a[i,0] /= d '
-  cdef long ii=<long>i
+  cdef slong ii=<slong>i
   cdef fmpq* on_row=self.matQQ[0].rows[ii]
   cdef fmpz_t u
   fmpz_init( u )
@@ -157,26 +157,26 @@ cdef class fmpq_mat:
  
  def entry_mul_Rational( self, i, Rational m):
   ' changes self: a[i,0] *= m '
-  cdef long ii=<long>i
+  cdef slong ii=<slong>i
   cdef fmpq* on_row=self.matQQ[0].rows[ii]
   cdef fmpq_t q
   fmpq_init( q )
   fmpq_set_mpq( q, m.value )
   fmpq_mul( on_row, on_row, q )
   fmpq_clear( q )
- 
+
  def denominator( self ):
   ' returns common denominator, assumes self in canonical form '
   cdef fmpz_t lcm
   fmpz_init(lcm)
   fmpz_one(lcm)
-  cdef long i,j
+  cdef slong i,j
   cdef fmpq* on_row
-  cdef long c=self.matQQ[0].c
+  cdef slong c=self.matQQ[0].c
   for i in range(self.matQQ[0].r):
    on_row=self.matQQ[0].rows[i]
    for j in range(c):
-    fmpz_lcm(lcm, lcm, (<long*>(on_row+j))+1 ) # how to do this cleanly?
+    fmpz_lcm(lcm, lcm, (<slong*>(on_row+j))+1 ) # how to do this cleanly?
   cdef Integer r=Integer(0)
   fmpz_get_mpz( r.value, lcm )
   fmpz_clear(lcm)
@@ -267,9 +267,8 @@ cdef class fmpq_mat:
 def column_to_fmpq_mat( Vector_rational_dense c ):
  ' convert Sage rational vector to fmpq_mat of dimension n*1 '
  cdef fmpq_mat a=fmpq_mat.__new__(fmpq_mat)
- cdef long n=c._degree
+ cdef slong n=c._degree,i
  fmpq_mat_init( a.matQQ, n, 1 )
- cdef long i
  for i in range(n):
   fmpq_set_mpq( a.matQQ[0].entries+i, c._entries[i] )
  return a
@@ -302,7 +301,7 @@ def fmpq_mat_scalar_mul_rational(fmpq_mat a, Rational m):
  cdef fmpq_t q
  fmpq_init( q )
  fmpq_set_mpq( q, m.value )
- cdef long i,size=a.matQQ[0].r * a.matQQ[0].c
+ cdef slong i,size=a.matQQ[0].r * a.matQQ[0].c
  for i in range(size):
   fmpq_mul(  b.matQQ[0].entries+i, a.matQQ[0].entries+i, q )
  fmpq_clear( q )
@@ -316,7 +315,7 @@ def fmpz_mat_mul_by_fmpq_mat(fmpz_mat a, fmpq_mat b):
  else damage matrice a and return 0
  '''
  cdef fmpq_mat_t C
- cdef long dim=b.matQQ[0].r
+ cdef slong dim=b.matQQ[0].r
  fmpq_mat_init( C, dim, dim )
  fmpq_mat_mul_r_fmpz_mat(C, a.matr, b.matQQ)
  dim=fmpq_mat_get_fmpz_mat(a.matr, C)
