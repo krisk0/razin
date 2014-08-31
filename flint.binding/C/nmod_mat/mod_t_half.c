@@ -17,10 +17,10 @@ void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou)
  {
   slong rc=sou->r, cc=sou->c, i, j;
   tgt->r=rc; tgt->c=cc;
-  nmod_t mod=tgt->mod;
-  mod.n   =UWORD(0x8000000000000000);
-  mod.norm=0;
-  mod.ninv=UWORD(0xFFFFFFFFFFFFFFFF);
+  nmod_t* mod=&(tgt->mod);
+  mod->n   =UWORD(0x8000000000000000);
+  mod->norm=0;
+  mod->ninv=UWORD(0xFFFFFFFFFFFFFFFF);
   mp_limb_t* e = (mp_limb_t*)flint_malloc( rc * cc * sizeof(mp_limb_t) );
   tgt->entries=e;
   tgt->rows = (mp_limb_t**)flint_malloc( rc * sizeof(mp_limb_t*) );
