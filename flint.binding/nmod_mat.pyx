@@ -29,6 +29,10 @@ cdef extern from 'flint/fmpz_mat.h':
  void fmpz_mat_set_nmod_mat(fmpz_mat_t A, const nmod_mat_t Amod)
  void fmpz_mat_zero(fmpz_mat_t A)
 
+cdef extern from './nmod_mat_HNF.c':
+ void nmod_mat_HNF(nmod_mat_t A)
+ void nmod_mat_HNF_nonsquare(nmod_mat_t A)
+
 def AmodB(Integer a, Integer b):
  ' test that mp_limb_t arithmetic works in Cython '
  cdef Integer r=Integer(0)
@@ -177,6 +181,9 @@ def fmpz_mat_hermite_form(fmpz_mat A, Integer M):
  nmod_mat_HNF(a.matZn)
  #sig_off()
  return a.export_nonnegative_fmpz_mat_upper()
+
+def nmod_mat_HNF_wr(nmod_mat m):
+ nmod_mat_HNF( m.matZn )
 
 cdef export_triU(fmpz_mat_t R, nmod_mat_t S):
  '''

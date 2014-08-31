@@ -139,10 +139,6 @@ cdef extern from 'flint/nmod_mat.h':
   nmod_t mod
  ctypedef nmod_mat_struct nmod_mat_t[1]
 
-cdef extern from './nmod_mat_HNF.c':
- void nmod_mat_HNF(nmod_mat_t A)
- void nmod_mat_HNF_nonsquare(nmod_mat_t A)
-
 # fmpz, mpz, ui number manipulation
 include "fmpz.pyx"
 
