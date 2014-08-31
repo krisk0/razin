@@ -308,8 +308,8 @@ HNF: Hermite Normal Form as defined by W.Stein/C.Pernet
 
 Input data:
 ~~~~~~~~~~
-A: square, non-singular over integers, n=A->mod.n is a multiple of abs(det(A))
- (can be equal)
+A: square, non-singular over integers, d=det(A) counted over Z,
+ n=A->mod.n is a multiple of abs(d) (n >= abs(d), abs(d) divides n)
 
 Output data:
 ~~~~~~~~~~~
