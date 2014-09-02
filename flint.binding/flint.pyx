@@ -39,6 +39,16 @@ ctypedef __mpz_struct* mpz_ptr
 
 include "slong.pyx"
 
+from sage.libs.gmp.all cimport gmp_randstate_t
+
+cdef extern from 'flint/flint.h':
+ ctypedef struct flint_rand_s:
+  gmp_randstate_t gmp_state
+  int gmp_init
+  mp_limb_t __randval
+  mp_limb_t __randval2
+ ctypedef flint_rand_s flint_rand_t[1]
+
 cdef extern from 'flint/fmpz.h':
  ctypedef fmpz fmpz_t[1]
  void fmpz_init(fmpz_t x)

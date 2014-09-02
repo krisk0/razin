@@ -8,8 +8,8 @@
 #include "../fmpz/fmpz_.h"
 #include "../ulong_extras/ulong_extras_.h"
 
-void fmpz_mat_det_5arg(mpz_t r,const fmpz_mat_t A,mpfr_t h_bound,
- slong smallest_row,mp_limb_t good_p);
+void fmpz_mat_det_6arg(flint_rand_t rst, mpz_t r,const fmpz_mat_t A,
+ mpfr_t h_bound,slong smallest_row,mp_limb_t good_p);
 
 mpfr_prec_t static
 hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)
@@ -143,7 +143,7 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
     //flint_printf("selected p=%wu\n",pp.p);
     if( nmod_mat_det_mod_pk_4block(Amod,pp,scratch) )
      {
-      fmpz_mat_det_5arg(r, A, h_bound, smallest_row, pp.p);
+      fmpz_mat_det_6arg(rand_st, r, A, h_bound, smallest_row, pp.p);
       pp.p=UWORD_MAX;
       break;
      }
@@ -162,4 +162,5 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
    mpz_set_ui(r,0);
   mpfr_clear(prime_product);
   mpfr_clear(h_bound);
+  flint_randclear(rand_st);
  }

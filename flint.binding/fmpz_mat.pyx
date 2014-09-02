@@ -39,8 +39,9 @@ cdef extern from 'C/fmpz_mat/is_singular.c':
 cdef extern from 'C/fmpz_mat/det_suspected_zero.c':
  void fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
 
-cdef extern from 'C/fmpz_mat/det_5arg.c':
- void fmpz_mat_det_5arg(mpz_t,const fmpz_mat_t,mpfr_t,slong,mp_limb_t)
+cdef extern from 'C/fmpz_mat/det_6arg.c':
+ void fmpz_mat_det_6arg(flint_rand_t,mpz_t,const fmpz_mat_t,mpfr_t,slong,
+  mp_limb_t)
 
 cdef class fmpz_mat:
 
