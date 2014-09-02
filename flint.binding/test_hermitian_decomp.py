@@ -14,6 +14,7 @@ This program tests subroutines nmod_mat_HNF() and fmpz_triU_small_det_inverse()
 import sage.all
 import flint_sage as flint
 import sys,time
+from test_nmod_HNF import unimodular
 
 Integer=sage.all.Integer
 matrix=sage.all.matrix
@@ -103,11 +104,18 @@ def det_hermitian(x):
  else:
   return count_det( fmpz_mat(y) ) * z
 
+def matrix_with_det( n, d ):
+ x=identity_matrix(n)
+ x[0,0]=d
+ return x * unimodular(n)
+
 def test_for_dim(n):
  '''
  generate 10 non-singular matrix and one singular
+ for x in range 2..100, generate matrice with determinant 2**x and y*2**x,
+  where y is a random number in range 3..33
  
- count its determinant two ways, compare results
+ for all the matrix, count its determinant two ways, compare results
  '''
  singular_count=i=0
  while 1:
@@ -124,6 +132,15 @@ def test_for_dim(n):
  if singular_count==0:
   a=generate_singular_matrice(n)
   assert det_hermitian(a) == 0
+ for x in range(2,101):
+  test_this_det( n, 1<<x )
+  test_this_det( n, randint(3,34)<<x )
+  
+def test_this_det( n, y ):
+ a=matrix_with_det( dim, y )
+ z=count_det(fmpz_mat(a))
+ assert abs(z)==y
+ assert det_hermitian(a) == z
 
 x=identity_matrix(3)
 for i in range(2,100):
