@@ -133,12 +133,12 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
      }
     else
      {
-      nmod_mat_init_square_2arg(Amod,n);
-      pp.p=n_primes_rev_init(it,0);
+      nmod_mat_init_square_2arg(Amod, n);
+      pp.p=n_primes_rev_init(it, 0);
       scratch=flint_malloc( 4*(n-4)*sizeof(mp_limb_t) );
       mpfr_init2(log2_p, h_bits);
      }
-    init__p_k_pk__and__nmod(&pp,&Amod->mod);
+    init__p_k_pk__and__nmod(&pp, &Amod->mod);
     fmpz_mat_get_nmod_mat(Amod, A);
     //flint_printf("selected p=%wu\n",pp.p);
     if( nmod_mat_det_mod_pk_4block(Amod,pp,scratch) )
