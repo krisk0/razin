@@ -72,10 +72,6 @@ def divide_away(m, i, det_i):
    r[k,j] = r_kj / det_i
  return r
 
-def det_hermittian_subr(m, i, det_i):
- r=divide_away(m,i,det_i)
- return count_det( fmpz_mat(r) )
-
 def decompose_hermittian(m):
  '''
  return 
@@ -98,9 +94,12 @@ def decompose_hermittian(m):
  return None, d0 * d1
 
 def det_hermitian(x):
+ if x.nrows() < 5:
+  return count_det( fmpz_mat(x) )
  y,z=decompose_hermittian(x)
  if y==None:
-  return count_det( fmpz_mat(x) )
+  #return count_det( fmpz_mat(x) )
+  return flint.count_det_suspected_zero( fmpz_mat(x), z )
  else:
   return count_det( fmpz_mat(y) ) * z
 
@@ -142,11 +141,16 @@ def test_this_det( n, y ):
  assert abs(z)==y
  assert det_hermitian(a) == z
 
-x=identity_matrix(3)
-for i in range(2,100):
- x[0,0] = 1<<i
- d=det_hermitian(x)
- assert x[0,0] == d
+if 1:
+ x=identity_matrix(6)
+ for i in range(2,200):
+  x[0,0] = 1<<i
+  d=det_hermitian(x)
+  if x[0,0] != d:
+   print 'test failed for i=%s' % i
+   print '%s != %s' % (x[0,0],d)
+   sys.exit(1)
+ sys.exit(0)
 
 sage.all.set_random_seed('20140831')
 

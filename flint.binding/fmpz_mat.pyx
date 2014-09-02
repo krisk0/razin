@@ -36,6 +36,12 @@ cdef extern from 'C/fmpz_mat/det.c':
 cdef extern from 'C/fmpz_mat/is_singular.c':
  int fmpz_mat_is_singular(const fmpz_mat_t A)
 
+cdef extern from 'C/fmpz_mat/det_suspected_zero.c':
+ void fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
+
+cdef extern from 'C/fmpz_mat/det_5arg.c':
+ void fmpz_mat_det_5arg(mpz_t,const fmpz_mat_t,mpfr_t,slong,mp_limb_t)
+
 cdef class fmpz_mat:
 
  cdef fmpz_mat_t matr
@@ -248,12 +254,21 @@ def det_20140704(fmpz_mat i):
 
 def det_modular(fmpz_mat i):
  cdef fmpz_t d
- cdef Integer r
+ cdef Integer r=Integer(0)
  fmpz_init( d )
  fmpz_mat_det_modular( d, i.matr, <int>1 )
- r=Integer(0)
  fmpz_get_mpz( r.value, d )
  fmpz_clear( d )
+ return r
+
+def count_det_suspected_zero(fmpz_mat m, Integer w):
+ '''
+ det m is known to be a multiple of w and suspected to be zero
+ 
+ count det m
+ '''
+ cdef Integer r=Integer(0)
+ fmpz_mat_det_suspected_zero(r.value, m.matr, w.value)
  return r
 
 cdef wrap_fmpz_mat(fmpz_mat_t a):
