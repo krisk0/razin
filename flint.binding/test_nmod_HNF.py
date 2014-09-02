@@ -103,7 +103,7 @@ def unimodular_triU(dim, x):
 
 def randomly_permute_rows( m, dim ):
  max_i=dim-1
- for i in range(dim):
+ for i in range(max_i):
   j=randint( i, max_i )
   if j != i:
    m.swap_rows(i,j)
