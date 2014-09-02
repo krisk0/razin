@@ -126,3 +126,5 @@
 
 30 Aug 2014 Looks like my code has 0% chance to compile under Windoz-64. Must
              get rid of 'long' type in many .pyx files (use 'slong' or 'ulong')
+             --- done. If you fail to compile Python package with setup.py, 
+             report this as error.
