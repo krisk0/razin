@@ -26,7 +26,6 @@ write=sys.stdout.write
 small_det_inv=flint.fmpz_triU_small_det_inverse
 nmod_mat_HNF=flint.nmod_mat_HNF_wr
 
-#from test_nmod_HNF import unimodular_triU
 count_det=flint.det_20140704
 bits = 1<<100
 
@@ -76,29 +75,33 @@ def det_hermittian_subr(m, i, det_i):
  r=divide_away(m,i,det_i)
  return count_det( fmpz_mat(r) )
 
-def det_hermittian(m):
- #print 'det_hermittian(): m=\n',m
+def decompose_hermittian(m):
+ '''
+ return 
+  c,d such that det c == 1 mod 2 and m*det c = det m
+  or None,d if d divides det m
+ '''
  a=fmpz_mat(m)
  b=would_be_multiplier(a)
- #print 'det_hermittian(): b=\n',b.export_sage()
  d0=det_tri(b)
- #print 'det_hermittian(): d0=%s' % d0
  i,di=small_det_inv( b )
- #print 'di=%s i=\n' % di,i.export_sage()
+ aa=divide_away( m, i, di )
  if d0<2**63:
-  return det_hermittian_subr( a, i, di ) * d0
- aa=divide_away( m, i, di ) # aa det = m det / d0
- #print 'aa=\n',aa
+  return aa,d0
  aa=fmpz_mat(aa)
  b=would_be_multiplier( aa )
- #print 'aa divisor=\n',b.export_sage()
  d1=det_tri(b)
  if d1<2**63:
   i,di=small_det_inv( b )
-  #print 'its inverse: %s\n' % di,i
-  return d0 * det_hermittian_subr( aa, i, di ) * d1
- #print 'fallback to count_det(), a=\n',a.export_sage()
- return count_det(a)
+  return divide_away( aa, i, di ), d0 * d1
+ return None, d0 * d1
+
+def det_hermitian(x):
+ y,z=decompose_hermittian(x)
+ if y==None:
+  return count_det( fmpz_mat(x) )
+ else:
+  return count_det( fmpz_mat(y) ) * z
 
 def test_for_dim(n):
  '''
@@ -115,23 +118,23 @@ def test_for_dim(n):
    singular_count += 1
   else:
    i += 1
-  assert det_hermittian(a) == d0
+  assert det_hermitian(a) == d0
   if i==10:
    break
  if singular_count==0:
   a=generate_singular_matrice(n)
-  assert det_hermittian(a) == 0
+  assert det_hermitian(a) == 0
 
 x=identity_matrix(3)
 for i in range(2,100):
  x[0,0] = 1<<i
- d=det_hermittian(x)
- #print 'x00=%s d=%s\n' % (x[0,0],d)
+ d=det_hermitian(x)
  assert x[0,0] == d
 
 sage.all.set_random_seed('20140831')
 
 for dim in range(3,30):
+ write( '%s ' % dim )
  test_for_dim(dim)
 
 print '\ntest passed'
