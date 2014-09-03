@@ -48,12 +48,26 @@ void max_degree(p_k_pk_t* s)
 
 static __inline__
 void init__p_k_pk__and__nmod(p_k_pk_t* s,nmod_t* m)
-// Initialize all fields of s and m, based on s->p
+// Based on s->p, initialize all other fields of s and m, 
  {
   mp_limb_t t;
   max_degree(s);
   // looks like count_leading_zeros() makes into same code as 
   //  count_leading_zeros_opt()
+  count_leading_zeros_opt( t, s->p_deg_k );
+  m->n = s->p_deg_k << t;
+  invert_limb(m->ninv, m->n);
+  #if SPEEDUP_NMOD_RED3
+   t = - m->n;
+   m->norm = n_mulmod_preinv_4arg( t,t, m->n,m->ninv );
+  #endif
+ }
+
+static __inline__
+void init__p_pk__and__nmod(p_k_pk_t* s,nmod_t* m)
+// Based on s->p and s->k, initialize all other fields of s and m,
+ {
+  mp_limb_t t;
   count_leading_zeros_opt( t, s->p_deg_k );
   m->n = s->p_deg_k << t;
   invert_limb(m->ninv, m->n);
