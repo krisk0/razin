@@ -52,7 +52,7 @@ FAQ
 ===
 
 Q0. What are the technical requirements of the package?
-A0. GMP, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x; standard Unix utilities such as grep.
+A0. GMP, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x; standard Unix utilities such as grep. I attempt to write portable code, but since I never compiled RAZIN under OS other than Linux, you may experience problems, if your OS has different ABI (for instance if long int is not 64 bit).
 
     FLINT versions known to work: 2.4.1, 2.4.3, 2.4.4.
 
