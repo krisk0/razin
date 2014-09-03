@@ -102,4 +102,4 @@ Q9. How do I install your software on <your OS name>?
 A9. Use Unix-like shell and GNU C compiler. Install GMP and FLINT (CC=gcc CFLAGS='-O2 -march=native ...' ./configure); install Sage. Arrange it so gmp.h is in /usr/include/ or in $EPREFIX/usr/include. To install my software, use command CC=gcc CFLAGS=...  MY_SAGE_IS_HERE=... python2 ./setup.py install (might need EPREFIX, too). If you find it impossible without changing my setup.py, report this as error. Your bug-report should include exact whereabouts of your gmp.h, usr/share/sage/src and usr/include/csage/; gcc version; relevant error message in English.
 
 Qa. Can you make it so that your software compiles under <specific OS> with <specific compiler>? Can you port your software to <specific platform>? Can you write a documentation? a documentation in <specific language>?
-Aa. I can do everything, if you hire me. Of course, I will need to access that OS/platform, directly or via command-line.
+Aa. I can do everything, if you hire me. Of course, I will need to access that OS/platform, directly or via command-line. I will fix a bug in my code for free, if you fill in a good bug-report.
