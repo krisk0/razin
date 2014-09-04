@@ -9,40 +9,15 @@
 #include "../fmpz/fmpz_.h"
 #include "../ulong_extras/ulong_extras_.h"
 
+/*
+ good news: gmp functions ..._ui() should work fine under Windoz/MPIR
+ So integer code in this file might be considered portable
+ mpfr _ui() functions might need replacement
+*/
+
 #define NDEBUG 0
 #define LOUD_nmod_mat_in_det_divisor 1
 #define LOUD_det_divisor_count_y 1
-
-void
-nmod_mat_print_prett(const nmod_mat_t mat)
-{
-    slong i, j;
-    int width;
-    char fmt[FLINT_BITS + 5];
-
-    flint_printf("<%wd x %wd integer matrix mod %wu>\n", mat->r, mat->c, mat->mod.n);
-
-    if (!(mat->c) || !(mat->r))
-        return;
-
-    width = n_sizeinbase(mat->mod.n, 10);
-
-    flint_sprintf(fmt, "%c%dwu", '%', width );
-    
-    for (i = 0; i < mat->r; i++)
-    {
-        flint_printf("[");
-
-        for (j = 0; j < mat->c; j++)
-        {
-            flint_printf(fmt, mat->rows[i][j]);
-            if (j + 1 < mat->c)
-                flint_printf(" ");
-        }
-
-        flint_printf("]\n");
-    }
-}
 
 mpfr_prec_t static
 hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)
