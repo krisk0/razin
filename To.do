@@ -129,7 +129,6 @@
              --- done. If you fail to compile Python package with setup.py, 
              report this as error.
 
-04 Sep 2014 Stop ABI-sensitive code such as fmpz_mat/det_suspected_zero.c from
-             attempts to start when mp_limb_t is not unsigned long --- insert 
-             printf followed by exit(1). This should be done in setup.py (since
-             #if sizeof()!=... does not work)
+04 Sep 2014 Test fmpz_mat/det_suspected_zero.c under Windoz64, too. Chances are 
+             it just works under MPIR because MPIR redefined _ui() interface so
+             it closely follows GMP/Linux. 
