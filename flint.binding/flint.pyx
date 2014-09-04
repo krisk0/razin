@@ -149,6 +149,14 @@ cdef extern from 'flint/nmod_mat.h':
   nmod_t mod
  ctypedef nmod_mat_struct nmod_mat_t[1]
 
+cdef extern from 'C/mpz_square_mat/mpz_square_mat_.h':
+ ctypedef struct mpz_square_mat_struct:
+  mpz_ptr entries
+  slong r
+  mpz_ptr* rows
+  slong* mark
+ ctypedef mpz_square_mat_struct mpz_square_mat_t[1]
+
 # fmpz, mpz, ui number manipulation
 include "fmpz.pyx"
 
@@ -157,3 +165,4 @@ include "fmpz_mat.pyx"
 include "fmpq_mat.pyx"
 include "tmod_mat.pyx"
 include "nmod_mat.pyx"
+include "mpz_square_mat.pyx"

@@ -412,6 +412,32 @@ det_divisor_y_to_x(mpz_t xI, slong i, nmod_mat_t y, slong y_rows, slong y_cols,
  }
 
 void __inline__ static
+det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,mp_limb_t p,slong k,slong n)
+ {
+  mpz_t M; mpz_init(M);
+  // TODO: what if mp_limb_t is not unsigned long?
+  mpz_ui_pow_ui(M,p,(mp_limb_t)k);
+  mpz_ptr zp,xA=flint_malloc( sizeof(__mpz_struct)*n );
+  slong i;
+  for(i=0,zp=xA;i<n;zp++,i++)
+   mpz_init(zp);
+  mpz_square_mat_mul_vec_mat_modulo(xA,x,A,M);
+  for(i=0,zp=xA;i<n;zp++,i++)
+   {
+    //mpz_add_si(zp,-((i&1) ? 1 : -1)); // this addition should give zero 
+    gmp_printf("xA[%d]=%ZX\n",i,zp);
+    if( i&1 )
+     mpz_sub_ui(zp, zp, 1);
+    else
+     mpz_add_ui(zp, zp, 1);
+    assert( (0==mpz_cmp_ui(zp,0) || (0==mpz_cmp(zp,M)) ) );
+   }
+  flint_printf("xA=b modulo M  check positive\n");
+  det_divisor_clear_b(xA,n);
+  mpz_clear(M);
+ }
+
+void __inline__ static
 det_divisor_rational_reconstruction(mpq_t x_fraction,nmod_mat_t y, slong max_i,
   slong n, mp_limb_t p
   #if NDEBUG==0
@@ -421,14 +447,18 @@ det_divisor_rational_reconstruction(mpq_t x_fraction,nmod_mat_t y, slong max_i,
  {
   slong i,Msize=FLINT_BITS*max_i;
   mpz_ptr zp,x_modulo_M=flint_malloc( sizeof(__mpz_struct)*n );
-  gmp_printf("x = ");
+  //gmp_printf("x = ");
   for(i=0,zp=x_modulo_M;i<n;zp++,i++)
    {
     mpz_init2( zp, Msize );
     det_divisor_y_to_x( zp, i, y, max_i, n, p );
-    gmp_printf("%ZX ",zp);
+    //gmp_printf("%ZX ",zp);
    }
-  gmp_printf("\n");
+  //gmp_printf("\n");
+  #if NDEBUG==0
+   //check that x_modulo_M*A equals original b modulo M, where M=p**max_i
+   det_divisor_xAbM_check(x_modulo_M,A,p,max_i,n);
+  #endif
   assert(0);
   det_divisor_clear_b( x_modulo_M, n );
  }
