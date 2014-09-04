@@ -3,13 +3,46 @@
 
 // Licence: GNU General Public License (GPL)
 
-#include <flint/flint.h>
-#include <flint/fmpz_mat.h>
+#include <assert.h>
+#include "../mpz_square_mat/mpz_square_mat_.h"
+#include "../nmod_mat/nmod_mat_.h"
 #include "../fmpz/fmpz_.h"
 #include "../ulong_extras/ulong_extras_.h"
 
-void fmpz_mat_det_6arg(flint_rand_t rst, mpz_t r,const fmpz_mat_t A,
- mpfr_t h_bound,slong smallest_row,mp_limb_t good_p);
+#define NDEBUG 0
+#define LOUD_nmod_mat_in_det_divisor 1
+#define LOUD_det_divisor_count_y 1
+
+void
+nmod_mat_print_prett(const nmod_mat_t mat)
+{
+    slong i, j;
+    int width;
+    char fmt[FLINT_BITS + 5];
+
+    flint_printf("<%wd x %wd integer matrix mod %wu>\n", mat->r, mat->c, mat->mod.n);
+
+    if (!(mat->c) || !(mat->r))
+        return;
+
+    width = n_sizeinbase(mat->mod.n, 10);
+
+    flint_sprintf(fmt, "%c%dwu", '%', width );
+    
+    for (i = 0; i < mat->r; i++)
+    {
+        flint_printf("[");
+
+        for (j = 0; j < mat->c; j++)
+        {
+            flint_printf(fmt, mat->rows[i][j]);
+            if (j + 1 < mat->c)
+                flint_printf(" ");
+        }
+
+        flint_printf("]\n");
+    }
+}
 
 mpfr_prec_t static
 hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)
@@ -40,7 +73,7 @@ hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)
   (void)mpfr_mul(r, r, nn, D );              // multiply by n
   mpfr_log2( nn, nn, D );
   (void)mpfr_mul(r, r, nn, D);              // multiply by log2(n)
-  i=(slong)mpfr_get_ui(r, D);             // convert result to int
+  i=(slong)mpfr_get_ui(r, D)+10;          // convert result to int, add 10
   mpfr_clear(nn); 
   mpfr_clear(r);
   n=(slong)mpfr_get_default_prec();   // 53 on 64-bit Linux
@@ -52,55 +85,492 @@ hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)
   #undef RAND_ROW
  }
 
-slong static
-_hadamard(mpfr_t b,const fmpz_mat_t m,mpfr_prec_t pr)
-// upper bound on log2( m det )
+#define SQUARE(x,y,w) fmpz_get_mpz(y,w); mpz_mul(x,y,y)
+int __inline__ static
+log2_L2_fmpz_3arg(mpfr_t tgt,const fmpz* vec,slong n)
+// 2*log2(L2 norm) rounded up. Return 1 on zero row
  {
-  #define D MPFR_RNDU
-  #define L2( tgt, p )       \
-   {                             \
-    SQUARE( tgt, p[0] )             \
-    for(i=1;i<n;i++)                 \
-     {                                \
-      SQUARE( scratch, p[i] );         \
-      mpfr_add( tgt, tgt, scratch, D ); \
-     }                                  \
-    mpfr_log2( tgt, tgt, D );          \
+  slong size=0,i,j;
+  const fmpz* u;
+  for(i=n,u=vec;i--;)
+   {
+    j=fmpz_size(u++);
+    if(j>size)
+     size=j;
    }
-  #define SQUARE( s_tgt, f )           \
-   fmpz_get_mpfr_macro(s_tgt, f, D);  \
-   mpfr_mul(s_tgt, s_tgt, s_tgt, D);
+  if(0==size)
+   return 1;
+  j=size*FLINT_BITS;
+  size = size*2*FLINT_BITS;
+  mpz_t a,b,c; mpz_init2(a,size+FLINT_BITS); mpz_init2(b,j); mpz_init2(c,size);
+  SQUARE( a, b, vec );
+  for(i=n-1,u=vec+1;i--;u++)
+   {
+    SQUARE( c, b, u );
+    mpz_add( a, a, c );
+   }
+  mpz_clear(c);
+  mpfr_prec_t p=mpz_size(a)*FLINT_BITS;
+  mpfr_t f; mpfr_init2(f,p);
+  mpfr_set_z(f, a, MPFR_RNDU);
+  mpfr_log2(tgt, f, MPFR_RNDU);
+  mpfr_clear(f);
+  mpz_clear(b); mpz_clear(a);
+  return 0;
+ }
+#undef SQUARE
+
+slong static __inline__
+hadamard_3arg(mpfr_t b,const fmpz_mat_t m,mpfr_prec_t pr)
+/*
+upper bound on log2( 2*abs(m det) )
+returns -1 if zero row found, smallest row index otherwise
+*/
+ {
   const slong n=m->r;
-  slong smallest=0,i,j;
+  slong smallest=0,j;
+  // gcc warning: initialization from incompatible pointer type --- don't know
+  //  how to fix
   const fmpz** const rows=m->rows;
   mpfr_t v; mpfr_init2(v,pr);
   mpfr_t u; mpfr_init2(u,pr);
   mpfr_t scratch; mpfr_init2(scratch,pr);
-  L2( v, rows[0] );
-  mpfr_set(b, v, D);
+  #define HADAMARD_CLEAR mpfr_clear(scratch); mpfr_clear(u); mpfr_clear(v)
+  if(log2_L2_fmpz_3arg( v, rows[0], n ))
+   {
+    HADAMARD_CLEAR;
+    return -1;
+   }
+  mpfr_set(b, v, MPFR_RNDU);
   for(j=1;j<n;j++)
    {
-    L2( u, rows[j] );
-    mpfr_add(b, b, u, D);
-    if( mpfr_cmp(v,u)<0 )
+    if(log2_L2_fmpz_3arg( u, rows[j], n ))
+     {
+      HADAMARD_CLEAR;
+      return -1;
+     }
+    mpfr_add(b, b, u, MPFR_RNDU);
+    if( mpfr_cmp(v, u)<0 )
      {
       smallest=j;
-      mpfr_set(v,u,D);
+      mpfr_set(v, u, MPFR_RNDU);
      }
    }
-  mpfr_div_ui( b, b, 2, D );
-  mpfr_add_ui( b, b, 1, D );
+  HADAMARD_CLEAR;
+  mpfr_div_ui( b, b, 2, MPFR_RNDU ); // instead of taking root
+  mpfr_add_ui( b, b, 1, MPFR_RNDU ); // instead of multiplying by 2
+  #undef HADAMARD_CLEAR
   return smallest;
-  #undef SQUARE
-  #undef L2
-  #undef D
+ }
+
+#define SQUARE(x,y) mpz_mul(x,y,y)
+void __inline__ static 
+log2_L2_norm_4arg(mpfr_t tgt, mpz_square_mat_t A, slong k, slong n)
+// log2(L2 norm) rounded down
+ {
+  mpz_ptr u;
+  slong size=0,i,j;
+  for(i=n,u=A->rows[k];i--;)
+   {
+    j=mpz_size(u++);
+    if(j>size)
+     size=j;
+   }
+  size = size*2*FLINT_BITS;
+  mpz_t a,c; mpz_init2(a,size+FLINT_BITS); mpz_init2(c,size);
+  u=A->rows[k];
+  SQUARE( a, u );
+  for(i=n-1,u++;i--;u++)
+   {
+    SQUARE( c, u );
+    mpz_add( a, a, c );
+   }
+  mpz_clear(c);
+  mpfr_prec_t p=mpz_size(a)*FLINT_BITS;
+  mpfr_t f; mpfr_init2(f,p);
+  mpfr_set_z(f, a, MPFR_RNDZ);
+  mpfr_log2(tgt, f, MPFR_RNDZ);
+  mpfr_div_ui( tgt, tgt, 2, MPFR_RNDZ );
+  mpfr_clear(f);
+  mpz_clear(a); 
+ }
+#undef SQUARE
+
+void __inline__ static
+cramer_rule(mpfr_t num_bound, const mpfr_t den_bound, 
+  mpz_square_mat_t A, mpfr_prec_t pr, slong k)
+// num_bound := log2(Cramer bound on numerator) rounded up
+ {
+  const slong n=A->r;
+  mpfr_t u,v; 
+  mpfr_init2(u,pr);
+  log2_L2_norm_4arg(u, A, k, n);
+  mpfr_sub(num_bound, den_bound, u, MPFR_RNDU);  // den_bound / min row norm
+  mpfr_sub_ui(u, num_bound, 1, MPFR_RNDU);       //  / 2
+  // vector norm = square root of n
+  mpfr_init(v);
+  mpfr_set_ui(v, n, MPFR_RNDU);
+  mpfr_log2(num_bound, v, MPFR_RNDU);
+  mpfr_clear(v);
+  mpfr_div_ui(num_bound, num_bound, 2, MPFR_RNDU);
+  mpfr_add(num_bound, num_bound, u, MPFR_RNDU);
+  mpfr_clear(u);
+ }
+
+slong __inline__ static 
+dixon_lifting_max_i(mpfr_t b,mp_limb_t p)
+ {
+  mpfr_t i; mpfr_init(i);
+  mpfr_t pF; mpfr_init2(pF,FLINT_BITS);
+  // TODO: what if mp_limb_t is not unsigned long?
+  mpfr_set_ui(pF,p,MPFR_RNDZ); 
+  mpfr_log2(pF, pF, MPFR_RNDZ);
+  mpfr_div(i, b, pF, MPFR_RNDU);    
+  return (slong)mpfr_get_ui(i,MPFR_RNDU);
+ }
+
+void __inline__ static
+det_divisor_init_b(mpz_ptr b,slong n,mpz_square_mat_t m)
+ {
+  slong i;
+  mpz_ptr t;
+  slong* s=m->mark;
+  for(i=0,t=b;i<n;i++,t++)
+   {
+    //mpz_init_set_si(t,(i&1) ? 1 : -1);
+    mpz_init2(t, s[i]);
+    mpz_set_si(t,  (i&1) ? 1 : -1  );
+   }
+ }
+
+void __inline__ static
+det_divisor_init_x(mpq_ptr x,slong n)
+ {
+  mpq_ptr y;
+  for(y=x;n--;y++)
+   mpq_init( y );
+ }
+
+void __inline__ static
+det_divisor_clear_b(mpz_ptr b,slong n)
+ {
+  slong i;
+  mpz_ptr t;
+  for(i=n,t=b;i--;t++)
+   mpz_clear(t);
+  flint_free(b);
+ }
+
+void __inline__ static
+det_divisor_clear_x(mpq_ptr x,slong n)
+ {
+  slong i;
+  mpq_ptr t;
+  for(i=n,t=x;i--;t++)
+   mpq_clear(t);
+  flint_free(x);
+ }
+
+mp_limb_t __inline__ static
+det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
+ {
+  slong i;
+  mpz_srcptr s;
+  #if !defined(_WIN64)
+   // if mp_limb_t is unsigned long int then use faster mpz_tdiv_ui
+   for(i=0,s=src;i<n;i++,s++)
+    {
+     if( mpz_cmp_ui(s,0) >= 0)
+      tgt[i] = mpz_tdiv_ui(s,p);   //  mpz_tdiv_ui returns absolute value 
+     else
+      tgt[i] = p-mpz_tdiv_ui(s,p); //   of remainder, so negate it
+    }
+  #else
+   // TODO: test if code below works
+   mpz_t r; mpz_init(r);
+   ulong res;
+   FLINT_MOCK_MPZ_UI(tc, p);
+   for(i=0,s=src;i<n;i++,s++)
+    {
+     mpz_fdiv_r(r, s, tc);
+     res = flint_mpz_get_ui(r);
+     tgt[i]=(mp_limb_t)res;
+    }
+   mpz_clear(r);
+  #endif
+  #if LOUD_det_divisor_count_y
+   flint_printf("ZZ b=");
+   for(i=0;i<n;i++)
+    gmp_printf("%Zd ",src+i);
+   flint_printf("\n");
+  #endif
+ }
+
+void __inline__ static 
+det_divisor_inverse_A(nmod_mat_t r, nmod_mat_t m, const fmpz_mat_t a, slong n)
+ {
+  memcpy( &r->mod, &m->mod, sizeof(m->mod) );
+  nmod_mat_t s,t;
+  nmod_mat_init_3arg(s, n, n);  memcpy( &s->mod, &m->mod, sizeof(m->mod) );
+  nmod_mat_init_3arg(t, n, n);  memcpy( &t->mod, &m->mod, sizeof(m->mod) );
+  fmpz_mat_get_nmod_mat(s,a);
+  nmod_mat_inv(t,s);
+  #if LOUD_nmod_mat_in_det_divisor
+   flint_printf("A mod prime:\n");
+   nmod_mat_print_pretty(s);
+   flint_printf("\n\ninverted:\n");
+   nmod_mat_print_pretty(t);
+  #endif
+  nmod_mat_transpose_square_tgt_virgin(r,t);
+  #if LOUD_nmod_mat_in_det_divisor
+   flint_printf("\n\ntransposed:\n");
+   nmod_mat_print_pretty(r);
+  #endif  
+  nmod_mat_clear(t);
+  nmod_mat_clear(s);
+ }
+
+void __inline__ static
+print_limb_vector(char* m,const mp_limb_t* v,slong n)
+ {
+  flint_printf(m);
+  slong i;
+  for(i=0;i<n;i++)
+   flint_printf("%wu ",v[i]);
+  flint_printf("\n");
+ }
+
+void __inline__ static
+det_divisor_count_y(mp_limb_t* y,const mp_limb_t* b,const nmod_mat_t m,slong dim)
+// y := b*transposed m
+ {
+  const mp_limb_t** const m_row=m->rows;
+  const mp_limb_t n=m->mod.n;
+  const mp_limb_t nI=m->mod.ninv;
+  const mp_limb_t norm=m->mod.norm;
+  slong i,j;
+  #if defined(VECTOR_DOT_TAIL) && defined(SPEEDUP_NMOD_RED3)
+  for(i=0;i<dim;i++)
+   {
+    const mp_limb_t* c=m_row[i];
+    VECTOR_DOT_HEAD( b[0], c[0] );
+    for(j=1;j<dim;j++)
+     VECTOR_DOT_BODY( b[j], c[j] );
+    VECTOR_DOT_TAIL( y[i], n,nI,norm );
+   }
+  #else
+   #error cant compile this
+  #endif
+  #if LOUD_det_divisor_count_y
+   print_limb_vector("b=", b, dim);
+   print_limb_vector("y=", y, dim);
+  #endif
+ }
+
+void __inline__ static
+det_divisor_mul_add_divide(mpz_ptr b,const mp_limb_t* y,
+  const mpz_square_mat_t m,slong n,mp_limb_t prime_p)
+// b := (b+y*transposed m)/prime_p, b[i] allocated to correct size already  
+ {
+  slong i,j;
+  mpz_ptr pB,pM;
+  const mp_limb_t* pY;
+  slong* w=m->mark;
+  const mpz_ptr* m_rows=m->rows;
+  for(i=0,pB=b;i<n;i++,pB++)
+   {
+    mpz_t s; mpz_init2(s, w[i]);
+    // TODO: what if mp_limb_t is not unsigned long?
+    for(j=n,pM=m_rows[i],pY=y;j--;pM++,pY++)
+     {
+      mpz_mul_ui(s, pM, *pY);
+      mpz_add(pB, pB, s);
+     }
+    mpz_clear(s);
+    // b[i] should divide by p exactly
+    #if NDEBUG==0
+     assert( 0 == mpz_tdiv_ui(pB, prime_p) );
+    #endif
+    mpz_cdiv_q_ui(pB, pB, prime_p);
+   }
+ }
+
+void __inline__ static
+det_divisor_y_to_x(mpz_t xI, slong i, nmod_mat_t y, slong y_rows, slong y_cols,
+  mp_limb_t q)
+ {
+  slong j=y_rows-1;
+  mp_limb_t* p=y->rows[j]+i;
+  mpz_set_ui(xI,*p);
+  // TODO: what if mp_limb_t is not unsigned long?
+  for(;j--;)
+   {
+    p -= y_cols;
+    mpz_mul_ui(xI,xI,q);
+    mpz_add_ui(xI,xI,*p);
+   }
+ }
+
+void __inline__ static
+det_divisor_rational_reconstruction(mpq_t x_fraction,nmod_mat_t y, slong max_i,
+  slong n, mp_limb_t p
+  #if NDEBUG==0
+   ,mpz_square_mat_t A
+  #endif
+  )
+ {
+  slong i,Msize=FLINT_BITS*max_i;
+  mpz_ptr zp,x_modulo_M=flint_malloc( sizeof(__mpz_struct)*n );
+  gmp_printf("x = ");
+  for(i=0,zp=x_modulo_M;i<n;zp++,i++)
+   {
+    mpz_init2( zp, Msize );
+    det_divisor_y_to_x( zp, i, y, max_i, n, p );
+    gmp_printf("%ZX ",zp);
+   }
+  gmp_printf("\n");
+  assert(0);
+  det_divisor_clear_b( x_modulo_M, n );
+ }
+
+void __inline__ static 
+fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
+  mpfr_t denominator_b, mpfr_prec_t pr, slong smallest_row, p_k_pk_t pp,
+  mpz_t w)
+/*  
+denominator_b >= log2(2*abs(A det))
+*/
+ {
+  mpfr_t bound; mpfr_init2(bound,pr);
+  mpz_square_mat_t A; mpz_square_mat_lazy_init_set(A, Ao);
+  // A->size_in_limbs not initialized
+  cramer_rule(bound, denominator_b, A, pr, smallest_row); 
+  // bound >= log2(numerator_b)
+  mpfr_add(bound, bound, denominator_b, MPFR_RNDU);
+  // bound=log2(2*numerator_b*denominator_b) rounded up
+  slong max_i=dixon_lifting_max_i(bound, pp.p),i;
+  // this many iterations Dixon lifting will take, i=0..max_i-1
+  if(pp.k>1)
+   {
+    pp.k=1;
+    init__p_pk__and__nmod(&pp, &Amod->mod);
+   }
+  const slong n=A->r;
+  nmod_mat_t y_storage; nmod_mat_init_3arg(y_storage,max_i,n);
+  __mpq_struct* x_vec=flint_malloc( sizeof(__mpq_struct)*n );
+  det_divisor_init_x(x_vec,n);
+  nmod_mat_t Ainv;
+  nmod_mat_init_3arg(Ainv,n,n); 
+  det_divisor_inverse_A(Ainv, Amod, Ao, n);
+  mpz_square_mat_t A_t; mpz_square_mat_init_transpose(A_t,A);
+  mpz_square_mat_mark_biggest(A_t);
+  mpz_square_mat_negate(A_t);
+  mpz_ptr b=flint_malloc( sizeof(__mpz_struct)*n );
+  det_divisor_init_b(b, n, A_t);
+  mp_limb_t* b_mod_p=(mp_limb_t*)flint_malloc(sizeof(mp_limb_t)*n);
+  // TODO: pre-reduce b
+  #if 0
+   b={1,-1,...} --- integer vector
+   for i in range(max_i):
+    y := b*A inverted modulo p
+    store y into row no. i of y storage
+    b := (b-y*A)/p  --- must divide exactly
+   x := sum yI*p**i
+   rational reconstruction(x)
+  #endif
+  for(i=0;i<max_i;i++)
+   {
+    det_divisor_reduce_b(b_mod_p, b, n, pp.p);
+    det_divisor_count_y(y_storage->rows[i], b_mod_p, Ainv, n);
+    det_divisor_mul_add_divide(b, y_storage->rows[i], A_t, n, pp.p);
+   }
+  flint_free(b_mod_p);
+  det_divisor_clear_b(b, n);
+  mpz_square_mat_clear(A_t);
+  nmod_mat_clear(Ainv);
+  // for sanity check A is used
+  det_divisor_rational_reconstruction(x_vec, y_storage, max_i, n, pp.p
+   #if NDEBUG==0
+    ,A
+   #endif
+  );
+  det_divisor_lcm_3arg(r, x_vec, w);
+  det_divisor_clear_x(x_vec,n);
+  nmod_mat_clear(y_storage);
+  mpz_square_mat_clear(A);
+  mpfr_clear(bound);
+  assert(0);
+ }
+
+void __inline__ static
+fmpz_mat_det_9arg(
+  mpz_t tgt_det,
+  const fmpz_mat_t A, nmod_mat_t Amod,
+  mpfr_t hb, mpfr_prec_t pr, slong smallest_row,
+  const p_k_pk_t pp, n_primes_rev_t it,mpz_t w)
+/*
+this subroutine only works when source matrice det is non-zero and a multiple
+ of 2**126
+
+w: known divisor of A determinant, w>1 
+*/
+ {
+  mpz_t det_divisor; mpz_init(det_divisor);
+  fmpz_mat_det_divisor_8arg( det_divisor, A, Amod, hb, pr, smallest_row, pp, w);
+  gmp_printf("found det divisor %ZX\n",det_divisor);
+  flint_printf("End of rails in fmpz_mat_det_8arg()\n");
+  exit(1);
+ }
+
+mpfr_prec_t __inline__ static
+mpfr_bitlength(mpfr_t s)
+ {
+  mpz_t B; mpz_init(B); mpfr_get_z(B, s, MPFR_RNDN);
+  mpfr_prec_t q=mpz_sizeinbase(B,2);
+  mpz_clear(B);
+  return q;
+ }
+
+void __inline__ static
+init_log2p_3arg(mpfr_t L,mpfr_t P,mpfr_prec_t q)
+// initialize P then L
+ {
+  mpfr_init2(P, FLINT_BITS);
+  mpfr_init2(L, q);
+ }
+
+void __inline__ static
+det_suspected_zero_log2_w(mpfr_t r, const mpz_t w)
+ {
+  mpfr_prec_t p=mpz_size(w)*FLINT_BITS;
+  mpfr_t t; mpfr_init2(t,p);
+  mpfr_set_z(t,w,MPFR_RNDZ);
+  mpfr_log2(r,t,MPFR_RNDZ);
+  mpfr_clear(t);
+ }
+
+void __inline__ static
+fmpz_mat_det_update_w(mpz_t u,n_primes_rev_t i,const mpz_t w)
+// re-iterate thru primes again, multiply w by those primes, skipping last
+ {
+  mp_limb_t last_p=n_primes_rev_show_again(i),curr_p;
+  n_primes_rev_reset(i);
+  // TODO: what if mp_limb_t is not unsigned long?
+  while(1)
+   {
+    curr_p=n_primes_rev_show_again(i);
+    if(curr_p == last_p)
+     break;                  // i returned to where it was, go away
+    mpz_mul_ui(u,u,curr_p);
+    (void)n_primes_rev_next(i);
+   }
  }
 
 void
 fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
 /*
- det A is known to be a multiple of W and suspected to be zero, W>2**64,
-  A dimension > 4
+ det A is known to be a multiple of W and suspected to be zero,
+  W>1, A dimension > 4
 
  count det A
 */
@@ -111,19 +581,24 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
   // count Hadamard bound on det and remember which row is smallest
   mpfr_prec_t h_bits=hadamard_bits(A,rand_st);
   mpfr_t h_bound; mpfr_init2(h_bound,h_bits);
-  slong smallest_row=_hadamard(h_bound,A,h_bits);
-  // find prime p such that det A is non-zero modulo p, or make sure that it is
-  //  zero
+  slong smallest_row=hadamard_3arg(h_bound,A,h_bits);
+  if(-1==smallest_row)
+   {
+    mpfr_clear(h_bound);
+    mpz_set_ui(r,0);
+    return;
+   }
+  // try to find prime p such that det A is non-zero modulo p
   //mpfr_printf("h_bits=%d h_bound=%10Rf\n",h_bits,h_bound);
+  h_bits=mpfr_bitlength(h_bound)+5;
   mpfr_t prime_product; mpfr_init2(prime_product,h_bits);
-  mpfr_set_z(prime_product, W, MPFR_RNDZ);
-  mpfr_log2(prime_product, prime_product, MPFR_RNDZ);
+  det_suspected_zero_log2_w(prime_product, W);
   const slong n=A->r;
   n_primes_rev_t it;
-  mp_limb_t* scratch;
+  mp_limb_t* scratch=NULL;
   p_k_pk_t pp; pp.p=0;
   nmod_mat_t Amod;
-  mpfr_t log2_p;
+  mpfr_t log2_p,p;
   while( mpfr_cmp(prime_product,h_bound) < 0 )
    {
     if(pp.p)
@@ -136,24 +611,27 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
       nmod_mat_init_square_2arg(Amod, n);
       pp.p=n_primes_rev_init(it, 0);
       scratch=flint_malloc( 4*(n-4)*sizeof(mp_limb_t) );
-      mpfr_init2(log2_p, h_bits);
+      init_log2p_3arg(log2_p, p, h_bits);
      }
     init__p_k_pk__and__nmod(&pp, &Amod->mod);
-    fmpz_mat_get_nmod_mat(Amod, A);
+    fmpz_mat_get_nmod_mat(Amod, A); // TODO: speed-up this slow subroutine
     //flint_printf("selected p=%wu\n",pp.p);
     if( nmod_mat_det_mod_pk_4block(Amod,pp,scratch) )
      {
-      fmpz_mat_det_6arg(rand_st, r, A, h_bound, smallest_row, pp.p);
-      pp.p=UWORD_MAX;
+      mpz_t d; mpz_init_set(d, W);
+      fmpz_mat_det_update_w(d, it, W);
+      fmpz_mat_det_9arg(r, A, Amod, h_bound, h_bits, smallest_row, pp, it, d);
+      mpz_clear(d);
       break;
      }
-    mpfr_set_ui(log2_p, pp.p_deg_k, MPFR_RNDZ);
-    mpfr_log2(log2_p, log2_p, MPFR_RNDZ);
+    mpfr_set_ui(p, pp.p_deg_k, MPFR_RNDZ);
+    mpfr_log2(log2_p, p, MPFR_RNDZ);
     mpfr_add(prime_product, prime_product, log2_p, MPFR_RNDZ);
    }
-  if(pp.p)
+  if(scratch)
    {
     mpfr_clear(log2_p);
+    mpfr_clear(p);
     flint_free(scratch);
     n_primes_rev_clear(it);
     nmod_mat_clear(Amod);
@@ -164,3 +642,5 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
   mpfr_clear(h_bound);
   flint_randclear(rand_st);
  }
+
+#undef NDEBUG
