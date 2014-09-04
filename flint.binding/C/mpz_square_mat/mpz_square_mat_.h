@@ -102,7 +102,7 @@ mpz_square_mat_negate(mpz_square_mat_t m)
   slong s=m->r; s=s*s;
   mpz_ptr e=m->entries;
   for(;s--;e++)
-   mpz_neg( e );
+   mpz_neg( e, e );
  }
 
 #endif
