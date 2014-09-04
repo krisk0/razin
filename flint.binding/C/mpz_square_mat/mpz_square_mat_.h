@@ -92,7 +92,7 @@ mpz_square_mat_mark_biggest(mpz_square_mat_t m)
       if(c>b)
        b=c;
      }
-    m->mark[i]=FLINT_BITS*(2+b);
+    m->mark[i]=FLINT_BITS*(2+b); // TODO: maybe add 3 instead of 2?
    }
  }
 
