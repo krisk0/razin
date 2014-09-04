@@ -67,16 +67,16 @@ def divide_away(m, i, det_i):
    r_kj=r[k,j]
    if r_kj % det_i:
     print 'r=\n',r
-    print 'det_hermittian_subr(): r[%s,%s] not multiple of %s' % (k,j,det_i)
+    print 'det_hermitian_subr(): r[%s,%s] not multiple of %s' % (k,j,det_i)
     assert 0
    r[k,j] = r_kj / det_i
  return r
 
-def decompose_hermittian(m):
+def decompose_hermitian(m):
  '''
  return 
   c,d such that det c == 1 mod 2 and m*det c = det m
-  or None,d if d divides det m
+  or None,d if 2**d divides det m
  '''
  a=fmpz_mat(m)
  b=would_be_multiplier(a)
@@ -93,10 +93,14 @@ def decompose_hermittian(m):
   return divide_away( aa, i, di ), d0 * d1
  return None, d0 * d1
 
+def count_log2(x):
+ return int(x).bit_length()-1
+
 def det_hermitian(x):
  if x.nrows() < 5:
   return count_det( fmpz_mat(x) )
- y,z=decompose_hermittian(x)
+ print 'source matrice A:\n',x
+ y,z=decompose_hermitian(x)
  if y==None:
   #return count_det( fmpz_mat(x) )
   return flint.count_det_suspected_zero( fmpz_mat(x), z )
@@ -141,9 +145,10 @@ def test_this_det( n, y ):
  assert abs(z)==y
  assert det_hermitian(a) == z
 
-if 0:
- # simple test below fails because fmpz_mat_det_6arg() is not implemented
- x=identity_matrix(6)
+if 1:
+ # simple test below fails because some subroutines in det_suspected_zero.c 
+ #  are not implemented
+ x=identity_matrix(5)
  for i in range(2,200):
   x[0,0] = 1<<i
   d=det_hermitian(x)
