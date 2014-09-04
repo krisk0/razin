@@ -36,6 +36,9 @@ cdef extern from './nmod_mat_HNF.c':
 cdef extern from 'C/nmod_mat/transpose_square_tgt_virgin.c':
  void nmod_mat_transpose_square_tgt_virgin(nmod_mat_t r,const nmod_mat_t s)
 
+cdef extern from 'C/nmod_mat/init_3arg.c':
+ void nmod_mat_init_3arg(nmod_mat_t m, slong ro, slong co)
+
 def AmodB(Integer a, Integer b):
  ' test that mp_limb_t arithmetic works in Cython '
  cdef Integer r=Integer(0)
