@@ -38,8 +38,8 @@ cdef extern from 'flint/ulong_extras.h':
  
 # FLINT classifies rational reconstruction as fmpq subroutine, but...
 cdef extern from 'C/fmpq/det_divisor_rational_reconstruction.c':
- void det_divisor_rational_reconstruction(mpz_t d,mpz_ptr x,const mpz_t M, 
-  slong n,mp_limb_t log2_N, mp_limb_t log2_D)
+ void det_divisor_rational_reconstruction(mpz_t d,mpz_ptr x,const mpz_t M,
+  mp_limb_t p,slong n,mp_limb_t log2_N, mp_limb_t log2_D)
  
 def is_big_sureprime(n):
  return n_is_big_sureprime(<mp_limb_t>n)

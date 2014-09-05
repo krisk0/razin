@@ -410,13 +410,12 @@ det_divisor_ratnl_rcnstrction(mpz_t d,const nmod_mat_t y, slong k,
    }
   //gmp_printf("\n");
   mpz_t M; mpz_init(M);
-  // TODO: what if mp_limb_t is not unsigned long?
   mpz_ui_pow_ui(M,p,(mp_limb_t)k);                  // M=p**k
   #if NDEBUG==0
    //check that x_modulo_M*A equals original b modulo M
    det_divisor_xAbM_check(x_modulo_M,A,M,n);
   #endif
-  det_divisor_rational_reconstruction(d, x_modulo_M, M, n, log2_N, log2_D);
+  det_divisor_rational_reconstruction(d, x_modulo_M, M, p, n, log2_N, log2_D);
   mpz_clear(M);
   det_divisor_clear_b( x_modulo_M, n );
  }
