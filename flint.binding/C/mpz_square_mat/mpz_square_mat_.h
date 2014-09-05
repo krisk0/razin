@@ -106,6 +106,6 @@ mpz_square_mat_negate(mpz_square_mat_t m)
  }
 
 void mpz_square_mat_mul_vec_mat_modulo(mpz_ptr t,
-  const mpz_ptr v,const mpz_square_mat_t A,mpz_t m);
+  const mpz_ptr v,const mpz_square_mat_t A,const mpz_t m);
 
 #endif
