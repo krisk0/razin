@@ -1,6 +1,5 @@
 // This program is part of RAZIN
 // Copyright Денис Крыськов 2014
-
 // Licence: GNU General Public License (GPL)
 
 #include <assert.h>
@@ -8,14 +7,18 @@
 #include "../nmod_mat/nmod_mat_.h"
 #include "../fmpz/fmpz_.h"
 #include "../ulong_extras/ulong_extras_.h"
+#include "../fmpq/fmpq_.h"
 
 /*
- good news: gmp functions ..._ui() should work fine under Windoz/MPIR
- So integer code in this file might be considered portable
- mpfr _ui() functions might need replacement
+ gmp functions ..._ui() should work fine under Windoz/MPIR
+ 
+ mpfr_get_uj() and mpfr_set_uj() might work, too 
 */
 
 #define NDEBUG 0
+/*
+set NDEBUG to 0, to enable internal check in Dixon lifing algorithm
+*/
 #define LOUD_nmod_mat_in_det_divisor 1
 #define LOUD_det_divisor_count_y 1
 
@@ -171,37 +174,51 @@ log2_L2_norm_4arg(mpfr_t tgt, mpz_square_mat_t A, slong k, slong n)
  }
 #undef SQUARE
 
-void __inline__ static
-cramer_rule(mpfr_t num_bound, const mpfr_t den_bound, 
+mp_limb_t __inline__ static
+cramer_rule(const mpfr_t den_bound, 
   mpz_square_mat_t A, mpfr_prec_t pr, slong k)
-// num_bound := log2(Cramer bound on numerator) rounded up
+// returns log2(Cramer bound on numerator) rounded up
  {
+  mp_limb_t bI;
   const slong n=A->r;
-  mpfr_t u,v; 
+  mpfr_t u,v,w;
+  mpfr_init2(w,pr);
   mpfr_init2(u,pr);
   log2_L2_norm_4arg(u, A, k, n);
-  mpfr_sub(num_bound, den_bound, u, MPFR_RNDU);  // den_bound / min row norm
-  mpfr_sub_ui(u, num_bound, 1, MPFR_RNDU);       //  / 2
+  mpfr_sub(w, den_bound, u, MPFR_RNDU);  // w=den_bound / min row norm
+  mpfr_sub_ui(u, w, 1, MPFR_RNDU);       // u=den_bound/2/min row norm
   // vector norm = square root of n
   mpfr_init(v);
   mpfr_set_ui(v, n, MPFR_RNDU);
-  mpfr_log2(num_bound, v, MPFR_RNDU);
+  mpfr_log2(w, v, MPFR_RNDU);            // w=b norm * 2
   mpfr_clear(v);
-  mpfr_div_ui(num_bound, num_bound, 2, MPFR_RNDU);
-  mpfr_add(num_bound, num_bound, u, MPFR_RNDU);
+  mpfr_div_ui(w, w, 2, MPFR_RNDU);       // w=b norm
+  mpfr_add(w, w, u, MPFR_RNDU);          // w=b norm*(...)
   mpfr_clear(u);
+  bI=mpfr_get_uj(w, MPFR_RNDU);
+  mpfr_clear(w);
+  if(bI<FLINT_BITS)
+   bI=FLINT_BITS;
+  return bI;
  }
 
 slong __inline__ static 
-dixon_lifting_max_i(mpfr_t b,mp_limb_t p)
+dixon_lifting_max_i(mp_limb_t b,mp_limb_t p)
  {
+  slong r;
   mpfr_t i; mpfr_init(i);
   mpfr_t pF; mpfr_init2(pF,FLINT_BITS);
-  // TODO: what if mp_limb_t is not unsigned long?
-  mpfr_set_ui(pF,p,MPFR_RNDZ); 
-  mpfr_log2(pF, pF, MPFR_RNDZ);
-  mpfr_div(i, b, pF, MPFR_RNDU);    
-  return (slong)mpfr_get_ui(i,MPFR_RNDU);
+  mpfr_t bF; mpfr_init2(bF,FLINT_BITS);
+  // p might be big, using mpfr_set_uj()
+  (void)mpfr_set_uj(pF,p,MPFR_RNDZ);
+  (void)mpfr_log2(pF, pF, MPFR_RNDZ);  // pF <= log2(p)
+  (void)mpfr_set_uj(bF,b,MPFR_RNDU);   // bF >= b
+  (void)mpfr_div(i, bF, pF, MPFR_RNDU); // i >= b/log2(p)
+  r=(slong)mpfr_get_uj(i,MPFR_RNDU);   // r >= i
+  mpfr_clear(bF);
+  mpfr_clear(pF);
+  mpfr_clear(i);
+  return r;
  }
 
 void __inline__ static
@@ -212,18 +229,9 @@ det_divisor_init_b(mpz_ptr b,slong n,mpz_square_mat_t m)
   slong* s=m->mark;
   for(i=0,t=b;i<n;i++,t++)
    {
-    //mpz_init_set_si(t,(i&1) ? 1 : -1);
     mpz_init2(t, s[i]);
-    mpz_set_si(t,  (i&1) ? 1 : -1  );
+    mpz_set_si(t,  2*(i&1)-1);
    }
- }
-
-void __inline__ static
-det_divisor_init_x(mpq_ptr x,slong n)
- {
-  mpq_ptr y;
-  for(y=x;n--;y++)
-   mpq_init( y );
  }
 
 void __inline__ static
@@ -236,43 +244,18 @@ det_divisor_clear_b(mpz_ptr b,slong n)
   flint_free(b);
  }
 
-void __inline__ static
-det_divisor_clear_x(mpq_ptr x,slong n)
- {
-  slong i;
-  mpq_ptr t;
-  for(i=n,t=x;i--;t++)
-   mpq_clear(t);
-  flint_free(x);
- }
-
 mp_limb_t __inline__ static
 det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
  {
   slong i;
   mpz_srcptr s;
-  #if !defined(_WIN64)
-   // if mp_limb_t is unsigned long int then use faster mpz_tdiv_ui
-   for(i=0,s=src;i<n;i++,s++)
-    {
-     if( mpz_cmp_ui(s,0) >= 0)
-      tgt[i] = mpz_tdiv_ui(s,p);   //  mpz_tdiv_ui returns absolute value 
-     else
-      tgt[i] = p-mpz_tdiv_ui(s,p); //   of remainder, so negate it
-    }
-  #else
-   // TODO: test if code below works
-   mpz_t r; mpz_init(r);
-   ulong res;
-   FLINT_MOCK_MPZ_UI(tc, p);
-   for(i=0,s=src;i<n;i++,s++)
-    {
-     mpz_fdiv_r(r, s, tc);
-     res = flint_mpz_get_ui(r);
-     tgt[i]=(mp_limb_t)res;
-    }
-   mpz_clear(r);
-  #endif
+  for(i=0,s=src;i<n;i++,s++)
+   {
+    if( mpz_cmp_ui(s,0) >= 0)
+     tgt[i] = mpz_tdiv_ui(s,p);   //  mpz_tdiv_ui returns absolute value 
+    else
+     tgt[i] = p-mpz_tdiv_ui(s,p); //   of remainder, so negate it
+   }
   #if LOUD_det_divisor_count_y
    flint_printf("ZZ b=");
    for(i=0;i<n;i++)
@@ -371,11 +354,11 @@ det_divisor_mul_add_divide(mpz_ptr b,const mp_limb_t* y,
  }
 
 void __inline__ static
-det_divisor_y_to_x(mpz_t xI, slong i, nmod_mat_t y, slong y_rows, slong y_cols,
+det_divisor_y_to_x(mpz_t xI, slong i, const nmod_mat_t y, slong y_rows, slong y_cols,
   mp_limb_t q)
  {
   slong j=y_rows-1;
-  mp_limb_t* p=y->rows[j]+i;
+  mp_limb_t const * p=y->rows[j]+i;
   mpz_set_ui(xI,*p);
   // TODO: what if mp_limb_t is not unsigned long?
   for(;j--;)
@@ -387,11 +370,8 @@ det_divisor_y_to_x(mpz_t xI, slong i, nmod_mat_t y, slong y_rows, slong y_cols,
  }
 
 void __inline__ static
-det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,mp_limb_t p,slong k,slong n)
+det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,const mpz_t M,slong n)
  {
-  mpz_t M; mpz_init(M);
-  // TODO: what if mp_limb_t is not unsigned long?
-  mpz_ui_pow_ui(M,p,(mp_limb_t)k);
   mpz_ptr zp,xA=flint_malloc( sizeof(__mpz_struct)*n );
   slong i;
   for(i=0,zp=xA;i<n;zp++,i++)
@@ -409,32 +389,35 @@ det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,mp_limb_t p,slong k,slong n)
    }
   flint_printf("xA=b modulo M  check positive\n");
   det_divisor_clear_b(xA,n);
-  mpz_clear(M);
  }
 
 void __inline__ static
-det_divisor_rational_reconstruction(mpq_t x_fraction,nmod_mat_t y, slong max_i,
-  slong n, mp_limb_t p
+det_divisor_ratnl_rcnstrction(mpz_t d,const nmod_mat_t y, slong k,
+  slong n, mp_limb_t p, mp_limb_t log2_N, mp_limb_t log2_D
   #if NDEBUG==0
    ,mpz_square_mat_t A
   #endif
   )
  {
-  slong i,Msize=FLINT_BITS*max_i;
+  slong i,Msize=FLINT_BITS*k;
   mpz_ptr zp,x_modulo_M=flint_malloc( sizeof(__mpz_struct)*n );
   //gmp_printf("x = ");
   for(i=0,zp=x_modulo_M;i<n;zp++,i++)
    {
     mpz_init2( zp, Msize );
-    det_divisor_y_to_x( zp, i, y, max_i, n, p );
+    det_divisor_y_to_x( zp, i, y, k, n, p );
     //gmp_printf("%ZX ",zp);
    }
   //gmp_printf("\n");
+  mpz_t M; mpz_init(M);
+  // TODO: what if mp_limb_t is not unsigned long?
+  mpz_ui_pow_ui(M,p,(mp_limb_t)k);                  // M=p**k
   #if NDEBUG==0
-   //check that x_modulo_M*A equals original b modulo M, where M=p**max_i
-   det_divisor_xAbM_check(x_modulo_M,A,p,max_i,n);
+   //check that x_modulo_M*A equals original b modulo M
+   det_divisor_xAbM_check(x_modulo_M,A,M,n);
   #endif
-  assert(0);
+  det_divisor_rational_reconstruction(d, x_modulo_M, M, n, log2_N, log2_D);
+  mpz_clear(M);
   det_divisor_clear_b( x_modulo_M, n );
  }
 
@@ -442,17 +425,17 @@ void __inline__ static
 fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
   mpfr_t denominator_b, mpfr_prec_t pr, slong smallest_row, p_k_pk_t pp,
   mpz_t w)
-/*  
-denominator_b >= log2(2*abs(A det))
-*/
+// denominator_b >= log2(2*abs(A det))
  {
-  mpfr_t bound; mpfr_init2(bound,pr);
   mpz_square_mat_t A; mpz_square_mat_lazy_init_set(A, Ao);
-  // A->size_in_limbs not initialized
-  cramer_rule(bound, denominator_b, A, pr, smallest_row); 
-  // bound >= log2(numerator_b)
-  mpfr_add(bound, bound, denominator_b, MPFR_RNDU);
-  // bound=log2(2*numerator_b*denominator_b) rounded up
+  mp_limb_t denominator_b_i, numerator_b_i, bound;
+  numerator_b_i=cramer_rule(denominator_b, A, pr, smallest_row);
+  // numerator_b_i >= log2(numerator_b)
+  denominator_b_i=mpfr_get_uj(denominator_b,MPFR_RNDU);
+  if(denominator_b_i<FLINT_BITS)
+   denominator_b_i=FLINT_BITS;
+  bound=numerator_b_i+denominator_b_i;
+  // bound >= log2(2*numerator_b*denominator_b) 
   slong max_i=dixon_lifting_max_i(bound, pp.p),i;
   // this many iterations Dixon lifting will take, i=0..max_i-1
   if(pp.k>1)
@@ -462,8 +445,6 @@ denominator_b >= log2(2*abs(A det))
    }
   const slong n=A->r;
   nmod_mat_t y_storage; nmod_mat_init_3arg(y_storage,max_i,n);
-  __mpq_struct* x_vec=flint_malloc( sizeof(__mpq_struct)*n );
-  det_divisor_init_x(x_vec,n);
   nmod_mat_t Ainv;
   nmod_mat_init_3arg(Ainv,n,n); 
   det_divisor_inverse_A(Ainv, Amod, Ao, n);
@@ -475,7 +456,7 @@ denominator_b >= log2(2*abs(A det))
   mp_limb_t* b_mod_p=(mp_limb_t*)flint_malloc(sizeof(mp_limb_t)*n);
   // TODO: pre-reduce b
   #if 0
-   b={1,-1,...} --- integer vector
+   b={-1,1,...} --- integer vector
    for i in range(max_i):
     y := b*A inverted modulo p
     store y into row no. i of y storage
@@ -494,17 +475,15 @@ denominator_b >= log2(2*abs(A det))
   mpz_square_mat_clear(A_t);
   nmod_mat_clear(Ainv);
   // for sanity check A is used
-  det_divisor_rational_reconstruction(x_vec, y_storage, max_i, n, pp.p
+  det_divisor_ratnl_rcnstrction(r, y_storage, max_i, n, pp.p,
+   numerator_b_i,denominator_b_i
    #if NDEBUG==0
     ,A
    #endif
   );
-  det_divisor_lcm_3arg(r, x_vec, w);
-  det_divisor_clear_x(x_vec,n);
   nmod_mat_clear(y_storage);
   mpz_square_mat_clear(A);
-  mpfr_clear(bound);
-  assert(0);
+  mpz_lcm(r, r, w);
  }
 
 void __inline__ static
@@ -629,7 +608,7 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
       mpz_clear(d);
       break;
      }
-    mpfr_set_ui(p, pp.p_deg_k, MPFR_RNDZ);
+    mpfr_set_uj(p, pp.p_deg_k, MPFR_RNDZ);
     mpfr_log2(log2_p, p, MPFR_RNDZ);
     mpfr_add(prime_product, prime_product, log2_p, MPFR_RNDZ);
    }
