@@ -13,6 +13,10 @@
 #                  http://www.gnu.org/licenses/
 ###########################################################################
 
+# need to define uintmax_t before including flint/flint.h, which includes mpfr.h
+cdef extern from 'stdint.h':
+ pass
+
 from sage.rings.integer cimport Integer
 #from sage.rings.integer_ring import ZZ
 from sage.rings.rational cimport Rational
