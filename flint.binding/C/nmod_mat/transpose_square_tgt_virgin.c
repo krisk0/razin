@@ -9,7 +9,7 @@ nmod_mat_transpose_square_tgt_virgin(nmod_mat_t tgt,const nmod_mat_t sou)
  {
   slong n=tgt->r,i,j;
   const mp_limb_t** const sou_rows=sou->rows;
-  mp_limb_t* p;
+  mp_limb_t const* p;
   mp_limb_t* q;
   for(i=0;i<n;i++)
    {
