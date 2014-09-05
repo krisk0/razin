@@ -6,7 +6,7 @@
 
 void 
 mpz_square_mat_mul_vec_mat_modulo(mpz_ptr t,mpz_ptr v,
-  const mpz_square_mat_t A,mpz_t m)
+  const mpz_square_mat_t A,const mpz_t m)
 // t := v*A mod m
  {
   const slong n=A->r;
