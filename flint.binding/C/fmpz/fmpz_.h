@@ -19,4 +19,14 @@
   fmpz_get_mpfr_slave(r,_sR,rnd);    \
  }
 
+void __inline__ static
+mul_mpz_fmpz(mpz_t r,fmpz_t s)
+// this trick is documented in FLINT manual
+ {
+  __mpz_struct *z;
+  z=_fmpz_promote_val(s);
+  mpz_mul(r,r,z);
+  _fmpz_demote_val(s);
+ }
+
 #endif
