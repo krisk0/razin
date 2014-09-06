@@ -349,7 +349,7 @@ det_divisor_mul_add_divide(mpz_ptr b,const mp_limb_t* y,
     #if NDEBUG==0
      assert( 0 == mpz_tdiv_ui(pB, prime_p) );
     #endif
-    mpz_cdiv_q_ui(pB, pB, prime_p);
+    mpz_divexact_ui(pB, pB, prime_p);
    }
  }
 
