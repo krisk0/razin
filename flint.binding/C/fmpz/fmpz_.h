@@ -29,4 +29,21 @@ mul_mpz_fmpz(mpz_t r,fmpz_t s)
   _fmpz_demote_val(s);
  }
 
+void __inline__ static
+fmpz_mod_2arg(fmpz_t tgt,const mpz_t m)
+ {
+  if(fmpz_fits_si(tgt))
+   {
+    mpz_t t; mpz_init_set_si(t,fmpz_get_si(sou));
+    mpz_mod(t,t,m);
+    fmpz_set_mpz(tgt,t);
+    mpz_clear(t);
+   }
+  else
+   {
+    __mpz_struct *t = _fmpz_promote(tgt);
+    mpz_mod(t, t, m);
+    _fmpz_demote_val(tgt);
+   }
+ }
 #endif
