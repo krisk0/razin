@@ -34,7 +34,7 @@ fmpz_mod_2arg(fmpz_t tgt,const mpz_t m)
  {
   if(fmpz_fits_si(tgt))
    {
-    mpz_t t; mpz_init_set_si(t,fmpz_get_si(sou));
+    mpz_t t; mpz_init_set_si(t,fmpz_get_si(tgt));
     mpz_mod(t,t,m);
     fmpz_set_mpz(tgt,t);
     mpz_clear(t);
