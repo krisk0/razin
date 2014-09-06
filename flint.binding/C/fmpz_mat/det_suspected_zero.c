@@ -431,9 +431,11 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
   numerator_b_i=cramer_rule(denominator_b, A, pr, smallest_row);
   // numerator_b_i >= log2(numerator_b)
   denominator_b_i=mpfr_get_uj(denominator_b,MPFR_RNDU);
-  if(denominator_b_i<FLINT_BITS)
-   denominator_b_i=FLINT_BITS;
+  if(denominator_b_i<FLINT_BITS+1)
+   denominator_b_i=FLINT_BITS+1;
   bound=numerator_b_i+denominator_b_i;
+  --denominator_b_i;
+  // denominator_b_i >= log2(denominator_b)
   // bound >= log2(2*numerator_b*denominator_b) 
   slong max_i=dixon_lifting_max_i(bound, pp.p),i;
   // this many iterations Dixon lifting will take, i=0..max_i-1
@@ -480,6 +482,7 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
     ,A
    #endif
   );
+  gmp_printf("ratnl_rcnstrction() gave det divisor %ZX\n",r);
   nmod_mat_clear(y_storage);
   mpz_square_mat_clear(A);
   mpz_lcm(r, r, w);
