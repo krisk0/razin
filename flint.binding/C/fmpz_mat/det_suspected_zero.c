@@ -185,7 +185,7 @@ cramer_rule(const mpfr_t den_bound,
   mpfr_init2(w,pr);
   mpfr_init2(u,pr);
   log2_L2_norm_4arg(u, A, k, n);
-  mpfr_printf("k=%d row norm=%10Rf\n",k,u);
+  //mpfr_printf("k=%d row norm=%10Rf\n",k,u);
   mpfr_sub(w, den_bound, u, MPFR_RNDU);  // w=den_bound / min row norm
   mpfr_sub_ui(u, w, 1, MPFR_RNDU);       // u=den_bound/2/min row norm
   // vector norm = square root of n
@@ -477,13 +477,14 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
   mpz_square_mat_clear(A_t);
   nmod_mat_clear(Ainv);
   // for sanity check A is used
+  // TODO: feed known divisor w into rational rec. procedure
   det_divisor_ratnl_rcnstrction(r, y_storage, max_i, n, pp.p,
    numerator_b_i,denominator_b_i
    #if NDEBUG==0
     ,A
    #endif
   );
-  gmp_printf("ratnl_rcnstrction() gave det divisor %ZX\n",r);
+  //gmp_printf("ratnl_rcnstrction() gave det divisor %ZX\n",r);
   nmod_mat_clear(y_storage);
   mpz_square_mat_clear(A);
   mpz_lcm(r, r, w);
