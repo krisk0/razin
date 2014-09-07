@@ -15,8 +15,8 @@ Decreasing modulo/reusing discovered denominator trick learnt from solve1()
  subroutine implemented by V.Shoup
 */
 
-//#define NDEBUG 1
-#define LOUD_RR_IO 1
+#define NDEBUG 1
+#define LOUD_RR_IO 0
 #include <assert.h>
 
 #include <flint/flint.h>
@@ -41,6 +41,18 @@ MulMod_fmpz(mpz_t tgt,const fmpz_t sou,const mpz_t M)
   else
    mpz_mul(tgt,tgt,COEFF_TO_PTR(*sou));
   mpz_mod(tgt,tgt,M);
+ }
+
+void lcm_2arg(mpz_t tgt,const fmpz_t sou)
+ {
+  register fmpz s=*sou;
+  if(!COEFF_IS_MPZ(s))
+   {
+    if(s != 1)
+     mpz_lcm_ui(tgt, tgt, (mp_limb_t)s);    // sou is small but not 1
+   }
+  else
+   mpz_lcm(tgt, tgt, COEFF_TO_PTR(s));      // sou is big
  }
 
 int __inline__ static
@@ -291,14 +303,12 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
   mpz_ptr xI;
   fmpz_t denom_i; fmpz_init(denom_i);
   fmpz_t D; fmpz_init(D); // D=0
-  for(i=0; i<n; i++)
+  for(i=0,xI=x; i<n; i++,xI++)
    {
-    xI = x+i;
     if(M_modified)
      mpz_mod(xI,xI,M);
     if( mpz_cmp_ui(d_mod_M,1) )
      MulMod( xI, d_mod_M, M );
-    assert( mpz_cmp_ui(xI,0) >= 0 );
     // if not debugging, skip unnecessary check in rational rec. subroutine
     #if NDEBUG 
      #define SKIP_CHECK 1
@@ -339,9 +349,7 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
        }
      }
    }
-  fmpz_clear(D);
   fmpz_clear(denom_i);
-  mpz_clear(d_mod_M);
   #if NDEBUG==0
    flint_printf("det_divisor_rational_reconstruction(): check positive\n");
   #endif
@@ -350,3 +358,4 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
 #undef SKIP_CHECK
 #undef MulMod
 #undef NDEBUG
+#undef LOUD_RR_IO
