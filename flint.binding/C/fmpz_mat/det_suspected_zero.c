@@ -19,8 +19,8 @@
 /*
 set NDEBUG to 0, to enable internal check in Dixon lifing algorithm
 */
-#define LOUD_nmod_mat_in_det_divisor 1
-#define LOUD_det_divisor_count_y 1
+#define LOUD_nmod_mat_in_det_divisor 0
+#define LOUD_det_divisor_count_y 0
 
 mpfr_prec_t static
 hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)
@@ -128,7 +128,7 @@ returns -1 if zero row found, smallest row index otherwise
       return -1;
      }
     mpfr_add(b, b, u, MPFR_RNDU);
-    if( mpfr_cmp(v, u)<0 )
+    if( mpfr_cmp(u, v)<0 )
      {
       smallest=j;
       mpfr_set(v, u, MPFR_RNDU);
@@ -185,6 +185,7 @@ cramer_rule(const mpfr_t den_bound,
   mpfr_init2(w,pr);
   mpfr_init2(u,pr);
   log2_L2_norm_4arg(u, A, k, n);
+  mpfr_printf("k=%d row norm=%10Rf\n",k,u);
   mpfr_sub(w, den_bound, u, MPFR_RNDU);  // w=den_bound / min row norm
   mpfr_sub_ui(u, w, 1, MPFR_RNDU);       // u=den_bound/2/min row norm
   // vector norm = square root of n
@@ -380,7 +381,7 @@ det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,const mpz_t M,slong n)
   for(i=0,zp=xA;i<n;zp++,i++)
    {
     //mpz_add_si(zp,-((i&1) ? 1 : -1)); // this addition should give zero 
-    gmp_printf("xA[%d]=%ZX\n",i,zp);
+    //gmp_printf("xA[%d]=%ZX\n",i,zp);
     if( i&1 )
      mpz_sub_ui(zp, zp, 1);
     else
