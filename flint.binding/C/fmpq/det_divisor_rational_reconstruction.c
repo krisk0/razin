@@ -15,7 +15,8 @@ Decreasing modulo/reusing discovered denominator trick learnt from solve1()
  subroutine implemented by V.Shoup
 */
 
-#define NDEBUG 0
+//#define NDEBUG 1
+#define LOUD_RR_IO 1
 #include <assert.h>
 
 #include <flint/flint.h>
@@ -70,10 +71,10 @@ fmpz_cmpabs_log2(const fmpz_t x,mp_limb_t y)
    return -1;          // |x|<2**64, 2**y>2**64
   register mpz_ptr z=COEFF_TO_PTR(xx);
   xx=mpz_size(z);      // xx>0
-  if(xx*FLINT_BITS < y)
+  if(xx*FLINT_BITS <= y)
    return -1;          // x is too short, no need to further compare
-  --x;
-  if( xx*FLINT_BITS+1 > y )
+  --xx;
+  if( xx*FLINT_BITS > y )
    return 1;           // even if senior limb is 1, x is larger
   int lz;
   count_leading_zeros(lz,mpz_getlimbn(z,xx));
@@ -178,6 +179,11 @@ int reconstruct_rational_log2_log2(fmpz_t n, fmpz_t d,
 // like reconstruct_rational_log2_plain(), but denominator bound is logarithmic
  {
   RR_tome0
+  #if LOUD_RR_IO
+   fmpz_hex_print("RR inside n=",n,1);
+   fmpz_hex_print("RR inside d=",d,1);
+   flint_printf("d in range: %d\n",fmpz_cmpabs_log2(d, D2));
+  #endif
   if (fmpz_cmpabs_log2(d, D2) <= 0)  // d is positive, using cheaper
    {                                 //  fmpz_cmpabs_log2
     if(skip_check)
@@ -186,11 +192,17 @@ int reconstruct_rational_log2_log2(fmpz_t n, fmpz_t d,
      {
       fmpz_mul(s, a,d);
       fmpz_mod(t, s,m);
+      #if LOUD_RR_IO
+       fmpz_hex_print("          a*d=",t,1);
+      #endif
       if(fmpz_cmp_ui(n,0)>0)
        success = !fmpz_cmp(n,t);
       else
        {
         fmpz_mod(s, n,m);
+        #if LOUD_RR_IO
+         fmpz_hex_print("          n mod M=",s,1);
+        #endif
         success = !fmpz_cmp(s,t);
        }
      }
@@ -210,6 +222,20 @@ reconstruct_rational_take_denominator(fmpz_t d,mpz_t aa,const mpz_t mm,
   fmpz_t a; fmpz_init_set_readonly(a, aa); 
   fmpz_t n; fmpz_init(n);
   int r=reconstruct_rational_log2_plain(n,d, a,m, log2_N,D, skip_check);
+  #if LOUD_RR_IO
+   flint_printf("RR log2(N)=%llX\n",log2_N);
+   fmpz_hex_print("RR D=",D,1);
+   fmpz_hex_print("RR a=",a,1);
+   fmpz_hex_print("RR M=",m,1);
+   if(r)
+    {
+     fmpz_hex_print("   n=",n,1);
+     fmpz_hex_print("   d=",d,1);
+    }
+   else
+    flint_printf("RR failed\n");
+   flint_printf("\n");
+  #endif
   fmpz_clear(n);
   fmpz_clear_readonly(a);
   fmpz_clear_readonly(m);
@@ -225,6 +251,20 @@ reconstruct_rational_take_denominator_log2(fmpz_t d,mpz_t aa,const mpz_t mm,
   fmpz_t a; fmpz_init_set_readonly(a, aa); 
   fmpz_t n; fmpz_init(n);
   int r=reconstruct_rational_log2_log2(n,d, a,m, log2_N,log2_D, skip_check);
+  #if LOUD_RR_IO
+   flint_printf("RR log2(N)=%llX\n",log2_N);
+   flint_printf("RR log2(D)=%llX\n",log2_D);
+   fmpz_hex_print("RR a=",a,1);
+   fmpz_hex_print("RR M=",m,1);
+   if(r)
+    {
+     fmpz_hex_print("   n=",n,1);
+     fmpz_hex_print("   d=",d,1);
+    }
+   else
+    flint_printf("RR failed\n");
+   flint_printf("\n");
+  #endif
   fmpz_clear(n);
   fmpz_clear_readonly(a);
   fmpz_clear_readonly(m);
@@ -260,12 +300,17 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
      MulMod( xI, d_mod_M, M );
     assert( mpz_cmp_ui(xI,0) >= 0 );
     // if not debugging, skip unnecessary check in rational rec. subroutine
+    #if NDEBUG 
+     #define SKIP_CHECK 1
+    #else
+     #define SKIP_CHECK 0
+    #endif
     if( fmpz_cmp_ui(D,0) )
-     rc=reconstruct_rational_take_denominator_log2(denom_i, xI, M, log2_N, 
-      log2_D, NDEBUG);
-    else
      rc=reconstruct_rational_take_denominator(denom_i, xI, M, log2_N, D, 
-      NDEBUG);
+      SKIP_CHECK);
+    else
+     rc=reconstruct_rational_take_denominator_log2(denom_i, xI, M, log2_N, 
+      log2_D, SKIP_CHECK);
     if(!rc)
      {
       flint_printf("Exception (det_divisor_rational_reconstruction): "
@@ -302,5 +347,6 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
   #endif
  }
 
+#undef SKIP_CHECK
 #undef MulMod
 #undef NDEBUG

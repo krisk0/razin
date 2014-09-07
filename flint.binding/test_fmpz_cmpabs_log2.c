@@ -6,8 +6,11 @@
 
 // To compile: gcc -O2 -march=native -lflint -lgmp
 
-#include <assert.h>
 #include "C/fmpq/det_divisor_rational_reconstruction.c"
+#undef NDEBUG
+#include <assert.h>
+
+#define LOUD 0
 
 flint_rand_t rst;
 
@@ -15,11 +18,17 @@ void test2(mp_limb_t log2,const fmpz_t b,const fmpz_t n)
  {
   int r0=fmpz_cmpabs(n,b);
   int r1=fmpz_cmpabs_log2(n,log2);
+  #if LOUD
+   fmpz_hex_print("b=",b,0);
+   fmpz_hex_print("    n=",n,0);
+   flint_printf("    r0/1: %d/%d\n",r0,r1);
+  #endif
   if( r0>0 )
    assert( r1>0 );
   if( r0<0 )
    assert( r1<0 );
-  assert( 0 == r1 );
+  if( r0==0 )
+   assert( 0 == r1 );
  }
 
 void test1(mp_limb_t log2,const fmpz_t b,const fmpz_t n)
@@ -88,4 +97,5 @@ int main()
   for(i=FLINT_BITS;i<4*FLINT_BITS+5;i++)
    test0(i);
   flint_printf("Test passed\n");
+  return 0;
  }

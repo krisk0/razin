@@ -60,4 +60,34 @@ abs_x_is_degree_of_2(const mpz_t x)
   return !( y&(y-1));
  }
 
+void __inline__ static
+fmpz_hex_print(const char* m,const fmpz_t n,int CR)
+ {
+  flint_printf(m);
+  if(fmpz_fits_si(n))
+   {
+    mpz_t t; mpz_init_set_si(t,fmpz_get_si(n));
+    gmp_printf("%ZX (%d)",t,mpz_sizeinbase(t,2));
+    mpz_clear(t);
+   }
+  else
+   {
+    #define nn (fmpz*)n
+    __mpz_struct* t = _fmpz_promote(nn);
+    gmp_printf("%ZX (%d)",t,mpz_sizeinbase(t,2));
+    _fmpz_demote_val(nn);
+    #undef nn
+   }
+  if(CR)
+   flint_printf("\n");
+ }
+
+void __inline__ static
+mpz_hex_print(const char* m,const mpz_t n,int CR)
+ {
+  flint_printf(m);
+  gmp_printf("%ZX (%d)",n,mpz_sizeinbase(n,2));
+  if(CR)
+   flint_printf("\n");
+ }
 #endif
