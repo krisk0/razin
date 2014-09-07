@@ -46,4 +46,18 @@ fmpz_mod_2arg(fmpz_t tgt,const mpz_t m)
     _fmpz_demote_val(tgt);
    }
  }
+ 
+int __inline__ static
+abs_x_is_degree_of_2(const mpz_t x)
+ {
+  size_t s=mpz_size(x)-1;
+  slong i;
+  for(i=0;i<s;i++)
+   if( mpz_getlimbn(x,i) )
+    return 0;
+  mp_limb_t y=mpz_getlimbn(x,s);
+  // |x| is degree of 2 iff subtracting 1 from y decreases its bit-length
+  return !( y&(y-1));
+ }
+
 #endif
