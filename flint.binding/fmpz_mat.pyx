@@ -39,6 +39,11 @@ cdef extern from 'C/fmpz_mat/is_singular.c':
 cdef extern from 'C/fmpz_mat/det_suspected_zero.c':
  void fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
 
+cdef extern from 'C/fmpz_mat/det_modular_given_divisor_8arg.c':
+ void fmpz_mat_det_modular_given_divisor_8arg(mpz_t det, nmod_mat_t Amod,
+  mpfr_t hb, mpfr_prec_t pr, p_k_pk_t& pp, n_primes_rev_t it,
+  mp_limb_t xmod, const fmpz_mat_t A)
+
 cdef class fmpz_mat:
 
  cdef fmpz_mat_t matr
