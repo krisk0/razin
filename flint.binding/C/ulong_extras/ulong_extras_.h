@@ -64,7 +64,7 @@ void init__p_k_pk__and__nmod(p_k_pk_t* s,nmod_t* m)
  }
 
 static __inline__
-void init_nmod_from_pp(p_k_pk_t* s,nmod_t* m)
+void init_nmod_from_pp(nmod_t* m,const p_k_pk_t* s)
 // Based on s, initialize m
  {
   mp_limb_t t;
