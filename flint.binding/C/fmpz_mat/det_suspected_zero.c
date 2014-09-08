@@ -442,8 +442,8 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
   // this many iterations Dixon lifting will take, i=0..max_i-1
   if(pp.k>1)
    {
-    pp.k=1;
-    init__p_pk__and__nmod(&pp, &Amod->mod);
+    pp.k=1; pp.p_deg_k=pp.p;
+    init_nmod_from_pp(&Amod->mod, &pp);
    }
   const slong n=A->r;
   nmod_mat_t y_storage; nmod_mat_init_3arg(y_storage,max_i,n);
@@ -495,7 +495,7 @@ fmpz_mat_det_9arg(
   mpz_t tgt_det,
   const fmpz_mat_t A, nmod_mat_t Amod,
   mpfr_t hb, mpfr_prec_t pr, slong smallest_row,
-  const p_k_pk_t pp, n_primes_rev_t it,mpz_t w)
+  p_k_pk_t pp, n_primes_rev_t it,mp_limb_t xmod,mpz_t w)
 /*
 this subroutine only works when source matrice det is non-zero and a multiple
  of 2**126
@@ -503,11 +503,10 @@ this subroutine only works when source matrice det is non-zero and a multiple
 w: known divisor of A determinant, w>1 
 */
  {
-  mpz_t det_divisor; mpz_init(det_divisor);
-  fmpz_mat_det_divisor_8arg( det_divisor, A, Amod, hb, pr, smallest_row, pp, w);
-  gmp_printf("found det divisor %ZX\n",det_divisor);
-  flint_printf("End of rails in fmpz_mat_det_8arg()\n");
-  exit(1);
+  // don't let pp change --- keep pp.k value which might be >1 
+  fmpz_mat_det_divisor_8arg(tgt_det, A, Amod, hb, pr, smallest_row, pp, w);
+  //gmp_printf("found det divisor %ZX\n",det_divisor);
+  fmpz_mat_det_modular_given_divisor_6arg(tgt_det,A,hb,pr,&pp,it,xmod);
  }
 
 mpfr_prec_t __inline__ static
@@ -604,11 +603,12 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
     init__p_k_pk__and__nmod(&pp, &Amod->mod);
     fmpz_mat_get_nmod_mat(Amod, A); // TODO: speed-up this slow subroutine
     //flint_printf("selected p=%wu\n",pp.p);
-    if( nmod_mat_det_mod_pk_4block(Amod,pp,scratch) )
+    mp_limb_t xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
+    if( xmod )
      {
       mpz_t d; mpz_init_set(d, W);
       fmpz_mat_det_update_w(d, it, W);
-      fmpz_mat_det_9arg(r, A, Amod, h_bound, h_bits, smallest_row, pp, it, d);
+      fmpz_mat_det_9arg(r, A, Amod, h_bound, h_bits, smallest_row, pp, it, xmod, d);
       mpz_clear(d);
       break;
      }
