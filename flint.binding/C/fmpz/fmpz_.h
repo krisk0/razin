@@ -91,4 +91,16 @@ mpz_hex_print(const char* m,const mpz_t n,int CR)
   if(CR)
    flint_printf("\n");
  }
+ 
+ulong __inline__ static
+fmpz_fdiv_ui_positive(const fmpz_t g, ulong h)
+ {
+  fmpz c1 = *g;
+  if (!COEFF_IS_MPZ(c1))      // g is small 
+   return c1 % h;
+  else                        // g is large
+   // should work correctly under Linux and Windows/MPIR
+   return mpz_fdiv_ui(COEFF_TO_PTR(c1), h);
+ }
+ 
 #endif
