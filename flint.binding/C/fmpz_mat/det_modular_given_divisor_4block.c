@@ -13,8 +13,8 @@
 
 #include <flint/flint.h>
 #include "../ulong_extras/ulong_extras_.h"
-#include <assert.h>
 #define NDEBUG 1
+#include <assert.h>
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
 mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
 
