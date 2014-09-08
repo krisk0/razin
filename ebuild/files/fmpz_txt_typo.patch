@@ -1,0 +1,11 @@
+--- old/fmpz/doc/fmpz.txt	2014-06-19 20:33:28.000000000 +0400
++++ new/fmpz/doc/fmpz.txt	2014-09-08 11:23:43.000000000 +0400
+@@ -196,7 +196,7 @@
+ 
+ void flint_mpz_init_set_readonly(mpz_t z, const fmpz_t f)
+ 
+-    Sets the unitialised \code{mpz_t} $z$ to the value of the 
++    Sets the uninitialised \code{mpz_t} $z$ to the value of the 
+     readonly \code{fmpz_t} $f$.
+ 
+     Note that it is assumed that $f$ does not change during 
