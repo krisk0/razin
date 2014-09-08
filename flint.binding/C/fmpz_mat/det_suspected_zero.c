@@ -4,10 +4,10 @@
 
 #include <assert.h>
 #include "../mpz_square_mat/mpz_square_mat_.h"
-#include "../nmod_mat/nmod_mat_.h"
 #include "../fmpz/fmpz_.h"
 #include "../ulong_extras/ulong_extras_.h"
 #include "../fmpq/fmpq_.h"
+#include "fmpz_mat_.h"
 
 /*
  gmp functions ..._ui() should work fine under Windoz/MPIR
@@ -266,9 +266,19 @@ det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
  }
 
 void __inline__ static 
-det_divisor_inverse_A(nmod_mat_t r, nmod_mat_t m, const fmpz_mat_t a, slong n)
+det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t pp,const nmod_mat_t m, 
+  const fmpz_mat_t a, slong n)
  {
-  memcpy( &r->mod, &m->mod, sizeof(m->mod) );
+  if(pp.k==1)
+   memcpy( &r->mod, &m->mod, sizeof(m->mod) );
+  else
+   {
+    // k changed, must re-calculate mod 
+    p_k_pk_t ppM;
+    ppM.p=ppM.p_deg_k=pp.p;
+    ppM.k=1;
+    init_nmod_from_pp(&r->mod, &ppM);
+   }
   nmod_mat_t s,t;
   nmod_mat_init_3arg(s, n, n);  memcpy( &s->mod, &m->mod, sizeof(m->mod) );
   nmod_mat_init_3arg(t, n, n);  memcpy( &t->mod, &m->mod, sizeof(m->mod) );
@@ -422,7 +432,7 @@ det_divisor_ratnl_rcnstrction(mpz_t d,const nmod_mat_t y, slong k,
  }
 
 void __inline__ static 
-fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
+fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, const nmod_mat_t Amod,
   mpfr_t denominator_b, mpfr_prec_t pr, slong smallest_row, p_k_pk_t pp,
   mpz_t w)
 // denominator_b >= log2(2*abs(A det))
@@ -440,16 +450,11 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
   // bound >= log2(2*numerator_b*denominator_b) 
   slong max_i=dixon_lifting_max_i(bound, pp.p),i;
   // this many iterations Dixon lifting will take, i=0..max_i-1
-  if(pp.k>1)
-   {
-    pp.k=1; pp.p_deg_k=pp.p;
-    init_nmod_from_pp(&Amod->mod, &pp);
-   }
   const slong n=A->r;
   nmod_mat_t y_storage; nmod_mat_init_3arg(y_storage,max_i,n);
   nmod_mat_t Ainv;
   nmod_mat_init_3arg(Ainv,n,n); 
-  det_divisor_inverse_A(Ainv, Amod, Ao, n);
+  det_divisor_inverse_A(Ainv, pp, Amod, Ao, n);
   mpz_square_mat_t A_t; mpz_square_mat_init_transpose(A_t,A);
   mpz_square_mat_mark_biggest(A_t);
   mpz_square_mat_negate(A_t);
@@ -503,10 +508,9 @@ this subroutine only works when source matrice det is non-zero and a multiple
 w: known divisor of A determinant, w>1 
 */
  {
-  // don't let pp change --- keep pp.k value which might be >1 
   fmpz_mat_det_divisor_8arg(tgt_det, A, Amod, hb, pr, smallest_row, pp, w);
   //gmp_printf("found det divisor %ZX\n",det_divisor);
-  fmpz_mat_det_modular_given_divisor_6arg(tgt_det,A,hb,pr,&pp,it,xmod);
+  fmpz_mat_det_modular_given_divisor_8arg(tgt_det,Amod,hb,pr,&pp,it,xmod,A);
  }
 
 mpfr_prec_t __inline__ static
