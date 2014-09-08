@@ -247,17 +247,19 @@ def ctypedef( c ):
  d=d.replace(';','').strip().replace('typedef',' ctypedef')
  return d
 
-def mp_limb_t( p, CC ):
+def mp_limb_t( gmpH, mpfrH, CC ):
  ' invoke C pre-processor to extract 2 type definitions from gmp.h '
- if not os.path.isfile( p ):
+ c_pattern="%s -E %s|grep '%s;'|grep typedef"
+ if not os.path.isfile( gmpH ):
   die('Failed to find gmp.h')
  with open("mp_limb_t.pyx",'wb') as o:
-  o.write( setup_automagic % p)
+  o.write( setup_automagic % (gmpH+' and '+mpfrH) )
   o.write( "cdef extern from 'gmp.h':\n" )
   for t in 'mp_limb_t','mp_limb_signed_t','mp_bitcnt_t':
-   c="%s -E %s|grep '%s;'|grep typedef" % (CC,p,t)
-   d=ctypedef(c)
-   o.write( d+'\n' )
+   o.write( ctypedef( c_pattern % (CC,gmpH,t) )+'\n' )
+  o.write( "\ncdef extern from 'mpfr.h':\n" )
+  for t in 'mpfr_prec_t', 'mpfr_sign_t', 'mpfr_exp_t', 'mpfr_uexp_t':
+   o.write( ctypedef( c_pattern % (CC,mpfrH,t) )+'\n' )
 
 def take_define( f, q ):
  with open(f,'rb') as i:
@@ -287,9 +289,12 @@ def slong( p, CC ):
   o.write( fmpz+'\n' )
 
 def slong__mp_limb_t( x ):
- ' assume FLINT and GMP are together. Extract basic number type definitions '
+ '''
+  assume FLINT, GMP and MPFR headers share same directory. 
+  Extract basic number type definitions 
+ '''
  CC=os.environ.get('CC','gcc')
- mp_limb_t( x+'/gmp.h', CC )
+ mp_limb_t( x+'/gmp.h', x+'/mpfr.h', CC )
  slong( x+'/flint/flint.h', CC )
 
 include_dirs=[include_0,include_1]

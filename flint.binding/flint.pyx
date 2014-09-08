@@ -41,6 +41,14 @@ include "mp_limb_t.pyx"
 
 ctypedef __mpz_struct* mpz_ptr
 
+cdef extern from 'mpfr.h':
+ ctypedef struct __mpfr_struct:
+  mpfr_prec_t  _mpfr_prec
+  mpfr_sign_t  _mpfr_sign
+  mpfr_exp_t   _mpfr_exp
+  mp_limb_t   *_mpfr_d
+ ctypedef __mpfr_struct mpfr_t[1]
+
 include "slong.pyx"
 
 from sage.libs.gmp.all cimport gmp_randstate_t
