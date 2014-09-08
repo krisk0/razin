@@ -66,6 +66,7 @@ fmpz_hex_print(const char* m,const fmpz_t n,int CR)
   flint_printf(m);
   if(fmpz_fits_si(n))
    {
+    // could use WORD_FMT like that: printf(WORD_FMT"X",small_num);
     mpz_t t; mpz_init_set_si(t,fmpz_get_si(n));
     gmp_printf("%ZX (%d)",t,mpz_sizeinbase(t,2));
     mpz_clear(t);
