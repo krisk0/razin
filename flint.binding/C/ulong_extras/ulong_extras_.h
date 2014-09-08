@@ -64,8 +64,8 @@ void init__p_k_pk__and__nmod(p_k_pk_t* s,nmod_t* m)
  }
 
 static __inline__
-void init__p_pk__and__nmod(p_k_pk_t* s,nmod_t* m)
-// Based on s->p and s->k, initialize all other fields of s and m,
+void init_nmod_from_pp(p_k_pk_t* s,nmod_t* m)
+// Based on s, initialize m
  {
   mp_limb_t t;
   count_leading_zeros_opt( t, s->p_deg_k );
