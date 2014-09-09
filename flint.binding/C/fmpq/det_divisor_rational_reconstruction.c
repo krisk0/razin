@@ -23,6 +23,7 @@ Decreasing modulo/reusing discovered denominator trick learnt from solve1()
 #include <flint/fmpz.h>
 #include <flint/longlong.h>
 #include "../fmpz/fmpz_.h"
+#include "fmpq_.h"
 
 #define ROT(u,v,t)   \
     do { fmpz _t = *u; *u = *v; *v = *t; *t = _t; } while (0);
@@ -296,13 +297,22 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
  found in mat_ZZ.c (which is part of NTL)
 */
  {
-  mpz_set_ui(d,1);
+  #if RAT_REC_TAKES_D_SERIOUSLY==0
+   mpz_set_ui(d,1);
+  #endif
   mpz_t d_mod_M; mpz_init_set_ui(d_mod_M,1);
   slong i;
   int M_modified=0,rc;
   mpz_ptr xI;
   fmpz_t denom_i; fmpz_init(denom_i);
   fmpz_t D; fmpz_init(D); // D=0
+  #if RAT_REC_TAKES_D_SERIOUSLY
+   // if d>1 then mix it into x[]
+   if( mpz_cmp_ui(d,1)>0 )
+    {
+     MulMod( x, d, M );
+    }
+  #endif
   for(i=0,xI=x; i<n; i++,xI++)
    {
     if(M_modified)
