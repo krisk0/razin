@@ -99,7 +99,7 @@ def count_log2(x):
 def det_hermitian(x):
  if x.nrows() < 5:
   return count_det( fmpz_mat(x) )
- print 'source matrice A:\n',x
+ # print 'source matrice A:\n',x
  y,z=decompose_hermitian(x)
  if y==None:
   #return count_det( fmpz_mat(x) )
