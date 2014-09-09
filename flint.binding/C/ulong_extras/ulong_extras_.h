@@ -77,4 +77,22 @@ void init_nmod_from_pp(nmod_t* m,const p_k_pk_t* s)
   #endif
  }
 
+void mod_flint_style(nmod_t* m,const p_k_pk_t* s)
+// change m from pk-style to regular FLINT style, to match modulo s->p
+ {
+  if(s->k > 1)
+   {
+    // no correct fields at all
+    nmod_init(m,s->p);
+    return;
+   }
+  if( s->p >= (UWORD(1)<<(FLINT_BITS-1)) )
+   {
+    // only m->norm is incorrect
+    m->norm=0;
+    return;
+   }
+  nmod_init(m, s->p);
+ }
+
 #endif

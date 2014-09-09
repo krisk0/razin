@@ -39,6 +39,18 @@ cdef extern from 'C/nmod_mat/transpose_square_tgt_virgin.c':
 cdef extern from 'C/nmod_mat/init_3arg.c':
  void nmod_mat_init_3arg(nmod_mat_t m, slong ro, slong co)
 
+cdef extern from 'C/nmod_mat/mul_vec_left.c':
+ void nmod_mat_mul_vec_left(mp_limb_t* r, const mp_limb_t* s, const nmod_mat_t m)
+
+cdef extern from 'C/nmod_mat/is_one.c':
+ int nmod_mat_is_one(const nmod_mat_t m)
+
+cdef extern from 'C/nmod_mat/mul_pk_classical.c':
+ void nmod_mat_mul_pk_classical(nmod_mat_t C,nmod_mat_t A,nmod_mat_t B)
+
+cdef extern from 'C/nmod_mat/copy_entries.c':
+ void nmod_mat_copy_entries(nmod_mat_t r,const nmod_mat_t s)
+
 def AmodB(Integer a, Integer b):
  ' test that mp_limb_t arithmetic works in Cython '
  cdef Integer r=Integer(0)

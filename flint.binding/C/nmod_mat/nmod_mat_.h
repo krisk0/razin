@@ -15,6 +15,10 @@ void nmod_mat_transpose_square_tgt_virgin(nmod_mat_t tgt,const nmod_mat_t sou);
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
 mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,
  mp_limb_t* scrtch);
+void nmod_mat_mul_vec_left(mp_limb_t* r, const mp_limb_t* s, const nmod_mat_t m);
+void nmod_mat_mul_pk_classical(nmod_mat_t C,nmod_mat_t A,nmod_mat_t B);
+int nmod_mat_is_one(const nmod_mat_t m);
+void nmod_mat_copy_entries(nmod_mat_t r,const nmod_mat_t s);
 
 #if GMP_LIMB_BITS == 64 && defined (__amd64__)
 
