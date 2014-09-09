@@ -65,7 +65,7 @@ fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   fmpz_init(bound);
   fmpz_init_set_ui( prod, UWORD(1) ); // this is just movq $1,(rsp...), good
   fmpz_init(x);
-  fmpz_init(xnew);
+  fmpz_init(xnew);                    // xnew = x = 0
   nmod_mat_init_square_2arg(Amod,dim);
   
   /* bound = 2 * max abs det(A) / divisor */
