@@ -7,17 +7,10 @@
 #include <flint/fmpz_mat.h>
 #include <mpfr.h>
 #include "../ulong_extras/ulong_extras_.h"
+#include "../fmpz/fmpz_.h"
+#include "../nmod_mat/nmod_mat_.h"
 #undef NDEBUG
 #include <assert.h>
-void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
-mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
-
-static __inline__ mp_limb_t
-choose_prime_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor,
-  n_primes_rev_t it)
- {
-  assert(0);
- }
 
 static __inline__ void
 decrease_bound_fmpz(mpfr_t b,mpfr_prec_t pr,mpz_t d)
@@ -47,6 +40,45 @@ decrease_bound_ui(mpfr_t b,mpfr_prec_t pr,mp_limb_t d)
   mpfr_clear(dF);
  }
 
+static __inline__ int
+comp_bound_ui(mpfr_t b,mp_limb_t q)
+// 1 iff log2(q) rounded down <= b
+ {
+  mpfr_t log2; mpfr_init(log2);
+  mpfr_t qF; mpfr_init2(qF, FLINT_BITS);
+  mpfr_set_uj(qF, q, MPFR_RNDZ);
+  mpfr_log2(log2, qF, MPFR_RNDZ);
+  int r=(mpfr_cmp(log2,b)<0);
+  mpfr_clear(qF);
+  mpfr_clear(log2);
+  return r;
+ }
+
+static __inline__ mp_limb_t
+invert_det_divisor_modulo_pk(mpz_t dd,p_k_pk_t const* pp,nmod_t const* mod)
+// take dd modulo p_deg_k, then invert it
+ {
+  mp_limb_t r,m=pp->p_deg_k
+  r=mpz_fdiv_ui(divisor, m);
+  if(pp->k==1)
+   return n_invmod(r,m);
+  else
+   return inv_mod_pk_3arg(r,pp[0],mod[0]);
+ }
+
+static __inline__ void
+mpz_fmpz_mul_2arg(mpz_t z,fmpz_t x)
+ {
+  register slong xx=(slong)(*x);
+  if(!COEFF_IS_MPZ(xx))
+   {                              // x is small
+    if(xx != WORD(1))
+     mpz_mul_ui(z,z,(mp_limb_t)xx);
+   }
+  else
+   mpz_mul(z,z,COEFF_TO_PTR(xx)); // x is big
+ }
+
 void 
 fmpz_mat_det_modular_given_divisor_8arg(mpz_t det, nmod_mat_t Amod,
   mpfr_t hadamard_log2, mpfr_prec_t pr, p_k_pk_t* pp, n_primes_rev_t iT,
@@ -67,15 +99,47 @@ iT on entry just found prime pp->p
  {
   // loop bound = 2*H.B / known det divisor
   decrease_bound_fmpz(hadamard_log2,pr,det);
-  assert(0);
 
-  slong dim = A->r;
-  mp_limb_t* scratch=flint_malloc( 4*(dim-4)*sizeof(mp_limb_t) );
-  #if !SPEEDUP_NMOD_RED3
-   Amod->mod.norm=0;
-  #endif
+  // re-use known det A modulo pp->p_deg_k
+  mp_limb_t divisor_inv=invert_det_divisor_modulo_pk(det,pp,&Amod->mod);
+  xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
+  fmpz_t xnew,x;
+  fmpz_init(xnew); 
+  fmpz_init(x); 
+  fmpz_t prod; mpz_init_set_ui( prod, UWORD(1) );
+
+  fmpz_CRT_ui(xnew, x, prod, xmod, pp->p_deg_k, 1);
+  fmpz_set_ui(prod, pp->p_deg_k);
+  fmpz_set(x, xnew);
+
+  // for orthogonal matrice the bound might be reached at this point.
+  //  Attempt to skip main loop
+  if(comp_bound_ui(hadamard_log2,pp->p_deg_k))
+   {
+    mp_limb_t* scratch=flint_malloc( 4*(A->r-4)*sizeof(mp_limb_t) );
+    mp_limb_t bound=mpfr_get_uj(hadamard_log2,MPFR_RNDU);
+
+    for(;;)
+     {
+      divisor_inv=choose_prime_and_degree( &pp, &Amod->mod, it, det );
+      mpz_mat_get_nmod_mat(Amod, A);
+      xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
+      xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
+      fmpz_CRT_ui(xnew, x, prod, xmod, pp->p_deg_k, 1);
+      fmpz_mul_ui(prod, prod, pp->p_deg_k);
+      if(cmp_positive_log2(prod,bound) >= 0)
+       break;
+      fmpz_set(x, xnew);
+     }
   
-  flint_free(scratch);
+    flint_free(scratch);
+   }
+
+  fmpz_clear(prod);
+  mpz_fmpz_mul_2arg(det,xnew);
+  fmpz_clear(prod);
+  fmpz_clear(x);
+  fmpz_clear(xnew);
  }
 
 #undef NDEBUG
