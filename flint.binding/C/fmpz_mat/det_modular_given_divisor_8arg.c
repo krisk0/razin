@@ -13,20 +13,6 @@
 #include <assert.h>
 
 static __inline__ void
-decrease_bound_fmpz(mpfr_t b,mpfr_prec_t pr,mpz_t d)
- {
-  mpfr_t dF; mpfr_init2(dF, mpz_sizeinbase(d,2));
-  mpfr_t log2_d; mpfr_init2(log2_d,pr);
-
-  mpfr_set_z(dF, d, MPFR_RNDZ);
-  mpfr_log2(log2_d, dF, MPFR_RNDZ);
-  mpfr_sub(b, b, log2_d, MPFR_RNDU);
-
-  mpfr_clear(log2_d);
-  mpfr_clear(dF);
- }
-
-static __inline__ void
 decrease_bound_ui(mpfr_t b,mpfr_prec_t pr,mp_limb_t d)
  {
   mpfr_t dF; mpfr_init2(dF, FLINT_BITS);
@@ -73,7 +59,7 @@ mpz_fmpz_mul_2arg(mpz_t z,const fmpz_t x)
   if(!COEFF_IS_MPZ(xx))
    {                              // x is small
     if(xx != WORD(1))
-     mpz_mul_ui(z,z,(mp_limb_t)xx);
+     mpz_mul_si(z,z,xx);
    }
   else
    mpz_mul(z,z,COEFF_TO_PTR(xx)); // x is big
@@ -150,6 +136,11 @@ iT on entry just found prime pp->p
   fmpz_set_ui(prod, pp->p_deg_k);
   fmpz_set(x, xnew);
 
+  #if LOUD_DET_BOUND
+   mpfr_printf("fmpz_mat_det_modular_given_divisor_8arg(): log2 bound=%Rf\n",
+    hadamard_log2);
+   slong primes_used=1;
+  #endif
   // for orthogonal matrice the bound might be reached at this point.
   //  Attempt to skip main loop
   if(comp_bound_ui(hadamard_log2,pp->p_deg_k))
@@ -169,6 +160,9 @@ iT on entry just found prime pp->p
       // TODO: rewrite fmpz_CRT_ui() -> mpz_CRT_ui_5arg()
       fmpz_CRT_ui(xnew, x, prod, xmod, pp->p_deg_k, 1);
       fmpz_mul_ui(prod, prod, pp->p_deg_k);
+      #if LOUD_DET_BOUND
+       primes_used++;
+      #endif
       if(cmp_positive_log2(prod,bound) >= 0)
        break;
       fmpz_set(x, xnew);
@@ -177,6 +171,10 @@ iT on entry just found prime pp->p
     flint_free(scratch);
    }
 
+  #if LOUD_DET_BOUND
+   flint_printf("fmpz_mat_det_modular_given_divisor_8arg() primes used: %d\n\n\n",
+    primes_used);
+  #endif
   fmpz_clear(prod);
   mpz_fmpz_mul_2arg(det,xnew);
   fmpz_clear(prod);

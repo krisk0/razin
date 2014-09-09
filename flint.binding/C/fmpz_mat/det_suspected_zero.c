@@ -9,6 +9,7 @@
 #include "../ulong_extras/ulong_extras_.h"
 #include "../fmpq/fmpq_.h"
 #include "fmpz_mat_.h"
+#include "../nmod_mat/nmod_mat_.h"
 
 /*
  gmp functions ..._ui() should work fine under Windoz/MPIR
@@ -16,9 +17,11 @@
  mpfr_get_uj() and mpfr_set_uj() might work, too 
 */
 
+// no asserts in code below, if checks disabled
 #define LOUD_nmod_mat_in_det_divisor 0
 #define LOUD_det_divisor_count_y 0
 #define DIXON_INTERNAL_CHECK 0
+#define LOUD_DET_RESULT 0
 
 mpfr_prec_t static
 hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)
@@ -264,9 +267,12 @@ det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
  }
 
 void __inline__ static 
-det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t pp,const nmod_mat_t m, 
+det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t pp,nmod_mat_t m, 
   const fmpz_mat_t a, slong n)
  {
+  #if LOUD_nmod_mat_in_det_divisor
+   int check_result;
+  #endif
   if(pp.k==1)
    memcpy( &r->mod, &m->mod, sizeof(m->mod) );
   else
@@ -281,12 +287,34 @@ det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t pp,const nmod_mat_t m,
   nmod_mat_init_3arg(s, n, n);  memcpy( &s->mod, &m->mod, sizeof(m->mod) );
   nmod_mat_init_3arg(t, n, n);  memcpy( &t->mod, &m->mod, sizeof(m->mod) );
   fmpz_mat_get_nmod_mat(s,a);
+  #if LOUD_nmod_mat_in_det_divisor
+   // need correct A mod p, for internal check
+   nmod_mat_copy_entries(m, s);
+  #endif
+  #if SPEEDUP_NMOD_RED3
+   // must set mod->norm to a different value
+   mod_flint_style( &s->mod, &pp );
+   memcpy( &t->mod, &s->mod, sizeof(t->mod) );
+  #endif
   nmod_mat_inv(t,s);
+  
+  // check inverse
+  #if LOUD_nmod_mat_in_det_divisor
+   nmod_mat_mul_pk_classical(r, t, s);
+   check_result=nmod_mat_is_one(r);
+  #endif
+  // check inverse positive
+  
   #if LOUD_nmod_mat_in_det_divisor
    flint_printf("A mod prime:\n");
    nmod_mat_print_pretty(s);
    flint_printf("\n\ninverted:\n");
    nmod_mat_print_pretty(t);
+   if( !check_result )
+    {
+     flint_printf("det_divisor_inverse_A(): bad inverse\n");
+     abort();
+    }
   #endif
   nmod_mat_transpose_square_tgt_virgin(r,t);
   #if LOUD_nmod_mat_in_det_divisor
@@ -389,7 +417,7 @@ det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,const mpz_t M,slong n)
   for(i=0,zp=xA;i<n;zp++,i++)
    {
     //mpz_add_si(zp,-((i&1) ? 1 : -1)); // this addition should give zero 
-    //gmp_printf("xA[%d]=%ZX\n",i,zp);
+    gmp_printf("xA[%d]=%ZX\n",i,zp);
     if( i&1 )
      mpz_sub_ui(zp, zp, 1);
     else
@@ -410,17 +438,15 @@ det_divisor_ratnl_rcnstrction(mpz_t d,const nmod_mat_t y, slong k,
  {
   slong i,Msize=FLINT_BITS*k;
   mpz_ptr zp,x_modulo_M=flint_malloc( sizeof(__mpz_struct)*n );
-  //gmp_printf("x = ");
   for(i=0,zp=x_modulo_M;i<n;zp++,i++)
    {
     mpz_init2( zp, Msize );
     det_divisor_y_to_x( zp, i, y, k, n, p );
-    //gmp_printf("%ZX ",zp);
    }
-  //gmp_printf("\n");
   mpz_t M; mpz_init(M);
   mpz_ui_pow_ui(M,p,(mp_limb_t)k);                  // M=p**k
   #if DIXON_INTERNAL_CHECK
+   gmp_printf("M = %ZX\n",M);
    //check that x_modulo_M*A equals original b modulo M
    det_divisor_xAbM_check(x_modulo_M,A,M,n);
   #endif
@@ -429,12 +455,57 @@ det_divisor_ratnl_rcnstrction(mpz_t d,const nmod_mat_t y, slong k,
   det_divisor_clear_b( x_modulo_M, n );
  }
 
+void
+print_y_by_A(mp_limb_t* y, const nmod_mat_t A, slong n)
+ {
+  mp_limb_t* x=flint_malloc( n*sizeof(mp_limb_t) );
+  nmod_mat_mul_vec_left(x, y, A);
+  flint_printf("y*A mod p=");
+  slong i;
+  for(i=0;i<n;i++)
+   flint_printf("%wu ",x[i]);
+  flint_printf("\n");
+  flint_free(x);
+ }
+
+void
+test_y_by_A(mp_limb_t* y, const nmod_mat_t A, slong n,const mp_limb_t* b)
+ {
+  slong i,ok=1;
+  mp_limb_t* x=flint_malloc( n*sizeof(mp_limb_t) );
+  nmod_mat_mul_vec_left(x, y, A);
+  for(i=n;i--;)
+   if(x[i] != b[i])
+    ok=0;
+  if( !ok )
+   {
+    flint_printf("A=\n");   nmod_mat_print_pretty(A); flint_printf("\n\n");
+    flint_printf("y*A mod p=");
+    for(i=0;i<n;i++)
+     flint_printf("%wu ",x[i]);
+    flint_printf("\ny*A not equals b\n");
+    flint_printf("A->mod: %wu, %wu, %wu\n",A->mod.n,A->mod.ninv,A->mod.norm);
+    abort();
+   }
+  flint_free(x);
+ }
+
 void __inline__ static 
-fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, const nmod_mat_t Amod,
-  mpfr_t denominator_b, mpfr_prec_t pr, slong smallest_row, p_k_pk_t pp,
-  mpz_t w)
+fmpz_mat_det_divisor_7arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
+  mpfr_t denominator_b, mpfr_prec_t pr, slong smallest_row, p_k_pk_t pp
+  #if RAT_REC_TAKES_D_SERIOUSLY==0  
+   ,mpz_t w
+  #endif
+  )
 // denominator_b >= log2(2*abs(A det))
  {
+  #if RAT_REC_TAKES_D_SERIOUSLY
+   // divide denominator bound by known det divisor r
+   decrease_bound_fmpz(denominator_b,pr,r);
+   #if LOUD_DET_BOUND
+    mpfr_printf("H.B. for Dixon (log2): %Rf\n",denominator_b);
+   #endif
+  #endif
   mpz_square_mat_t A; mpz_square_mat_lazy_init_set(A, Ao);
   mp_limb_t denominator_b_i, numerator_b_i, bound;
   numerator_b_i=cramer_rule(denominator_b, A, pr, smallest_row);
@@ -443,6 +514,9 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, const nmod_mat_t Amod,
   if(denominator_b_i<FLINT_BITS+1)
    denominator_b_i=FLINT_BITS+1;
   bound=numerator_b_i+denominator_b_i;
+  #if LOUD_DET_BOUND
+   flint_printf("log2 bound for Dixon: %llX\n",bound);
+  #endif
   --denominator_b_i;
   // denominator_b_i >= log2(denominator_b)
   // bound >= log2(2*numerator_b*denominator_b) 
@@ -471,8 +545,15 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, const nmod_mat_t Amod,
   #endif
   for(i=0;i<max_i;i++)
    {
+    #if LOUD_det_divisor_count_y
+     flint_printf("Dixon loop, i=%d\n",i);
+    #endif
     det_divisor_reduce_b(b_mod_p, b, n, pp.p);
     det_divisor_count_y(y_storage->rows[i], b_mod_p, Ainv, n);
+    #if LOUD_det_divisor_count_y
+     //print_y_by_A(y_storage->rows[i], Amod, n);
+     test_y_by_A(y_storage->rows[i], Amod, n, b_mod_p);
+    #endif
     det_divisor_mul_add_divide(b, y_storage->rows[i], A_t, n, pp.p);
    }
   flint_free(b_mod_p);
@@ -480,7 +561,6 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, const nmod_mat_t Amod,
   mpz_square_mat_clear(A_t);
   nmod_mat_clear(Ainv);
   // for sanity check A is used
-  // TODO: feed known divisor w into rational rec. procedure
   det_divisor_ratnl_rcnstrction(r, y_storage, max_i, n, pp.p,
    numerator_b_i,denominator_b_i
    #if DIXON_INTERNAL_CHECK
@@ -490,7 +570,9 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, const nmod_mat_t Amod,
   //gmp_printf("ratnl_rcnstrction() gave det divisor %ZX\n",r);
   nmod_mat_clear(y_storage);
   mpz_square_mat_clear(A);
-  mpz_lcm(r, r, w);
+  #if RAT_REC_TAKES_D_SERIOUSLY==0  
+   mpz_lcm(r, r, w);
+  #endif
  }
 
 void __inline__ static
@@ -498,7 +580,11 @@ fmpz_mat_det_9arg(
   mpz_t tgt_det,
   const fmpz_mat_t A, nmod_mat_t Amod,
   mpfr_t hb, mpfr_prec_t pr, slong smallest_row,
-  p_k_pk_t pp, n_primes_rev_t it,mp_limb_t xmod,mpz_t w)
+  p_k_pk_t pp, n_primes_rev_t it,mp_limb_t xmod
+  #if RAT_REC_TAKES_D_SERIOUSLY==0  
+   ,mpz_t w
+  #endif
+  )
 /*
 this subroutine only works when source matrice det is non-zero and a multiple
  of 2**126
@@ -506,10 +592,30 @@ this subroutine only works when source matrice det is non-zero and a multiple
 w: known divisor of A determinant, w>1 
 */
  {
-  fmpz_mat_det_divisor_8arg(tgt_det, A, Amod, hb, pr, smallest_row, pp, w);
-  // gmp_printf("found det divisor %ZX\n",tgt_det);
-  fmpz_mat_det_modular_given_divisor_8arg(tgt_det,Amod,hb,pr,&pp,it,xmod,A);
-  // gmp_printf("fmpz_mat_det_9arg() result: %ZX\n",tgt_det);
+  #if LOUD_DET_RESULT
+   gmp_printf("initial det divisor %ZX\n",
+    #if RAT_REC_TAKES_D_SERIOUSLY
+     tgt_det
+    #else
+     w
+    #endif
+    );
+  #endif
+  // Do not subtract log2(det divisor) twice, so keep original bound
+  mpfr_t hb0; mpfr_init_set(hb0,hb,MPFR_RNDU);
+  fmpz_mat_det_divisor_7arg(tgt_det, A, Amod, hb, pr, smallest_row, pp
+    #if RAT_REC_TAKES_D_SERIOUSLY==0  
+     , w
+    #endif
+   );
+  #if LOUD_DET_RESULT
+   gmp_printf("after rat. rec.: %ZX\n",tgt_det);
+  #endif
+  fmpz_mat_det_modular_given_divisor_8arg(tgt_det,Amod,hb0,pr,&pp,it,xmod,A);
+  #if LOUD_DET_RESULT
+   gmp_printf("fmpz_mat_det_9arg() result: %ZX\n",tgt_det);
+  #endif
+  mpfr_clear(hb0);
  }
 
 mpfr_prec_t __inline__ static
@@ -540,7 +646,7 @@ det_suspected_zero_log2_w(mpfr_t r, const mpz_t w)
  }
 
 void __inline__ static
-fmpz_mat_det_update_w(mpz_t u,n_primes_rev_t i,const mpz_t w)
+fmpz_mat_det_update_w(mpz_t u,n_primes_rev_t i)
 // re-iterate thru primes again, multiply w by those primes, skipping last
  {
   mp_limb_t last_p=n_primes_rev_show_again(i),curr_p;
@@ -609,10 +715,16 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
     mp_limb_t xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
     if( xmod )
      {
-      mpz_t d; mpz_init_set(d, W);
-      fmpz_mat_det_update_w(d, it, W);
-      fmpz_mat_det_9arg(r, A, Amod, h_bound, h_bits, smallest_row, pp, it, xmod, d);
-      mpz_clear(d);
+      #if RAT_REC_TAKES_D_SERIOUSLY
+       mpz_set(r, W);
+       fmpz_mat_det_update_w(r, it);
+       fmpz_mat_det_9arg(r, A, Amod, h_bound, h_bits, smallest_row, pp, it, xmod);
+      #else
+       mpz_t d; mpz_init_set(d, W);
+       fmpz_mat_det_update_w(d, it);
+       fmpz_mat_det_9arg(r, A, Amod, h_bound, h_bits, smallest_row, pp, it, xmod, d);
+       mpz_clear(d);
+      #endif
       pp.p=UWORD_MAX;
       break;
      }

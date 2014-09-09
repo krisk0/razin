@@ -8,6 +8,8 @@
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 
+#define LOUD_DET_BOUND 0
+
 // s should be fmpz, s evaluated multiple times
 #define fmpz_get_mpfr_slave(r, s, rnd)    \
  if( COEFF_IS_MPZ(s) )                      \
@@ -141,6 +143,20 @@ cmp_positive_log2(const fmpz_t z,mp_limb_t y)
   // Now either |z| is degree of 2, and result should be 0
   //  or |z| is not degree of 2, and result should be 1
   return !abs_x_is_degree_of_2(x);
+ }
+
+static __inline__ void
+decrease_bound_fmpz(mpfr_t b,mpfr_prec_t pr,mpz_t d)
+ {
+  mpfr_t dF; mpfr_init2(dF, mpz_sizeinbase(d,2));
+  mpfr_t log2_d; mpfr_init2(log2_d,pr);
+
+  mpfr_set_z(dF, d, MPFR_RNDZ);
+  mpfr_log2(log2_d, dF, MPFR_RNDZ);
+  mpfr_sub(b, b, log2_d, MPFR_RNDU);
+
+  mpfr_clear(log2_d);
+  mpfr_clear(dF);
  }
 
 #endif

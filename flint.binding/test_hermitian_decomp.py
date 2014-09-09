@@ -107,6 +107,21 @@ def det_hermitian(x):
  else:
   return count_det( fmpz_mat(y) ) * z
 
+def det_hermitian_time(x):
+ if x.nrows() < 5:
+  return count_det( fmpz_mat(x) ),0
+ # print 'source matrice A:\n',x
+ y,z=decompose_hermitian(x)
+ if y==None:
+  #return count_det( fmpz_mat(x) )
+  t0=time.time()
+  rez=flint.count_det_suspected_zero( fmpz_mat(x), z )
+  spent=time.time()-t0
+ else:
+  rez=count_det( fmpz_mat(y) ) * z
+  spent=0
+ return rez, spent
+
 def matrix_with_det( n, d ):
  x=identity_matrix(n)
  x[0,0]=d
@@ -120,6 +135,7 @@ def test_for_dim(n):
  
  for all the matrix, count its determinant two ways, compare results
  '''
+ global t0,t1
  singular_count=i=0
  while 1:
   a,d0=generate_matrice(n)
@@ -135,19 +151,32 @@ def test_for_dim(n):
  if singular_count==0:
   a=generate_singular_matrice(n)
   assert det_hermitian(a) == 0
- for x in range(2,101):
-  test_this_det( n, 1<<x )
-  test_this_det( n, randint(3,34)<<x )
+ t0=t1=0
+ for x in range(2,301):
+  test_this_det( n, 1<<x, x>=126 )
+  test_this_det( n, randint(3,34)<<x, x>=126 )
+ print 't0,1=',t0,t1
   
-def test_this_det( n, y ):
+def test_this_det( n, y, mind_time ):
+ global t0,t1
  a=matrix_with_det( dim, y )
+ # print 'source matrice A with abs(det)=%X:\n' % y,a
+ m0=time.time()
  z=count_det(fmpz_mat(a))
+ m1=time.time()
  assert abs(z)==y
- assert det_hermitian(a) == z
+ if mind_time:
+  h,m2=det_hermitian_time(a)
+ else:
+  h=det_hermitian(a)
+ if h != z:
+  print 'det mismatch: z=%X != %X' % (z,h)
+  assert 0
+ if mind_time:
+  t0 += m1-m0
+  t1 += m2
 
 if 1:
- # simple test below fails because some subroutines in det_suspected_zero.c 
- #  are not implemented
  print 'testing simple diagonal matrice'
  x=identity_matrix(5)
  for i in range(2,200):
@@ -160,6 +189,7 @@ if 1:
 
 sage.all.set_random_seed('20140831')
 
+t0=t1=0
 for dim in range(3,30):
  write( '%s ' % dim )
  test_for_dim(dim)
