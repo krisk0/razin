@@ -2,6 +2,7 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
+#undef NDEBUG
 #include <assert.h>
 #include "../mpz_square_mat/mpz_square_mat_.h"
 #include "../fmpz/fmpz_.h"
@@ -15,12 +16,9 @@
  mpfr_get_uj() and mpfr_set_uj() might work, too 
 */
 
-#define NDEBUG 0
-/*
-set NDEBUG to 0, to enable internal check in Dixon lifing algorithm
-*/
 #define LOUD_nmod_mat_in_det_divisor 0
 #define LOUD_det_divisor_count_y 0
+#define DIXON_INTERNAL_CHECK 0
 
 mpfr_prec_t static
 hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)
@@ -357,7 +355,7 @@ det_divisor_mul_add_divide(mpz_ptr b,const mp_limb_t* y,
      }
     mpz_clear(s);
     // b[i] should divide by p exactly
-    #if NDEBUG==0
+    #if DIXON_INTERNAL_CHECK
      assert( 0 == mpz_tdiv_ui(pB, prime_p) );
     #endif
     mpz_divexact_ui(pB, pB, prime_p);
@@ -405,7 +403,7 @@ det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,const mpz_t M,slong n)
 void __inline__ static
 det_divisor_ratnl_rcnstrction(mpz_t d,const nmod_mat_t y, slong k,
   slong n, mp_limb_t p, mp_limb_t log2_N, mp_limb_t log2_D
-  #if NDEBUG==0
+  #if DIXON_INTERNAL_CHECK
    ,mpz_square_mat_t A
   #endif
   )
@@ -422,7 +420,7 @@ det_divisor_ratnl_rcnstrction(mpz_t d,const nmod_mat_t y, slong k,
   //gmp_printf("\n");
   mpz_t M; mpz_init(M);
   mpz_ui_pow_ui(M,p,(mp_limb_t)k);                  // M=p**k
-  #if NDEBUG==0
+  #if DIXON_INTERNAL_CHECK
    //check that x_modulo_M*A equals original b modulo M
    det_divisor_xAbM_check(x_modulo_M,A,M,n);
   #endif
@@ -485,7 +483,7 @@ fmpz_mat_det_divisor_8arg(mpz_t r,const fmpz_mat_t Ao, const nmod_mat_t Amod,
   // TODO: feed known divisor w into rational rec. procedure
   det_divisor_ratnl_rcnstrction(r, y_storage, max_i, n, pp.p,
    numerator_b_i,denominator_b_i
-   #if NDEBUG==0
+   #if DIXON_INTERNAL_CHECK
     ,A
    #endif
   );

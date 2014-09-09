@@ -148,6 +148,7 @@ def test_this_det( n, y ):
 if 1:
  # simple test below fails because some subroutines in det_suspected_zero.c 
  #  are not implemented
+ print 'testing simple diagonal matrice'
  x=identity_matrix(5)
  for i in range(2,200):
   x[0,0] = 1<<i
