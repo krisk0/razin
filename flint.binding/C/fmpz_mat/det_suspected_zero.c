@@ -509,8 +509,9 @@ w: known divisor of A determinant, w>1
 */
  {
   fmpz_mat_det_divisor_8arg(tgt_det, A, Amod, hb, pr, smallest_row, pp, w);
-  //gmp_printf("found det divisor %ZX\n",det_divisor);
+  gmp_printf("found det divisor %ZX\n",tgt_det);
   fmpz_mat_det_modular_given_divisor_8arg(tgt_det,Amod,hb,pr,&pp,it,xmod,A);
+  gmp_printf("fmpz_mat_det_9arg() result: %ZX\n",tgt_det);
  }
 
 mpfr_prec_t __inline__ static
@@ -614,6 +615,7 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
       fmpz_mat_det_update_w(d, it, W);
       fmpz_mat_det_9arg(r, A, Amod, h_bound, h_bits, smallest_row, pp, it, xmod, d);
       mpz_clear(d);
+      pp.p=UWORD_MAX;
       break;
      }
     mpfr_set_uj(p, pp.p_deg_k, MPFR_RNDZ);

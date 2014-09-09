@@ -58,8 +58,8 @@ static __inline__ mp_limb_t
 invert_det_divisor_modulo_pk(mpz_t dd,p_k_pk_t const* pp,nmod_t const* mod)
 // take dd modulo p_deg_k, then invert it
  {
-  mp_limb_t r,m=pp->p_deg_k
-  r=mpz_fdiv_ui(divisor, m);
+  mp_limb_t r,m=pp->p_deg_k;
+  r=mpz_fdiv_ui(dd, m);
   if(pp->k==1)
    return n_invmod(r,m);
   else
@@ -67,7 +67,7 @@ invert_det_divisor_modulo_pk(mpz_t dd,p_k_pk_t const* pp,nmod_t const* mod)
  }
 
 static __inline__ void
-mpz_fmpz_mul_2arg(mpz_t z,fmpz_t x)
+mpz_fmpz_mul_2arg(mpz_t z,const fmpz_t x)
  {
   register slong xx=(slong)(*x);
   if(!COEFF_IS_MPZ(xx))
@@ -77,6 +77,44 @@ mpz_fmpz_mul_2arg(mpz_t z,fmpz_t x)
    }
   else
    mpz_mul(z,z,COEFF_TO_PTR(xx)); // x is big
+ }
+
+static __inline__ mp_limb_t
+choose_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,n_primes_rev_t it,
+  const mpz_t divisor)
+ {
+  mp_limb_t r,t,r_mod_p;
+  for(;;)
+   {
+    if( (pp->p = n_primes_rev_next(it)) == 1 )
+     {
+      flint_printf("Exception (choose_prime_and_degree): "
+                     "Prime set exhausted\n");
+      abort();
+     }
+    if( pp->p >= (UWORD(1)<<(FLINT_BITS/2)) )
+     {
+      pp->k=1;
+      r=r_mod_p=mpz_fdiv_ui( divisor, pp->p_deg_k=pp->p );
+     }
+    else
+     {
+      max_degree( pp );
+      r=mpz_fdiv_ui( divisor, pp->p_deg_k );
+      r_mod_p=r % pp->p;
+     }
+    if(r_mod_p)
+     {
+      count_leading_zeros( t, pp->p_deg_k );
+      mod->n = pp->p_deg_k << t;
+      invert_limb(mod->ninv, mod->n);
+      #if SPEEDUP_NMOD_RED3
+       t = - mod->n;
+       mod->norm = n_mulmod_preinv_4arg( t,t, mod->n,mod->ninv );
+      #endif
+      return inv_mod_pk_4arg(r,r_mod_p,pp[0],mod[0]);
+     }
+   }
  }
 
 void 
@@ -91,10 +129,10 @@ act like fmpz_mat_det_modular_given_divisor_4block(), but
  * re-use found prime pp->p and xmod which is determinant of A modulo pp->p
 
 hadamard_log2 on entry is upper bound on log2(2*H.B)
-              decreased to a non-positive value on exit
+              on exit, decreased to an unspecified value 
 
 iT on entry just found prime pp->p
-   possibly gets shifted on exit
+   possibly gets shifted 
 */
  {
   // loop bound = 2*H.B / known det divisor
@@ -106,7 +144,7 @@ iT on entry just found prime pp->p
   fmpz_t xnew,x;
   fmpz_init(xnew); 
   fmpz_init(x); 
-  fmpz_t prod; mpz_init_set_ui( prod, UWORD(1) );
+  fmpz_t prod; fmpz_init_set_ui( prod, UWORD(1) );
 
   fmpz_CRT_ui(xnew, x, prod, xmod, pp->p_deg_k, 1);
   fmpz_set_ui(prod, pp->p_deg_k);
@@ -121,10 +159,14 @@ iT on entry just found prime pp->p
 
     for(;;)
      {
-      divisor_inv=choose_prime_and_degree( &pp, &Amod->mod, it, det );
-      mpz_mat_get_nmod_mat(Amod, A);
-      xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
+      divisor_inv=choose_prime_and_degree( pp, &Amod->mod, iT, det );
+      // TODO: optimize fmpz_mat_get_nmod_mat()
+      fmpz_mat_get_nmod_mat(Amod, A);
+      // TODO: call a faster subroutine instead of nmod_mat_det_mod_pk_4block()
+      //  when pp->p is 64 bit long
+      xmod=nmod_mat_det_mod_pk_4block(Amod,pp[0],scratch);
       xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
+      // TODO: rewrite fmpz_CRT_ui() -> mpz_CRT_ui_5arg()
       fmpz_CRT_ui(xnew, x, prod, xmod, pp->p_deg_k, 1);
       fmpz_mul_ui(prod, prod, pp->p_deg_k);
       if(cmp_positive_log2(prod,bound) >= 0)

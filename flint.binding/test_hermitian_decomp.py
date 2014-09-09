@@ -154,9 +154,8 @@ if 1:
   d=det_hermitian(x)
   if x[0,0] != d:
    print 'test failed for i=%s' % i
-   print '%s != %s' % (x[0,0],d)
+   print '(hex) %X != %X' % (x[0,0],d)
    sys.exit(1)
- sys.exit(0)
 
 sage.all.set_random_seed('20140831')
 
