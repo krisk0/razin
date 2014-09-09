@@ -75,6 +75,11 @@ fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   fmpz_mul_ui(bound, bound, UWORD(2));
   fmpz_cdiv_q(bound, bound, divisor);
 
+  #if LOUD_DET_BOUND
+   fmpz_hex_print("fmpz_mat_det_modular_given_divisor_4block(): bound=",
+    bound,1);
+   slong primes_used=0;
+  #endif
   while(fmpz_cmp(prod, bound) <= 0)
    {
     divisor_inv=select_prime_and_degree( &pp, &Amod->mod, divisor );
@@ -84,10 +89,17 @@ fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
     xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
      
     fmpz_CRT_ui(xnew, x, prod, xmod, pp.p_deg_k, 1);
+    #if LOUD_DET_BOUND
+     primes_used++;
+    #endif
     fmpz_mul_ui(prod, prod, pp.p_deg_k);
     fmpz_set(x, xnew);
    }
   fmpz_mul(det, x, divisor);
+  #if LOUD_DET_BOUND
+   flint_printf("fmpz_mat_det_modular_given_divisor_4block() primes used: %d\n",
+    primes_used);
+  #endif
   
   nmod_mat_clear(Amod);
   fmpz_clear(xnew);
