@@ -81,7 +81,7 @@ fmpz_cmpabs_log2(const fmpz_t x,mp_limb_t y)
   register slong xx=(slong)(*x);
   if(!COEFF_IS_MPZ(xx))
    return -1;          // |x|<2**64, 2**y>2**64
-  register mpz_ptr z=COEFF_TO_PTR(xx);
+  mpz_ptr z=COEFF_TO_PTR(xx);
   xx=mpz_size(z);      // xx>0
   if(xx*FLINT_BITS <= y)
    return -1;          // x is too short, no need to further compare
