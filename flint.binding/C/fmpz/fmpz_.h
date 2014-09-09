@@ -5,6 +5,9 @@
 #ifndef FMPZ__H
 #define FMPZ__H
 
+#include <flint/flint.h>
+#include <flint/fmpz.h>
+
 // s should be fmpz, s evaluated multiple times
 #define fmpz_get_mpfr_slave(r, s, rnd)    \
  if( COEFF_IS_MPZ(s) )                      \
@@ -102,5 +105,42 @@ fmpz_fdiv_ui_positive(const fmpz_t g, ulong h)
    // should work correctly under Linux and Windows/MPIR
    return mpz_fdiv_ui(COEFF_TO_PTR(c1), h);
  }
- 
+
+int __inline__ static
+cmp_positive_log2(const fmpz_t z,mp_limb_t y)
+// both numbers positive
+ {
+  register mp_limb_t xx=(mp_limb_t)(*z);
+  int lz;
+  if(!COEFF_IS_MPZ(xx))
+   {
+    if(y>=FLINT_BITS)
+     return -1;          // |z|<2**64, 2**y>2**64
+    count_leading_zeros(lz,xx);
+    lz=FLINT_BITS-lz;    // z bit-length = lz, hence z in 2**(lz-1)..2**lz-1
+    if(lz <= y)
+     return -1;
+    if(lz-1 > y)
+     return 1;
+    // return 0 if xx is degree of 2, else return positive
+    return ( xx & (xx-1) )>0;
+   }
+  mpz_ptr x=COEFF_TO_PTR( (slong)xx );
+  xx=mpz_size(x);      // xx>1
+  if(xx*FLINT_BITS <= y)
+   return -1;          // z is too short, no need to further compare
+  --xx;
+  if( xx*FLINT_BITS > y )
+   return 1;           // even if senior limb is 1, x is larger
+  count_leading_zeros(lz,mpz_getlimbn(x,xx));
+  xx=(xx*FLINT_BITS)+FLINT_BITS-lz;   // xx=|z| bit_length
+  if(xx <= y)
+   return -1;     // |z| fits y bits
+  if(xx-1 > y)
+   return 1;      // |z| > 2**y because its bit-length is y+2 or more
+  // Now either |z| is degree of 2, and result should be 0
+  //  or |z| is not degree of 2, and result should be 1
+  return !abs_x_is_degree_of_2(x);
+ }
+
 #endif
