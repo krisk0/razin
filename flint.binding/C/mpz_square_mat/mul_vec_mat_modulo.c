@@ -19,9 +19,9 @@ mpz_square_mat_mul_vec_mat_modulo(mpz_ptr t,mpz_ptr v,
     mpz_set_ui(tP,0);
     for(vP=v,j=0;j<n;j++,vP++)
      {
-      aP = ro[i]+j;
+      aP = ro[j]+i;
       mpz_addmul(tP, vP, aP);
      }
-    mpz_tdiv_r(tP, tP, m);
+    mpz_mod(tP, tP, m);
    }
  }
