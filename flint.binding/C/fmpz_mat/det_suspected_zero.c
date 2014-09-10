@@ -634,8 +634,8 @@ w: known divisor of A determinant, w>1
     #endif
     );
   #endif
-  // Do not subtract log2(det divisor) twice, so keep original bound
-  mpfr_t hb0; mpfr_init_set(hb0,hb,MPFR_RNDU);
+  // Do not subtract log2(det divisor) twice --- keep original bound
+  mpfr_t hb0; mpfr_copy_bound(hb0, hb);
   MARK_TIME(t0);
   fmpz_mat_det_divisor_7arg(tgt_det, A, Amod, hb, pr, smallest_row, pp
     #if RAT_REC_TAKES_D_SERIOUSLY==0  
