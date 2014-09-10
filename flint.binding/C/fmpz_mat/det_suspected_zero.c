@@ -709,7 +709,7 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
  {
   MARK_TIME(t_st)
   // count Hadamard bound on det and remember which row is smallest
-  mpfr_t h_bound; // hadamard_3arg() initialises h_bound, 
+  mpfr_t h_bound; // hadamard_2arg() initialises h_bound, 
                   // fmpz_mat_det_suspected_zero() releases it
   MARK_TIME(t_h)
   slong smallest_row=hadamard_2arg(h_bound,A);
