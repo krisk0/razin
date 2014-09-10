@@ -7,6 +7,7 @@
 #include "../mpz_square_mat/mpz_square_mat_.h"
 #include "../fmpz/fmpz_.h"
 #include "../ulong_extras/ulong_extras_.h"
+#include "../ulong_extras/profile_.h"
 #include "../fmpq/fmpq_.h"
 #include "fmpz_mat_.h"
 #include "../nmod_mat/nmod_mat_.h"
@@ -64,43 +65,55 @@ hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)
   #undef RAND_ROW
  }
 
-#define SQUARE(x,y,w) fmpz_get_mpz(y,w); mpz_mul(x,y,y)
-int __inline__ static
-log2_L2_fmpz_3arg(mpfr_t tgt,const fmpz* vec,slong n)
-// 2*log2(L2 norm) rounded up. Return 1 on zero row
+__inline__ static void
+square_L2_fmpz(fmpz_t r,const fmpz* vec,slong n)
+// on entry r=0. on exit r=squared L2 norm of the vector 
  {
-  slong size=0,i,j;
+  fmpz_mul(r,vec,vec);
   const fmpz* u;
-  for(i=n,u=vec;i--;)
+  fmpz_t x; fmpz_init(x);
+  for(u=vec+1,--n;n--;u++)
    {
-    j=fmpz_size(u++);
-    if(j>size)
-     size=j;
+    fmpz_mul(x,u,u);
+    fmpz_add(r,r,x);
    }
-  if(0==size)
-   return 1;
-  j=size*FLINT_BITS;
-  size = size*2*FLINT_BITS;
-  mpz_t a,b,c; mpz_init2(a,size+FLINT_BITS); mpz_init2(b,j); mpz_init2(c,size);
-  SQUARE( a, b, vec );
-  for(i=n-1,u=vec+1;i--;u++)
+  fmpz_clear(x);
+ }
+
+__inline__ static int
+log2_L2_fmpz_3arg(mpfr_t tgt,const fmpz* vec,slong n)
+// 2*log2(L2 norm) rounded up
+// if row is zero, return 1 and do not initialize tgt
+// else return 0 and initialize tgt to a suitable precision
+ {
+  fmpz_t norm; fmpz_init(norm);
+  slong i,i_is_big=0;
+  square_L2_fmpz(norm,vec,n);
+  i=fmpz_size(norm);
+  if( 0==i )
    {
-    SQUARE( c, b, u );
-    mpz_add( a, a, c );
+    fmpz_clear(norm);
+    return 1;
    }
-  mpz_clear(c);
-  mpfr_prec_t p=mpz_size(a)*FLINT_BITS;
-  mpfr_t f; mpfr_init2(f,p);
-  mpfr_set_z(f, a, MPFR_RNDU);
-  mpfr_log2(tgt, f, MPFR_RNDU);
-  mpfr_clear(f);
-  mpz_clear(b); mpz_clear(a);
+  if(i>2)
+   {
+    i=2;
+    i_is_big=1;
+   }
+  mpfr_t normF; mpfr_init2(normF,i*FLINT_BITS);
+  fmpz_get_mpfr(normF,norm,MPFR_RNDU);
+  fmpz_clear(norm);
+  if(i_is_big)
+   mpfr_init2(tgt,1+FLINT_BITS);
+  else
+   mpfr_init(tgt);
+  mpfr_log2(tgt, normF, MPFR_RNDU);
+  mpfr_clear(normF);
   return 0;
  }
-#undef SQUARE
 
 slong static __inline__
-hadamard_3arg(mpfr_t b,const fmpz_mat_t m,mpfr_prec_t pr)
+hadamard_3arg_stupid(mpfr_t b,const fmpz_mat_t m,mpfr_prec_t pr)
 /*
 upper bound on log2( 2*abs(m det) )
 returns -1 if zero row found, smallest row index otherwise
@@ -139,6 +152,70 @@ returns -1 if zero row found, smallest row index otherwise
   mpfr_div_ui( b, b, 2, MPFR_RNDU ); // instead of taking root
   mpfr_add_ui( b, b, 1, MPFR_RNDU ); // instead of multiplying by 2
   #undef HADAMARD_CLEAR
+  return smallest;
+ }
+
+static __inline__ void
+mpfr_copy_bound(mpfr_t r,const mpfr_t s)
+ {
+  mpfr_init2(r, mpfr_get_prec(s));
+  mpfr_set(r, s, MPFR_RNDU);
+ }
+
+static __inline__ void
+mpfr_add_bound(mpfr_t r,const mpfr_t s)
+ {
+  mpfr_prec_t s_prec=mpfr_get_prec(s);
+  if(s_prec > mpfr_get_prec(r) )
+   {
+    mpfr_t n; mpfr_init2(n,s_prec);
+    mpfr_swap(n,r);
+    mpfr_add(r,n,s,MPFR_RNDU);
+    mpfr_clear(n);
+   }
+  else
+   mpfr_add(r,r,s,MPFR_RNDU);
+ }
+
+static __inline__ slong
+hadamard_2arg(mpfr_t b,const fmpz_mat_t m)
+/*
+upper bound on log2( 2*abs(m det) )
+returns -1 if zero row found, smallest row index otherwise
+
+b on entry is uninitialized
+b on exit is initialized iff no zero row found
+*/
+ {
+  const slong n=m->r;
+  slong smallest=0,j;
+  // gcc warning: initialization from incompatible pointer type --- don't know
+  //  how to fix
+  const fmpz** const rows=m->rows;
+  mpfr_t v,u;
+  if(log2_L2_fmpz_3arg( v, rows[0], n ))
+   return -1;
+  mpfr_copy_bound(b, v);
+  // v and b must be freed
+  for(j=1;j<n;j++)
+   {
+    if(log2_L2_fmpz_3arg( u, rows[j], n ))
+     {
+      mpfr_clear(b); mpfr_clear(v);
+      return -1;
+     }
+    mpfr_add_bound(b, u);
+    if( mpfr_cmp(u, v)<0 )
+     {
+      smallest=j;
+      mpfr_swap(v, u);
+     }
+    mpfr_clear(u);
+    // v and b must be freed
+   }
+  mpfr_clear(v);
+  mpfr_div_ui( b, b, 2, MPFR_RNDU ); // instead of taking root
+  mpfr_add_ui( b, b, 1, MPFR_RNDU ); // instead of multiplying by 2
   return smallest;
  }
 
@@ -603,6 +680,7 @@ w: known divisor of A determinant, w>1
   #endif
   // Do not subtract log2(det divisor) twice, so keep original bound
   mpfr_t hb0; mpfr_init_set(hb0,hb,MPFR_RNDU);
+  MARK_TIME(t0);
   fmpz_mat_det_divisor_7arg(tgt_det, A, Amod, hb, pr, smallest_row, pp
     #if RAT_REC_TAKES_D_SERIOUSLY==0  
      , w
@@ -611,10 +689,13 @@ w: known divisor of A determinant, w>1
   #if LOUD_DET_RESULT
    gmp_printf("after rat. rec.: %ZX\n",tgt_det);
   #endif
+  DUMP_TIME("fmpz_mat_det_divisor_7arg()",t0);
+  MARK_TIME(t1);
   fmpz_mat_det_modular_given_divisor_8arg(tgt_det,Amod,hb0,pr,&pp,it,xmod,A);
   #if LOUD_DET_RESULT
    gmp_printf("fmpz_mat_det_9arg() result: %ZX\n",tgt_det);
   #endif
+  DUMP_TIME("fmpz_mat_det_modular_given_divisor_8arg()",t1);
   mpfr_clear(hb0);
  }
 
@@ -638,8 +719,7 @@ init_log2p_3arg(mpfr_t L,mpfr_t P,mpfr_prec_t q)
 void __inline__ static
 det_suspected_zero_log2_w(mpfr_t r, const mpz_t w)
  {
-  mpfr_prec_t p=mpz_size(w)*FLINT_BITS;
-  mpfr_t t; mpfr_init2(t,p);
+  mpfr_t t; mpfr_init2(t,mpz_size(w)*FLINT_BITS);
   mpfr_set_z(t,w,MPFR_RNDZ);
   mpfr_log2(r,t,MPFR_RNDZ);
   mpfr_clear(t);
@@ -671,22 +751,24 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
  count det A
 */
  {
+  MARK_TIME(t_st)
   flint_rand_t rand_st; flint_randinit(rand_st);
   // add some randomness
   rand_st->__randval ^= (mp_limb_t)A->entries;
   // count Hadamard bound on det and remember which row is smallest
-  mpfr_prec_t h_bits=hadamard_bits(A,rand_st);
-  mpfr_t h_bound; mpfr_init2(h_bound,h_bits);
-  slong smallest_row=hadamard_3arg(h_bound,A,h_bits);
+  mpfr_t h_bound; // hadamard_3arg() initialises h_bound, 
+                  // fmpz_mat_det_suspected_zero() releases it
+  MARK_TIME(t_h)
+  slong smallest_row=hadamard_2arg(h_bound,A);
+  DUMP_TIME("hadamard_2arg()",t_h)
   if(-1==smallest_row)
    {
-    mpfr_clear(h_bound);
     mpz_set_ui(r,0);
     return;
    }
   // try to find prime p such that det A is non-zero modulo p
   //mpfr_printf("h_bits=%d h_bound=%10Rf\n",h_bits,h_bound);
-  h_bits=mpfr_bitlength(h_bound)+5;
+  mpfr_prec_t h_bits=mpfr_get_prec(h_bound);
   mpfr_t prime_product; mpfr_init2(prime_product,h_bits);
   det_suspected_zero_log2_w(prime_product, W);
   const slong n=A->r;
@@ -712,6 +794,7 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
     init__p_k_pk__and__nmod(&pp, &Amod->mod);
     fmpz_mat_get_nmod_mat(Amod, A); // TODO: speed-up this slow subroutine
     //flint_printf("selected p=%wu\n",pp.p);
+    // TODO: feed unmodified Amod to fmpz_mat_det_9arg()
     mp_limb_t xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
     if( xmod )
      {
@@ -745,6 +828,7 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
   mpfr_clear(prime_product);
   mpfr_clear(h_bound);
   flint_randclear(rand_st);
+  DUMP_TIME("count_det_suspected_zero()",t_st)
  }
 
 #undef NDEBUG
