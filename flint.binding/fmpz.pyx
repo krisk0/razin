@@ -36,11 +36,18 @@ cdef extern from 'flint/ulong_extras.h':
  mp_limb_t n_nextprime(mp_limb_t n, int proved)
  mp_limb_t n_preinvert_limb(mp_limb_t n)
  
-# FLINT classifies rational reconstruction as fmpq subroutine, but...
+# FLINT classifies rational reconstruction as fmpq subroutine
 cdef extern from 'C/fmpq/det_divisor_rational_reconstruction.c':
  void det_divisor_rational_reconstruction(mpz_t d,mpz_ptr x,const mpz_t M,
   mp_limb_t p,slong n,mp_limb_t log2_N, mp_limb_t log2_D)
- 
+
+cdef extern from 'C/fmpz/get_mpfr.c':
+ void fmpz_get_mpfr_3arg(mpfr_t r, fmpz s, mpfr_rnd_t d)
+ void fmpz_get_mpfr(mpfr_t r, const fmpz_t s, mpfr_rnd_t d)
+
+cdef extern from 'C/fmpz/set_mpfr.c':
+ void fmpz_set_mpfr(fmpz_t r, const mpfr_t s, mpfr_rnd_t d)
+
 def is_big_sureprime(n):
  return n_is_big_sureprime(<mp_limb_t>n)
 
