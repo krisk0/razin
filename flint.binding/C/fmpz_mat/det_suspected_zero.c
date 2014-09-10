@@ -301,43 +301,43 @@ det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
  }
 
 void __inline__ static 
-det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t pp,nmod_mat_t m, 
+det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t const* pp,nmod_mat_t m, 
   const fmpz_mat_t a, slong n)
  {
   #if LOUD_nmod_mat_in_det_divisor
    int check_result;
   #endif
-  if(pp.k==1)
+  p_k_pk_t ppM;
+  if(pp->k==1)
    memcpy( &r->mod, &m->mod, sizeof(m->mod) );
   else
    {
     // k changed, must re-calculate mod 
-    p_k_pk_t ppM;
-    ppM.p=ppM.p_deg_k=pp.p;
+    ppM.p=ppM.p_deg_k=pp->p;
     ppM.k=1;
     init_nmod_from_pp(&r->mod, &ppM);
    }
-  nmod_mat_t s,t;
-  nmod_mat_init_3arg(s, n, n);  memcpy( &s->mod, &m->mod, sizeof(m->mod) );
-  nmod_mat_init_3arg(t, n, n);  memcpy( &t->mod, &m->mod, sizeof(m->mod) );
-  fmpz_mat_get_nmod_mat(s,a);
-  #if LOUD_nmod_mat_in_det_divisor
-   // need correct A mod p, for internal check
-   nmod_mat_copy_entries(m, s);
-  #endif
-  #if SPEEDUP_NMOD_RED3
-   // must set mod->norm to a different value
-   mod_flint_style( &s->mod, &pp );
-   memcpy( &t->mod, &s->mod, sizeof(t->mod) );
-  #endif
-  nmod_mat_inv(t,s);
+  // r->mod calculated, now for the entries
+  nmod_mat_t t;
+  nmod_mat_init_3arg(t, n, n);
+
+  // must modify m->mod, then restore it
+  nmod_t s; memcpy( &s, &m->mod, sizeof(s) );
+  if(pp->k>1)
+   // we want inverse modulo p, not p**k
+   nmod_init( &m->mod, pp->p );
+  else
+   mod_flint_style( &m->mod, pp );
+  memcpy( &t->mod, &m->mod, sizeof(s) );
+  nmod_mat_inv(t,m);
+  memcpy( &m->mod, &s, sizeof(s) );
   
   // check inverse
   #if LOUD_nmod_mat_in_det_divisor
-   nmod_mat_mul_pk_classical(r, t, s);
+   nmod_mat_mul_pk_classical(r, t, m);
    check_result=nmod_mat_is_one(r);
   #endif
-  // check inverse positive
+  // check inverse positive iff check_result=1
   
   #if LOUD_nmod_mat_in_det_divisor
    flint_printf("A mod prime:\n");
@@ -356,7 +356,6 @@ det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t pp,nmod_mat_t m,
    nmod_mat_print_pretty(r);
   #endif  
   nmod_mat_clear(t);
-  nmod_mat_clear(s);
  }
 
 void __inline__ static
@@ -560,7 +559,7 @@ fmpz_mat_det_divisor_7arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
   nmod_mat_t y_storage; nmod_mat_init_3arg(y_storage,max_i,n);
   nmod_mat_t Ainv;
   nmod_mat_init_3arg(Ainv,n,n); 
-  det_divisor_inverse_A(Ainv, pp, Amod, Ao, n);
+  det_divisor_inverse_A(Ainv, &pp, Amod, Ao, n);
   mpz_square_mat_t A_t; mpz_square_mat_init_transpose(A_t,A);
   mpz_square_mat_mark_biggest(A_t);
   mpz_square_mat_negate(A_t);
@@ -709,9 +708,6 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
 */
  {
   MARK_TIME(t_st)
-  flint_rand_t rand_st; flint_randinit(rand_st);
-  // add some randomness
-  rand_st->__randval ^= (mp_limb_t)A->entries;
   // count Hadamard bound on det and remember which row is smallest
   mpfr_t h_bound; // hadamard_3arg() initialises h_bound, 
                   // fmpz_mat_det_suspected_zero() releases it
@@ -732,7 +728,7 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
   n_primes_rev_t it;
   mp_limb_t* scratch=NULL;
   p_k_pk_t pp; pp.p=0;
-  nmod_mat_t Amod;
+  nmod_mat_t Amod,Amod_ori;
   mpfr_t log2_p,p;
   while( mpfr_cmp(prime_product,h_bound) < 0 )
    {
@@ -744,6 +740,7 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
     else
      {
       nmod_mat_init_square_2arg(Amod, n);
+      nmod_mat_init_square_2arg(Amod_ori, n);
       pp.p=n_primes_rev_init(it, 0);
       scratch=flint_malloc( 4*(n-4)*sizeof(mp_limb_t) );
       init_log2p_3arg(log2_p, p, h_bits);
@@ -751,18 +748,21 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
     init__p_k_pk__and__nmod(&pp, &Amod->mod);
     fmpz_mat_get_nmod_mat(Amod, A); // TODO: speed-up this slow subroutine
     //flint_printf("selected p=%wu\n",pp.p);
-    // TODO: feed unmodified Amod to fmpz_mat_det_9arg()
+    nmod_mat_copy_entries(Amod_ori,Amod);
     mp_limb_t xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
     if( xmod )
      {
+      memcpy( &Amod_ori->mod, &Amod->mod, sizeof(Amod->mod) );
       #if RAT_REC_TAKES_D_SERIOUSLY
        mpz_set(r, W);
        fmpz_mat_det_update_w(r, it);
-       fmpz_mat_det_9arg(r, A, Amod, h_bound, h_bits, smallest_row, pp, it, xmod);
+       fmpz_mat_det_9arg(r, A, Amod_ori, h_bound, h_bits, smallest_row, pp, it,
+        xmod);
       #else
        mpz_t d; mpz_init_set(d, W);
        fmpz_mat_det_update_w(d, it);
-       fmpz_mat_det_9arg(r, A, Amod, h_bound, h_bits, smallest_row, pp, it, xmod, d);
+       fmpz_mat_det_9arg(r, A, Amod_ori, h_bound, h_bits, smallest_row, pp, it,
+        xmod, d);
        mpz_clear(d);
       #endif
       pp.p=UWORD_MAX;
@@ -784,7 +784,6 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
    mpz_set_ui(r,0);
   mpfr_clear(prime_product);
   mpfr_clear(h_bound);
-  flint_randclear(rand_st);
   DUMP_TIME("count_det_suspected_zero()",t_st)
  }
 
