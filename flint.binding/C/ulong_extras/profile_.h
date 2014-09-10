@@ -5,7 +5,7 @@
 #ifndef PROFILE__H
 #define PROFILE__H
 
-#define SHOW_TIME 1
+#define SHOW_TIME 0
 
 #if SHOW_TIME
  #include <time.h>
