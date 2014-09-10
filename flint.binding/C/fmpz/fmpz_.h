@@ -15,7 +15,7 @@
  if( COEFF_IS_MPZ(s) )                      \
    (void)mpfr_set_z(r, COEFF_TO_PTR(s), rnd); \
  else                                         \
-   mpfr_set_si(r, s, rnd);                   
+   mpfr_set_si(r, s, rnd);
 
 // _s should be fmpz, _s evaluated once
 #define fmpz_get_mpfr_macro(r, _s, rnd) \
