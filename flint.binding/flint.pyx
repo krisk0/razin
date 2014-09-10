@@ -48,6 +48,7 @@ cdef extern from 'mpfr.h':
   mpfr_exp_t   _mpfr_exp
   mp_limb_t   *_mpfr_d
  ctypedef __mpfr_struct mpfr_t[1]
+ ctypedef int mpfr_rnd_t
 
 include "slong.pyx"
 
