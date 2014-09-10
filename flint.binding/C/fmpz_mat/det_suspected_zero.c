@@ -80,6 +80,21 @@ square_L2_fmpz(fmpz_t r,const fmpz* vec,slong n)
   fmpz_clear(x);
  }
 
+__inline__ static void
+square_L2_mpz(mpz_t r,mpz_srcptr vec,slong n)
+// on entry r=0. on exit r=squared L2 norm of the vector 
+ {
+  mpz_mul(r,vec,vec);
+  mpz_srcptr u;
+  mpz_t x; mpz_init(x);
+  for(u=vec+1,--n;n--;u++)
+   {
+    mpz_mul(x,u,u);
+    mpz_add(r,r,x);
+   }
+  mpz_clear(x);
+ }
+
 __inline__ static int
 log2_L2_fmpz_3arg(mpfr_t tgt,const fmpz* vec,slong n)
 // 2*log2(L2 norm) rounded up
@@ -110,49 +125,6 @@ log2_L2_fmpz_3arg(mpfr_t tgt,const fmpz* vec,slong n)
   mpfr_log2(tgt, normF, MPFR_RNDU);
   mpfr_clear(normF);
   return 0;
- }
-
-slong static __inline__
-hadamard_3arg_stupid(mpfr_t b,const fmpz_mat_t m,mpfr_prec_t pr)
-/*
-upper bound on log2( 2*abs(m det) )
-returns -1 if zero row found, smallest row index otherwise
-*/
- {
-  const slong n=m->r;
-  slong smallest=0,j;
-  // gcc warning: initialization from incompatible pointer type --- don't know
-  //  how to fix
-  const fmpz** const rows=m->rows;
-  mpfr_t v; mpfr_init2(v,pr);
-  mpfr_t u; mpfr_init2(u,pr);
-  mpfr_t scratch; mpfr_init2(scratch,pr);
-  #define HADAMARD_CLEAR mpfr_clear(scratch); mpfr_clear(u); mpfr_clear(v)
-  if(log2_L2_fmpz_3arg( v, rows[0], n ))
-   {
-    HADAMARD_CLEAR;
-    return -1;
-   }
-  mpfr_set(b, v, MPFR_RNDU);
-  for(j=1;j<n;j++)
-   {
-    if(log2_L2_fmpz_3arg( u, rows[j], n ))
-     {
-      HADAMARD_CLEAR;
-      return -1;
-     }
-    mpfr_add(b, b, u, MPFR_RNDU);
-    if( mpfr_cmp(u, v)<0 )
-     {
-      smallest=j;
-      mpfr_set(v, u, MPFR_RNDU);
-     }
-   }
-  HADAMARD_CLEAR;
-  mpfr_div_ui( b, b, 2, MPFR_RNDU ); // instead of taking root
-  mpfr_add_ui( b, b, 1, MPFR_RNDU ); // instead of multiplying by 2
-  #undef HADAMARD_CLEAR
-  return smallest;
  }
 
 static __inline__ void
@@ -219,38 +191,23 @@ b on exit is initialized iff no zero row found
   return smallest;
  }
 
-#define SQUARE(x,y) mpz_mul(x,y,y)
 void __inline__ static 
-log2_L2_norm_4arg(mpfr_t tgt, mpz_square_mat_t A, slong k, slong n)
-// log2(L2 norm) rounded down
+log2_L2_norm_4arg(mpfr_t tgt, const mpz_square_mat_t A, slong k, slong n)
+// log2(L2 norm) rounded down. tgt initialized by caller
  {
-  mpz_ptr u;
-  slong size=0,i,j;
-  for(i=n,u=A->rows[k];i--;)
-   {
-    j=mpz_size(u++);
-    if(j>size)
-     size=j;
-   }
-  size = size*2*FLINT_BITS;
-  mpz_t a,c; mpz_init2(a,size+FLINT_BITS); mpz_init2(c,size);
-  u=A->rows[k];
-  SQUARE( a, u );
-  for(i=n-1,u++;i--;u++)
-   {
-    SQUARE( c, u );
-    mpz_add( a, a, c );
-   }
-  mpz_clear(c);
-  mpfr_prec_t p=mpz_size(a)*FLINT_BITS;
-  mpfr_t f; mpfr_init2(f,p);
-  mpfr_set_z(f, a, MPFR_RNDZ);
-  mpfr_log2(tgt, f, MPFR_RNDZ);
-  mpfr_div_ui( tgt, tgt, 2, MPFR_RNDZ );
-  mpfr_clear(f);
-  mpz_clear(a); 
+  mpz_t norm; mpz_init(norm);
+  slong i;
+  square_L2_mpz(norm,A->rows[k],n);
+  i=mpz_size(norm);
+  if(i>2)
+   i=2;
+  mpfr_t normF; mpfr_init2(normF,i*FLINT_BITS);
+  mpfr_set_z(normF,norm,MPFR_RNDU);
+  mpz_clear(norm);
+  mpfr_log2(tgt, normF, MPFR_RNDU);
+  mpfr_div_ui(tgt,tgt,2,MPFR_RNDU);
+  mpfr_clear(normF);
  }
-#undef SQUARE
 
 mp_limb_t __inline__ static
 cramer_rule(const mpfr_t den_bound, 
