@@ -30,6 +30,7 @@ static __inline__ int
 comp_bound_ui(mpfr_t b,mp_limb_t q)
 // 1 iff log2(q) rounded down <= b
  {
+  // TODO: use MPFR_DECL_INIT instead of mpfr_init2
   mpfr_t log2; mpfr_init(log2);
   mpfr_t qF; mpfr_init2(qF, FLINT_BITS);
   mpfr_set_uj(qF, q, MPFR_RNDZ);
