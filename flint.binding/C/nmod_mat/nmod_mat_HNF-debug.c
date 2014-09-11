@@ -2,14 +2,14 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
+// No, code below is not obfuscated.
+// When I write a program that needs to run fast, it comes this way
+
 #include <stdlib.h>
 #include <gmp.h>
 #include <flint/flint.h>
 #include <flint/nmod_vec.h>
 #include <flint/nmod_mat.h>
-
-// No, code below is not obfuscated.
-// When I write a program that needs to run fast, it comes this way
 
 #define BUG0_nmod_mat_HNF 1
 
