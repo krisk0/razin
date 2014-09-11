@@ -44,6 +44,9 @@ cdef extern from 'C/fmpz_mat/det_modular_given_divisor_8arg.c':
   mpfr_t hb, mpfr_prec_t pr, p_k_pk_t& pp, n_primes_rev_t it,
   mp_limb_t xmod, const fmpz_mat_t A)
 
+cdef extern from 'C/fmpz_mat/scalar_divexact_ui_2arg.c':
+ void fmpz_mat_scalar_divexact_ui_2arg(fmpz_mat_t R,mp_limb_t d)
+
 cdef class fmpz_mat:
 
  cdef fmpz_mat_t matr
