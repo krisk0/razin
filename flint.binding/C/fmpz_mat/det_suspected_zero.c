@@ -191,7 +191,7 @@ b on exit is initialized iff no zero row found
   return smallest;
  }
 
-void __inline__ static 
+__inline__ static void
 log2_L2_norm_4arg(mpfr_t tgt, const mpz_square_mat_t A, slong k, slong n)
 // log2(L2 norm) rounded down. tgt initialized by caller
  {
@@ -209,7 +209,7 @@ log2_L2_norm_4arg(mpfr_t tgt, const mpz_square_mat_t A, slong k, slong n)
   mpfr_clear(normF);
  }
 
-mp_limb_t __inline__ static
+__inline__ static mp_limb_t
 cramer_rule(const mpfr_t den_bound, 
   mpz_square_mat_t A, mpfr_prec_t pr, slong k)
 // returns log2(Cramer bound on numerator) rounded up
@@ -238,7 +238,7 @@ cramer_rule(const mpfr_t den_bound,
   return bI;
  }
 
-slong __inline__ static 
+__inline__ static slong
 dixon_lifting_max_i(mp_limb_t b,mp_limb_t p)
  {
   slong r;
@@ -257,7 +257,7 @@ dixon_lifting_max_i(mp_limb_t b,mp_limb_t p)
   return r;
  }
 
-void __inline__ static
+__inline__ static void
 det_divisor_init_b(mpz_ptr b,slong n,mpz_square_mat_t m)
  {
   slong i;
@@ -270,7 +270,7 @@ det_divisor_init_b(mpz_ptr b,slong n,mpz_square_mat_t m)
    }
  }
 
-void __inline__ static
+__inline__ static void
 det_divisor_clear_b(mpz_ptr b,slong n)
  {
   slong i;
@@ -280,7 +280,7 @@ det_divisor_clear_b(mpz_ptr b,slong n)
   flint_free(b);
  }
 
-mp_limb_t __inline__ static
+__inline__ static mp_limb_t
 det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
  {
   slong i;
@@ -300,7 +300,7 @@ det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
   #endif
  }
 
-void __inline__ static 
+__inline__ static void
 det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t const* pp,nmod_mat_t m, 
   const fmpz_mat_t a, slong n)
  {
@@ -318,8 +318,7 @@ det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t const* pp,nmod_mat_t m,
     init_nmod_from_pp(&r->mod, &ppM);
    }
   // r->mod calculated, now for the entries
-  nmod_mat_t t;
-  nmod_mat_init_3arg(t, n, n);
+  nmod_mat_t t; nmod_mat_init_3arg(t, n, n);
 
   // must modify m->mod, then restore it
   nmod_t s; memcpy( &s, &m->mod, sizeof(s) );
@@ -358,7 +357,7 @@ det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t const* pp,nmod_mat_t m,
   nmod_mat_clear(t);
  }
 
-void __inline__ static
+__inline__ static void
 print_limb_vector(char* m,const mp_limb_t* v,slong n)
  {
   flint_printf(m);
@@ -368,7 +367,7 @@ print_limb_vector(char* m,const mp_limb_t* v,slong n)
   flint_printf("\n");
  }
 
-void __inline__ static
+__inline__ static void
 det_divisor_count_y(mp_limb_t* y,const mp_limb_t* b,const nmod_mat_t m,slong dim)
 // y := b*transposed m
  {
@@ -395,7 +394,7 @@ det_divisor_count_y(mp_limb_t* y,const mp_limb_t* b,const nmod_mat_t m,slong dim
   #endif
  }
 
-void __inline__ static
+__inline__ static void
 det_divisor_mul_add_divide(mpz_ptr b,const mp_limb_t* y,
   const mpz_square_mat_t m,slong n,mp_limb_t prime_p)
 // b := (b+y*transposed m)/prime_p, b[i] allocated to correct size already  
@@ -423,7 +422,7 @@ det_divisor_mul_add_divide(mpz_ptr b,const mp_limb_t* y,
    }
  }
 
-void __inline__ static
+__inline__ static void
 det_divisor_y_to_x(mpz_t xI, slong i, const nmod_mat_t y, slong y_rows, slong y_cols,
   mp_limb_t q)
  {
@@ -439,7 +438,7 @@ det_divisor_y_to_x(mpz_t xI, slong i, const nmod_mat_t y, slong y_rows, slong y_
    }
  }
 
-void __inline__ static
+__inline__ static void
 det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,const mpz_t M,slong n)
  {
   mpz_ptr zp,xA=flint_malloc( sizeof(__mpz_struct)*n );
@@ -461,7 +460,7 @@ det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,const mpz_t M,slong n)
   det_divisor_clear_b(xA,n);
  }
 
-void __inline__ static
+__inline__ static void
 det_divisor_ratnl_rcnstrction(mpz_t d,const nmod_mat_t y, slong k,
   slong n, mp_limb_t p, mp_limb_t log2_N, mp_limb_t log2_D
   #if DIXON_INTERNAL_CHECK
@@ -523,7 +522,7 @@ test_y_by_A(mp_limb_t* y, const nmod_mat_t A, slong n,const mp_limb_t* b)
   flint_free(x);
  }
 
-void __inline__ static 
+__inline__ static void
 fmpz_mat_det_divisor_7arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
   mpfr_t denominator_b, mpfr_prec_t pr, slong smallest_row, p_k_pk_t pp
   #if RAT_REC_TAKES_D_SERIOUSLY==0  
@@ -608,7 +607,7 @@ fmpz_mat_det_divisor_7arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
   #endif
  }
 
-void __inline__ static
+__inline__ static void
 fmpz_mat_det_9arg(
   mpz_t tgt_det,
   const fmpz_mat_t A, nmod_mat_t Amod,
@@ -655,16 +654,7 @@ w: known divisor of A determinant, w>1
   mpfr_clear(hb0);
  }
 
-mpfr_prec_t __inline__ static
-mpfr_bitlength(mpfr_t s)
- {
-  mpz_t B; mpz_init(B); mpfr_get_z(B, s, MPFR_RNDN);
-  mpfr_prec_t q=mpz_sizeinbase(B,2);
-  mpz_clear(B);
-  return q;
- }
-
-void __inline__ static
+__inline__ static void
 init_log2p_3arg(mpfr_t L,mpfr_t P,mpfr_prec_t q)
 // initialize P then L
  {
