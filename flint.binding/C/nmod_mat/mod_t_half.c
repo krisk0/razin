@@ -8,7 +8,7 @@
 
 mp_limb_t fmpz_to_t(const fmpz_t);
 
-void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou)
+void nmod_mat_mod_t_half(nmod_mat_t tgt, const fmpz_mat_t sou)
 /*
  initialize tgt like nmod_mat_init(), compute tgt := sou modulo 2**63
  
