@@ -2,18 +2,18 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-#include <stdlib.h>
-#include <gmp.h>
-#include <flint/flint.h>
-#include <flint/nmod_vec.h>
-#include <flint/nmod_mat.h>
-
 // No, code below is not obfuscated.
 // When I write a program that needs to run fast, it comes this way
 
 // This file is auto-generated from C/nmod_mat_HNF-debug.c
 
 #define NDEBUG 1
+
+#include <stdlib.h>
+#include <gmp.h>
+#include <flint/flint.h>
+#include <flint/nmod_vec.h>
+#include <flint/nmod_mat.h>
 
 static __inline__ slong 
 DKryskov_nmod_find_nonzero(nmod_mat_t A,slong col,mp_limb_t det_tgt)
