@@ -20,6 +20,7 @@ void nmod_mat_mul_pk_classical(nmod_mat_t C,nmod_mat_t A,nmod_mat_t B);
 int nmod_mat_is_one(const nmod_mat_t m);
 void nmod_mat_copy_entries(nmod_mat_t r,const nmod_mat_t s);
 slong nmod_mat_HNF(nmod_mat_t r);
+mp_limb_t nmod_mat_diag_product_ZZ_ui(const nmod_mat_t m);
 
 #if GMP_LIMB_BITS == 64 && defined (__amd64__)
 
