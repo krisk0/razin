@@ -95,4 +95,14 @@ void mod_flint_style(nmod_t* m,const p_k_pk_t* s)
   nmod_init(m, s->p);
  }
 
+typedef struct
+ {
+  slong index;
+  slong allocated_size;
+  slong last_output_mod_30;
+  mp_limb_t* numbers;
+ }
+n_primes_rev_struct;
+typedef n_primes_rev_struct n_primes_rev_t[1];
+
 #endif

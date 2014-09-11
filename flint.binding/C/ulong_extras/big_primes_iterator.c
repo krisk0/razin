@@ -2,6 +2,7 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
+#include "ulong_extras_.h"
 #include "is_big_sureprime.c"
 
 #if USE_BASE7_MR
@@ -17,15 +18,6 @@
 //  many times. Max allowed range: MIN_n_primes_rev..2**64-59 where 2**64-59 is 
 //  maximal native prime and MIN_n_primes_rev=299210839 is minimal number for
 //  which trial_gcd_test_then_big_sureprime_test() works correctly
-typedef struct
- {
-  slong index;
-  slong allocated_size;
-  slong last_output_mod_30;
-  mp_limb_t* numbers;
- }
-n_primes_rev_struct;
-typedef n_primes_rev_struct n_primes_rev_t[1];
 
 #if (defined (__amd64__) || defined (__i386__) || defined (__i486__)) 
  #define GCD n_gcd_odd_odd

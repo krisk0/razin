@@ -7,6 +7,7 @@
 
 #include <flint/flint.h>
 #include <flint/fmpz_mat.h>
+#include "../fmpz/fmpz_.h"
 #include "../nmod_mat/nmod_mat_.h"
 
 void fmpz_mat_det_modular_given_divisor_8arg(mpz_t det, nmod_mat_t Amod,
