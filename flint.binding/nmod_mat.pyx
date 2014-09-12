@@ -51,6 +51,9 @@ cdef extern from 'C/nmod_mat/mul_pk_classical.c':
 cdef extern from 'C/nmod_mat/copy_entries.c':
  void nmod_mat_copy_entries(nmod_mat_t r,const nmod_mat_t s)
 
+cdef extern from 'C/nmod_mat/diag_product_ui.c':
+ mp_limb_t nmod_mat_diag_product_ZZ_ui(const nmod_mat_t m)
+
 def AmodB(Integer a, Integer b):
  ' test that mp_limb_t arithmetic works in Cython '
  cdef Integer r=Integer(0)
