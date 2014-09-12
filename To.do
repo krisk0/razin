@@ -119,6 +119,8 @@
 
 11 Apr 2014 After MPIR-2.7.0 test terminates, install GMP properly and re-test.
 
+            --- done. Hint: install gmp-6.0.0a with tuning disabled.
+
             Finally, write a code to replace Stein double-det.
 
 25 Aug 2014 ? or better speed-up my fastest in the open-world determinant 
