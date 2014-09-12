@@ -47,6 +47,15 @@ cdef extern from 'C/fmpz_mat/det_modular_given_divisor_8arg.c':
 cdef extern from 'C/fmpz_mat/scalar_divexact_ui_2arg.c':
  void fmpz_mat_scalar_divexact_ui_2arg(fmpz_mat_t R,mp_limb_t d)
 
+cdef extern from 'C/fmpz_mat/det_hermitian_decomposition.c':
+ void fmpz_mat_det_hermitian_decomposition(fmpz_t r, const fmpz_mat_t a)
+
+cdef extern from 'C/fmpz_mat/det_odd.c':
+ void fmpz_mat_det_odd(fmpz_t r,const fmpz_mat_t a)
+
+cdef extern from 'C/fmpz_mat/hermitian_decomposition_2.c':
+ int fmpz_mat_hermitian_decomposition_2(fmpz_mat_t b,fmpz_t r, const fmpz_mat_t m)
+
 cdef class fmpz_mat:
 
  cdef fmpz_mat_t matr
@@ -253,6 +262,15 @@ def det_20140704(fmpz_mat i):
  cdef Integer r=Integer(0)
  fmpz_init( d )
  fmpz_mat_det_4block( d, i.matr )
+ fmpz_get_mpz( r.value, d )
+ fmpz_clear( d )
+ return r
+
+def det_hermitian_decomposition(fmpz_mat i):
+ cdef fmpz_t d
+ cdef Integer r=Integer(0)
+ fmpz_init( d )
+ fmpz_mat_det_hermitian_decomposition( d, i.matr )
  fmpz_get_mpz( r.value, d )
  fmpz_clear( d )
  return r
