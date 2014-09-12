@@ -917,7 +917,7 @@ D := D-C*A'*B
 #if defined(ALIGN_inv_array)
  // WTF? GCC silently ignored the 2 movdqa commands
  #define SWALLOW_sou            \
-  asm volatile                   \
+  __asm__ volatile               \
    (                              \
     "movdqa %2,%0\n\tmovdqa %3,%1" \
     : "=x" (cont0), "=x" (cont1)     \
@@ -947,7 +947,7 @@ SCALAR_4(x0,x1,x2,x3): tgt[0] := x0..x3 DOT sou[0]..sou[3]
 #define SCALAR_4(x0,x1,x2,x3 )   \
  {                                            \
   register mp_limb_t t1,t2;                      \
-  asm                                              \
+  __asm__                                              \
    (                                                \
     "pextrq $0,%3,%%rax\n\t"                         \
     "mulq %q5\n\t"                                    \
@@ -1028,8 +1028,8 @@ D := D-B*A'*C
   mp_limb_t* tgt;
   mp_limb_t* sou;
   #if defined(ALIGN_inv_array)
-   register uint128_t cont0 asm("xmm0");
-   register uint128_t cont1 asm("xmm1");
+   register uint128_t cont0 __asm__("xmm0");
+   register uint128_t cont1 __asm__("xmm1");
   #endif
   mp_limb_t* so2;
   const nmod_t mod=M->mod;

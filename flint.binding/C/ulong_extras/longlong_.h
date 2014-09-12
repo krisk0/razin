@@ -56,11 +56,11 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
 // r += a*b modulo n
 #define MULADD_pk( r, a,b, n,ninv )         \
  {                                           \
-  register mp_limb_t _mscr1 asm ("rdx");      \
-  register mp_limb_t _mscr0 asm ("rax");       \
-  mp_limb_t _mscr2;                              \
-  asm                                               \
-   (                                                     \
+  register mp_limb_t _mscr1 __asm__ ("rdx");   \
+  register mp_limb_t _mscr0 __asm__ ("rax");     \
+  mp_limb_t _mscr2;                                \
+  __asm__                                             \
+   (                                                      \
     "mov %q5,%q1\n\t"                                        \
     "mulq %q4\n\t"                                            \
     "mov %q0,%q3\n\t"                                          \
@@ -94,9 +94,9 @@ mp_limb_t NMOD_RED2_pk_func(mp_limb_t p,mp_limb_t r,mp_limb_t n,mp_limb_t ninv)
 
 #define NMOD_RED2_pk_4arg( _p,_rez, n,ninv ) \
  {                                           \
-  register mp_limb_t _scr1 asm ("rdx");      \
-  register mp_limb_t _scr0 asm ("rax");      \
-  asm                                       \
+  register mp_limb_t _scr1 __asm__ ("rdx");      \
+  register mp_limb_t _scr0 __asm__ ("rax");      \
+  __asm__                                   \
    (                                        \
     "mov %q5,%q1\n\t"                       \
     "mulq %q3\n\t"                          \
