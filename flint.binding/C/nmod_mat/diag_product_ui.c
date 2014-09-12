@@ -7,7 +7,8 @@
 
 #include <flint/nmod_mat.h>
 
-mp_limb_t nmod_mat_diag_product_ZZ_ui(const nmod_mat_t m)
+mp_limb_t 
+nmod_mat_diag_product_ZZ_ui(const nmod_mat_t m)
 // counts product of diagonal entries (treated as integers) modulo 2**64
 // m: square, dimension>0
  {
