@@ -122,10 +122,10 @@ iT on entry just found prime pp->p
   fmpz_t xnew,x;
   fmpz_init(xnew); 
   fmpz_init(x); 
-  fmpz_t prod; fmpz_init_set_ui( prod, UWORD(1) );
+  fmpz_t prod;
 
   fmpz_CRT_ui(xnew, x, prod, xmod, pp->p_deg_k, 1);
-  fmpz_set_ui(prod, pp->p_deg_k);
+  fmpz_init_set_ui(prod, pp->p_deg_k);
   fmpz_set(x, xnew);
 
   #if LOUD_DET_BOUND
