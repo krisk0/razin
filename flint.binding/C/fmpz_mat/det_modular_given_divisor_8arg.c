@@ -70,7 +70,7 @@ static __inline__ mp_limb_t
 choose_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,n_primes_rev_t it,
   const mpz_t divisor)
  {
-  mp_limb_t r,t,r_mod_p;
+  mp_limb_t r,t=1,r_mod_p;
   for(;;)
    {
     if( (pp->p = n_primes_rev_next(it)) == 1 )
@@ -83,6 +83,7 @@ choose_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,n_primes_rev_t it,
      {
       pp->k=1;
       r=r_mod_p=mpz_fdiv_ui( divisor, pp->p_deg_k=pp->p );
+      t=0;
      }
     else
      {
@@ -92,12 +93,15 @@ choose_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,n_primes_rev_t it,
      }
     if(r_mod_p)
      {
-      count_leading_zeros( t, pp->p_deg_k );
+      if(t)
+       count_leading_zeros( t, pp->p_deg_k );
       mod->n = pp->p_deg_k << t;
       invert_limb(mod->ninv, mod->n);
       #if SPEEDUP_NMOD_RED3
        t = - mod->n;
        mod->norm = n_mulmod_preinv_4arg( t,t, mod->n,mod->ninv );
+      #else
+       mod->norm = 0;
       #endif
       return inv_mod_pk_4arg(r,r_mod_p,pp[0],mod[0]);
      }
