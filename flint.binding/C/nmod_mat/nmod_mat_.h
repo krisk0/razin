@@ -28,11 +28,11 @@ mp_limb_t nmod_mat_diag_product_ZZ_ui(const nmod_mat_t m);
  //  under gcc 4.7.4 and 4.8.3
  #define VECTOR_DOT_2(tgt, x0,y0, x1,y1, mod)   \
   {                                                    \
-   register mp_limb_t V2_dx asm ("rdx");                    \
-   register mp_limb_t V2_ax asm ("rax");                       \
+   register mp_limb_t V2_dx __asm__ ("rdx");                \
+   register mp_limb_t V2_ax __asm__ ("rax");                   \
    mp_limb_t V2_me,V2_lo; /* 1 register for n + theese 2 = 3 */  \
    register mp_limb_t n=mod.n;                                    \
-   asm                                                            \
+   __asm__                                                        \
     (                                                             \
         "mov  %q4,%q1\n\t"                                        \
         "mulq %q5\n\t"                                            \
@@ -65,11 +65,11 @@ mp_limb_t nmod_mat_diag_product_ZZ_ui(const nmod_mat_t m);
  //  VECTOR_DOT_2()
  #define VECTOR_DOT_2_add(tgt, x0,y0, x1,y1, mod)  \
   {                                                     \
-   register mp_limb_t V2_dx asm ("rdx");                    \
-   register mp_limb_t V2_ax asm ("rax");                       \
+   register mp_limb_t V2_dx __asm__ ("rdx");                    \
+   register mp_limb_t V2_ax __asm__ ("rax");                       \
    mp_limb_t V2_me,V2_lo; /* 1 register for n + theese 2 = 3 */  \
    register mp_limb_t n=mod.n;                                    \
-   asm                                                            \
+   __asm__                                                        \
     (                                                             \
         "mov  %q4,%q1\n\t"                                        \
         "mulq %q5\n\t"                                            \
@@ -105,7 +105,7 @@ mp_limb_t nmod_mat_diag_product_ZZ_ui(const nmod_mat_t m);
    umul_ppmm( Vmi,Vlo, alpha,betta );        
 
  #define VECTOR_DOT_BODY(alpha, betta) \
-   asm                                  \
+   __asm__                             \
     (                                   \
      "movq %q3,%%rax\n\t"                \
      "mulq %q4\n\t"                      \
