@@ -53,19 +53,6 @@ invert_det_divisor_modulo_pk(mpz_t dd,p_k_pk_t const* pp,nmod_t const* mod)
    return inv_mod_pk_3arg(r,pp[0],mod[0]);
  }
 
-static __inline__ void
-mpz_fmpz_mul_2arg(mpz_t z,const fmpz_t x)
- {
-  register slong xx=(slong)(*x);
-  if(!COEFF_IS_MPZ(xx))
-   {                              // x is small
-    if(xx != WORD(1))
-     mpz_mul_si(z,z,xx);
-   }
-  else
-   mpz_mul(z,z,COEFF_TO_PTR(xx)); // x is big
- }
-
 static __inline__ mp_limb_t
 choose_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,n_primes_rev_t it,
   const mpz_t divisor)
@@ -181,7 +168,7 @@ iT on entry just found prime pp->p
     primes_used);
   #endif
   fmpz_clear(prod);
-  mpz_fmpz_mul_2arg(det,xnew);
+  mpz_fmpz_mul_det_2arg(det,xnew);
   fmpz_clear(prod);
   fmpz_clear(x);
   fmpz_clear(xnew);

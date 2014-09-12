@@ -159,4 +159,19 @@ decrease_bound_fmpz(mpfr_t b,mpfr_prec_t pr,mpz_t d)
   mpfr_clear(dF);
  }
 
+// small macro used by fmpz_mat_det_modular_given_divisor_8arg() and
+//  fmpz_mat_det_modular_given_divisor_4arg()
+static __inline__ void
+mpz_fmpz_mul_det_2arg(mpz_t z,const fmpz_t x)
+ {
+  register slong xx=(slong)(*x);
+  if(!COEFF_IS_MPZ(xx))
+   {                              // x is small
+    if(xx != WORD(1))
+     mpz_mul_si(z,z,xx);
+   }
+  else
+   mpz_mul(z,z,COEFF_TO_PTR(xx)); // x is big
+ }
+
 #endif
