@@ -9,7 +9,7 @@
 #include "../nmod_mat/nmod_mat_.h"
 #include "../fmpz_mat/fmpz_mat_.h"
 
-#define LOUD_smallDet_matrice 1
+#define LOUD_smallDet_matrice 0
 
 static __inline__ void
 inverse_smallDet_HNF(fmpz_mat_t r,fmpz_t d,const nmod_mat_t a)
