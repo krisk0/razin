@@ -17,7 +17,8 @@
 #define NDEBUG 1
 #include <assert.h>
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
-mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch);
+mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,
+  mp_limb_t* scrtch);
 
 static __inline__ mp_limb_t
 select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor)
