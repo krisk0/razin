@@ -114,12 +114,13 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
     fmpz_set(x, xnew);
    }
 
+  n_primes_rev_clear(iT);
   nmod_mat_clear(Amod);
   free(scratch);
+  mpz_fmpz_mul_det_2arg(r,xnew);
   fmpz_clear(xnew);
   fmpz_clear(x);
   fmpz_clear(prod);
-  n_primes_rev_clear(iT);
  }
 
 #undef NDEBUG
