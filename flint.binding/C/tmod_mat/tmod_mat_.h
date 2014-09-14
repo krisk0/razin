@@ -21,6 +21,9 @@ tmod_mat_struct;
 typedef tmod_mat_struct tmod_mat_t[1];
 #define tmod_mat_entry(mat,i,j) ((mat)->rows[(i)][(j)])
 
+void tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols);
+void tmod_mat_clear(tmod_mat_t mat);
+
 // TODO: this number-oriented subroutine should be in /ulong_extras
 static mp_limb_t inv_mod__2_64__tab[13]={
  1,0xAAAAAAAAAAAAAAAB,0xCCCCCCCCCCCCCCCD,0x6DB6DB6DB6DB6DB7,0x8E38E38E38E38E39
