@@ -108,4 +108,18 @@ mpz_square_mat_negate(mpz_square_mat_t m)
 void mpz_square_mat_mul_vec_mat_modulo(mpz_ptr t,
   const mpz_ptr v,const mpz_square_mat_t A,const mpz_t m);
 
+// macro used by Dixon lifting subroutines
+__inline__ static void
+det_divisor_init_b(mpz_ptr b,slong n,mpz_square_mat_t m)
+ {
+  slong i;
+  mpz_ptr t;
+  slong* s=m->mark;
+  for(i=0,t=b;i<n;i++,t++)
+   {
+    mpz_init2(t, s[i]);
+    mpz_set_si(t,  2*(i&1)-1);
+   }
+ }
+
 #endif

@@ -257,29 +257,6 @@ dixon_lifting_max_i(mp_limb_t b,mp_limb_t p)
   return r;
  }
 
-__inline__ static void
-det_divisor_init_b(mpz_ptr b,slong n,mpz_square_mat_t m)
- {
-  slong i;
-  mpz_ptr t;
-  slong* s=m->mark;
-  for(i=0,t=b;i<n;i++,t++)
-   {
-    mpz_init2(t, s[i]);
-    mpz_set_si(t,  2*(i&1)-1);
-   }
- }
-
-__inline__ static void
-det_divisor_clear_b(mpz_ptr b,slong n)
- {
-  slong i;
-  mpz_ptr t;
-  for(i=n,t=b;i--;t++)
-   mpz_clear(t);
-  flint_free(b);
- }
-
 __inline__ static mp_limb_t
 det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
  {
@@ -457,7 +434,7 @@ det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,const mpz_t M,slong n)
     assert( (0==mpz_cmp_ui(zp,0) || (0==mpz_cmp(zp,M)) ) );
    }
   flint_printf("xA=b modulo M  check positive\n");
-  det_divisor_clear_b(xA,n);
+  clear_mpz_array(xA,n);
  }
 
 __inline__ static void
@@ -484,7 +461,7 @@ det_divisor_ratnl_rcnstrction(mpz_t d,const nmod_mat_t y, slong k,
   #endif
   det_divisor_rational_reconstruction(d, x_modulo_M, M, p, n, log2_N, log2_D);
   mpz_clear(M);
-  det_divisor_clear_b( x_modulo_M, n );
+  clear_mpz_array( x_modulo_M, n );
  }
 
 void
@@ -589,7 +566,7 @@ fmpz_mat_det_divisor_7arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
     det_divisor_mul_add_divide(b, y_storage->rows[i], A_t, n, pp.p);
    }
   flint_free(b_mod_p);
-  det_divisor_clear_b(b, n);
+  clear_mpz_array(b, n);
   mpz_square_mat_clear(A_t);
   nmod_mat_clear(Ainv);
   // for sanity check A is used
