@@ -174,4 +174,15 @@ mpz_fmpz_mul_det_2arg(mpz_t z,const fmpz_t x)
    mpz_mul(z,z,COEFF_TO_PTR(xx)); // x is big
  }
 
+// macro used multiple times by *det_divisor*()
+__inline__ static void
+clear_mpz_array(mpz_ptr b,slong n)
+ {
+  slong i;
+  mpz_ptr t;
+  for(i=n,t=b;i--;t++)
+   mpz_clear(t);
+  flint_free(b);
+ }
+
 #endif
