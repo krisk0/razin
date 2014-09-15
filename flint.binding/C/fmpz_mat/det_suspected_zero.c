@@ -143,8 +143,6 @@ det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t const* pp,nmod_mat_t m,
   // check inverse positive iff check_result=1
   
   #if LOUD_nmod_mat_in_det_divisor
-   flint_printf("A mod prime:\n");
-   nmod_mat_print_pretty(s);
    flint_printf("\n\ninverted:\n");
    nmod_mat_print_pretty(t);
    if( !check_result )
@@ -543,9 +541,16 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
     fmpz_mat_get_nmod_mat(Amod, A); // TODO: speed-up this slow subroutine
     //flint_printf("selected p=%wu\n",pp.p);
     nmod_mat_copy_entries(Amod_ori,Amod);
+    #if LOUD_nmod_mat_in_det_divisor
+     flint_printf("A modulo p**k:\n");
+     nmod_mat_print_pretty(Amod);
+    #endif
     mp_limb_t xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
     if( xmod )
      {
+      #if LOUD_nmod_mat_in_det_divisor
+       flint_printf("Found det mod p**k: %llX\n",xmod);
+      #endif
       memcpy( &Amod_ori->mod, &Amod->mod, sizeof(Amod->mod) );
       #if RAT_REC_TAKES_D_SERIOUSLY
        mpz_set(r, W);
