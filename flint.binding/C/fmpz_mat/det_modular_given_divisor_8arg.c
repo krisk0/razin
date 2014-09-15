@@ -12,6 +12,8 @@
 #undef NDEBUG
 #include <assert.h>
 
+#define LOUD_DET_BOUND 0
+
 static __inline__ void
 decrease_bound_ui(mpfr_t b,mpfr_prec_t pr,mp_limb_t d)
  {
@@ -116,16 +118,19 @@ iT on entry just found prime pp->p
   // loop bound = 2*H.B / known det divisor
   decrease_bound_fmpz(hadamard_log2,pr,det);
 
+  #if 0
+   flint_printf("det modulo %llX = %llX\n",pp->p_deg_k,xmod);
+  #endif
   // re-use known det A modulo pp->p_deg_k
   mp_limb_t divisor_inv=invert_det_divisor_modulo_pk(det,pp,&Amod->mod);
   xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
   fmpz_t xnew,x;
   fmpz_init(xnew); 
   fmpz_init(x); 
-  fmpz_t prod;
+  fmpz_t prod; fmpz_init_set_ui(prod, UWORD(1) );
 
   fmpz_CRT_ui(xnew, x, prod, xmod, pp->p_deg_k, 1);
-  fmpz_init_set_ui(prod, pp->p_deg_k);
+  fmpz_set_ui(prod, pp->p_deg_k);
   fmpz_set(x, xnew);
 
   #if LOUD_DET_BOUND
