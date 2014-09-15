@@ -56,6 +56,11 @@ cdef extern from 'C/fmpz_mat/det_odd.c':
 cdef extern from 'C/fmpz_mat/hermitian_decomposition_2.c':
  int fmpz_mat_hermitian_decomposition_2(fmpz_mat_t b,fmpz_t r, const fmpz_mat_t m)
 
+cdef extern from 'C/fmpz_mat/Hadamard_Cramer.c':
+ slong hadamard_2arg(mpfr_t b,const fmpz_mat_t m)
+ mp_limb_t cramer_rule(const mpfr_t den_bound, 
+  mpz_square_mat_t A, mpfr_prec_t pr, slong k)
+
 cdef class fmpz_mat:
 
  cdef fmpz_mat_t matr

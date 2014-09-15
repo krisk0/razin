@@ -185,4 +185,11 @@ clear_mpz_array(mpz_ptr b,slong n)
   flint_free(b);
  }
 
+static __inline__ void
+mpfr_copy_bound(mpfr_t r,const mpfr_t s)
+ {
+  mpfr_init2(r, mpfr_get_prec(s));
+  mpfr_set(r, s, MPFR_RNDU);
+ }
+
 #endif
