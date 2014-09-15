@@ -4,6 +4,7 @@
 
 #undef NDEBUG
 #include <assert.h>
+#include <time.h>
 #include <flint/flint.h>
 #include "../fmpz_mat/fmpz_mat_.h"
 
