@@ -185,6 +185,16 @@ clear_mpz_array(mpz_ptr b,slong n)
   flint_free(b);
  }
 
+__inline__ static void
+clear_mpfr_array(__mpfr_struct* b,slong n)
+ {
+  slong i;
+  __mpfr_struct t;
+  for(i=n,t=b;i--;t++)
+   mpfr_clear(t);
+  flint_free(b);
+ }
+
 static __inline__ void
 mpfr_copy_bound(mpfr_t r,const mpfr_t s)
  {
