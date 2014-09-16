@@ -202,4 +202,19 @@ mpfr_copy_bound(mpfr_t r,const mpfr_t s)
   mpfr_set(r, s, MPFR_RNDU);
  }
 
+__inline__ static void
+square_L2_fmpz(fmpz_t r,const fmpz* vec,slong n)
+// on entry r=0. on exit r=squared L2 norm of the vector 
+ {
+  fmpz_mul(r,vec,vec);
+  const fmpz* u;
+  fmpz_t x; fmpz_init(x);
+  for(u=vec+1,--n;n--;u++)
+   {
+    fmpz_mul(x,u,u);
+    fmpz_add(r,r,x);
+   }
+  fmpz_clear(x);
+ }
+
 #endif
