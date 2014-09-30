@@ -3,7 +3,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sci-mathematics/flint/flint-2.4.4-r1.ebuild,v 1.3 2014/08/14 16:22:26 phajdan.jr Exp $
 
-# Hacked by Kryskov Denis to take commit a980f9695a8b03e7e1ebdf94e2f8630aec6a59de
+# Hacked by Крыськов Денис to take commit a980f9695a8b03e7e1ebdf94e2f8630aec6a59de
 #  dated 25 sept 2014 instead of official 2.4.4
 
 EAPI=5
@@ -14,8 +14,7 @@ DESCRIPTION="Fast Library for Number Theory"
 HOMEPAGE="http://www.flintlib.org/"
 #SRC_URI="http://www.flintlib.org/${P}.tar.gz"
 SHA='a980f9695a8b03e7e1ebdf94e2f8630aec6a59de'
-SRC_URI="https://github.com/wbhart/${PN}2/archive/$SHA.zip -> 
- $P.zip"
+SRC_URI="https://github.com/wbhart/${PN}2/archive/$SHA.zip -> $P.zip"
 S="$WORKDIR/${PN}2-$SHA"
 
 RESTRICT=mirror
@@ -36,7 +35,8 @@ DEPEND="${RDEPEND}
 	)"
 
 src_prepare() {
- # 	${PN}-2.4.3-whitespaces.patch and ntl62.patch do not apply, skipped
+ # ${PN}-2.4.3-whitespaces.patch and ntl62.patch do not apply, skipped
+ # $P-latex.patch fixes error in documentation source
 	epatch "${FILESDIR}"/${PN}-2.4.3-libdir.patch \
 		"${FILESDIR}"/$PN-2.4.3-cflags-ldflags.patch \
 		"${FILESDIR}"/$PN-2.4.4-test.patch \
@@ -44,7 +44,7 @@ src_prepare() {
 }
 
 src_configure() {
- # added -fpermis*
+ # added -fpermissive so NTL-interface.lo builds successfully
 	./configure \
 		--prefix="${EPREFIX}/usr" \
 		--with-gmp="${EPREFIX}/usr" \
