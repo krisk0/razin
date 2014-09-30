@@ -60,7 +60,6 @@ src_configure() {
 
 src_compile() {
 	emake verbose
-
 	use doc &&	emake -C doc/latex
 }
 
