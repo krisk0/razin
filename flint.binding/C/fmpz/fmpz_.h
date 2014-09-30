@@ -189,7 +189,7 @@ __inline__ static void
 clear_mpfr_array(__mpfr_struct* b,slong n)
  {
   slong i;
-  __mpfr_struct t;
+  __mpfr_struct* t;
   for(i=n,t=b;i--;t++)
    mpfr_clear(t);
   flint_free(b);
