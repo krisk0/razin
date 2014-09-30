@@ -1,0 +1,12 @@
+diff -u fmpz_mat/doc/fmpz_mat.txt.old fmpz_mat/doc/fmpz_mat.txt
+--- fmpz_mat/doc/fmpz_mat.txt.old    2014-09-30 12:12:16.961495513 +0400
++++ fmpz_mat/doc/fmpz_mat.txt        2014-09-30 12:13:04.119497618 +0400
+@@ -1158,7 +1158,7 @@
+     Returns a non-zero value if the basis \code{A} is LLL-reduced with factor
+     (\code{delta}, \code{eta}) and the squared Gram-Schmidt length of each
+-    $i$th vector (where $i$ \ge \code{newd}) is greater than \code{gs_B}, and
++    $i$-th vector (where $i \ge$ \code{newd}) is greater than \code{gs_B}, and
+     otherwise returns zero. The function is mainly intended to be used for
+     testing purposes in the \code{fmpz_lll} module.
+
+
