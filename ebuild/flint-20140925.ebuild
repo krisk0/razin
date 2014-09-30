@@ -1,4 +1,5 @@
 # Copyright 1999-2014 Gentoo Foundation
+# Copyright      2014 Крыськов Денис 
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sci-mathematics/flint/flint-2.4.4-r1.ebuild,v 1.3 2014/08/14 16:22:26 phajdan.jr Exp $
 
@@ -43,8 +44,7 @@ src_prepare() {
 }
 
 src_configure() {
- # added -fpermissive to CXXFLAGS, for NTL-interface.lo to compile
-
+ # added -fpermis*
 	./configure \
 		--prefix="${EPREFIX}/usr" \
 		--with-gmp="${EPREFIX}/usr" \
