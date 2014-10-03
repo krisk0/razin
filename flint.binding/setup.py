@@ -144,14 +144,9 @@ if my_so != None:
  if os.path.isfile(my_so):
   bad_path=0
   flint_so=my_so
-  if flint_so[-2:] == '.a':
-   extra_objects=[flint_so]
-   libraries=[flint_so,'csage']# todo: maybe append mpfr.a to libraries
-  else:
-   libraries=[flint_so,'csage']
-   # flint*.so will want to find mpfr*.so and gmp*.so shared libs,
-   #  assume they are all in same directory. Add it to runtime_library_dirs
-   runtime_library_dirs=[ os.path.dirname( flint_so ) ]
+  extra_objects=[flint_so]
+  runtime_library_dirs=[ os.path.dirname( flint_so ) ]
+  libraries=['csage']
  if os.path.isdir(my_so):
   library_dirs=[ my_so ]
   runtime_library_dirs=[ my_so ]
@@ -159,8 +154,8 @@ if my_so != None:
  if bad_path:
   die( 'no such file or directory '+my_so )
 
-print 'shared libraries:',libraries
-print 'static libraries:',extra_objects
+print 'libraries taken via -l:',libraries
+print 'libraris taken as extra objects:',extra_objects
 
 def ext_file_exist(x):
  if not os.path.isfile(x):
