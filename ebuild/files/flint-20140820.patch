@@ -1,0 +1,21 @@
+20 Aug 2014 commit bbe4e214e5977b7292349b44eb5a0948ec0649e2 by fredrik-johansson
+ broke compilation under systems without MPIR
+
+diff -ur a/flint.h b/flint.h
+--- a/flint.h	2014-10-03 09:20:36.562031818 +0400
++++ b/flint.h	2014-10-03 09:22:33.632037042 +0400
+@@ -317,12 +317,9 @@
+ static __inline__ void
+ mpn_tdiv_q(mp_ptr qp, mp_srcptr np, mp_size_t nn, mp_srcptr dp, mp_size_t dn)
+ {
+-    mp_ptr _scratch;
+-    TMP_INIT;
+-    TMP_START;
+-    _scratch = (mp_ptr) TMP_ALLOC(dn * sizeof(mp_limb_t));
++    mp_ptr _scratch=(mp_ptr)flint_malloc(dn * sizeof(mp_limb_t));
+     mpn_tdiv_qr(qp, _scratch, 0, np, nn, dp, dn);
+-    TMP_END;
++    flint_free(_scratch);
+ }
+ #endif
+ 

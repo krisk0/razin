@@ -40,11 +40,11 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.4.3-libdir.patch \
 		"${FILESDIR}"/$PN-2.4.3-cflags-ldflags.patch \
 		"${FILESDIR}"/$PN-2.4.4-test.patch \
-		"${FILESDIR}"/$P-latex.patch 
+		"${FILESDIR}"/$P-latex.patch \
+		"${FILESDIR}"/$PN-20140820.patch 
 }
 
 src_configure() {
- # added -fpermissive so NTL-interface.lo builds successfully
 	./configure \
 		--prefix="${EPREFIX}/usr" \
 		--with-gmp="${EPREFIX}/usr" \
@@ -53,7 +53,7 @@ src_configure() {
 		$(use_enable static-libs static) \
 		$(usex gc "--with-gc=${EPREFIX}/usr" "") \
 		CC=$(tc-getCC) \
-		CXX="$(tc-getCXX) -fpermissive"\
+		CXX=$(tc-getCXX)\
 		AR=$(tc-getAR) \
 		|| die
 }
