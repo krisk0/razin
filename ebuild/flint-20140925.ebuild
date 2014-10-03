@@ -37,7 +37,8 @@ DEPEND="${RDEPEND}
 src_prepare() {
  # ${PN}-2.4.3-whitespaces.patch and ntl62.patch do not apply, skipped
  # $P-latex.patch fixes error in documentation source
-	epatch "${FILESDIR}"/${PN}-2.4.3-libdir.patch \
+ # $PN-20140820.patch fixes 20 Aug error in flint.h
+	epatch "${FILESDIR}"/$PN-2.4.3-libdir.patch \
 		"${FILESDIR}"/$PN-2.4.3-cflags-ldflags.patch \
 		"${FILESDIR}"/$PN-2.4.4-test.patch \
 		"${FILESDIR}"/$P-latex.patch \
@@ -45,6 +46,12 @@ src_prepare() {
 }
 
 src_configure() {
+ # fix >>>QA Notice: The following shared libraries lack a SONAME<<<
+
+ #local FLINT_LIB=lib"${PN}$(get_libname ${PV})"
+ local FLINT_LIB=lib"$PN".so.2.4.5
+ local ESF="-Wl,-soname,$FLINT_LIB"
+
 	./configure \
 		--prefix="${EPREFIX}/usr" \
 		--with-gmp="${EPREFIX}/usr" \
@@ -56,6 +63,11 @@ src_configure() {
 		CXX=$(tc-getCXX)\
 		AR=$(tc-getAR) \
 		|| die
+  
+ # append soname voodoo to EXTRA_SHARED_FLAGS value 
+ sed -e "s:^EXTRA_SHARED_FLAGS=.*:& $ESF:" -i Makefile
+ # change .so name
+ sed -e "s:^FLINT_LIB=.*:FLINT_LIB=$FLINT_LIB:" -i Makefile
 }
 
 src_compile() {
