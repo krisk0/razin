@@ -13,7 +13,7 @@ If results mismatch, aborts
 If results match, prints benchmarks table in the end
 '''
 
-#TODO: remove unused subrotuines
+#TODO: remove unused subroutines
 
 import sage.all
 import sys,time,numpy
