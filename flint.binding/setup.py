@@ -135,9 +135,9 @@ include_1=find_sage_include_dir( p0, p4, None )
 
 # Link to flint dynamically or statically
 # I failed to link statically under Linux, however leave code here 
-# todo: arrange it so libflint.a and mpfr.a get statically linked
 libraries=['flint','csage']
 extra_objects,library_dirs,runtime_library_dirs=[],[],[]
+flint_so=0
 my_so=osE('MY_FLINT_IS_HERE')
 if my_so != None:
  bad_path=1
@@ -155,7 +155,20 @@ if my_so != None:
   die( 'no such file or directory '+my_so )
 
 print 'libraries taken via -l:',libraries
-print 'libraris taken as extra objects:',extra_objects
+print 'libraries taken as extra objects:',extra_objects
+
+def create__fmpz_mat_HNF(h_file,out_file):
+ if os.system( "grep -q 'void fmpz_mat_hnf' '%s'" % h_file ):
+  with open(out_file,'wb') as f:
+   pass
+ else:
+  os.system( "cp '%s.in' '%s'" % (out_file,out_file) )
+
+# create fmpz_mat_HNF.pyx: either empty or defining AlexBest_hnf()
+fmpz_mat__h='/usr/include/flint/fmpz_mat.h'
+if p0!=None:
+ fmpz_mat__h=p0+fmpz_mat__h
+create__fmpz_mat_HNF( fmpz_mat__h, 'fmpz_mat_HNF.pyx' )
 
 def ext_file_exist(x):
  if not os.path.isfile(x):

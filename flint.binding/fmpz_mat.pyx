@@ -379,3 +379,4 @@ def fmpz_mat_is_singular_wr( fmpz_mat a ):
  return fmpz_mat_is_singular(a.matr)
 
 # include 'fmpz_unimodular.pyx'
+include 'fmpz_mat_HNF.pyx'
