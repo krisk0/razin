@@ -1,10 +1,10 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Copyright      2014 Крыськов Денис 
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sci-mathematics/flint/flint-2.4.4-r1.ebuild,v 1.3 2014/08/14 16:22:26 phajdan.jr Exp $
 
-# Based on flint-20140925.ebuild, changed to take commit 
-#  d7b9299a2399c7fe4f0e50e59ca6926ccac79f9a dated 01 oct 2014 instead of 2.4.4
+# Based on flint-20140925.ebuild, changed to take version
+#  d7b9299a2399c7fe4f0e50e59ca6926ccac79f9a dated 01 oct 2014 instead of a 25 Sept
+#  version
 
 EAPI=5
 
