@@ -36,13 +36,11 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
  # ${PN}-2.4.3-whitespaces.patch and ntl62.patch do not apply, skipped
- # $P-latex.patch fixes error in documentation source
  # $PN-20140820.patch fixes 20 Aug error in flint.h
 	epatch "${FILESDIR}"/$PN-2.4.3-libdir.patch \
 		"${FILESDIR}"/$PN-2.4.3-cflags-ldflags.patch \
 		"${FILESDIR}"/$PN-2.4.4-test.patch \
-		"${FILESDIR}"/$P-latex.patch \
-		"${FILESDIR}"/$PN-20140820.patch 
+		"${FILESDIR}"/$PN-20140820.patch || die 'epatch failed'
 }
 
 src_configure() {
