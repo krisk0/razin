@@ -37,7 +37,6 @@ DEPEND="${RDEPEND}
 src_prepare() {
  # $PN-2.4.3-libdir $PN-2.4.3-cflags-ldflags $PN-2.4.4-test
  #  apparently went upstream
- # $P-latex.patch fixes error in documentation source
  # $PN-20141004.patch fixes 20 Aug error in flint.h
  local i=$PN-20141004 
  epatch "${FILESDIR}"/$i.patch || die "patch $i does not apply"
