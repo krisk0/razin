@@ -39,10 +39,8 @@ src_prepare() {
  #  apparently went upstream
  # $P-latex.patch fixes error in documentation source
  # $PN-20141004.patch fixes 20 Aug error in flint.h
- local i
- for i in $PN-20141004 ; do
-	 epatch "${FILESDIR}"/$i.patch || die "patch $i does not apply"
- done
+ local i=$PN-20141004 
+ epatch "${FILESDIR}"/$i.patch || die "patch $i does not apply"
 }
 
 src_configure() {
