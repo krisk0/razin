@@ -193,3 +193,6 @@
             Clang producess beautiful error messages but awfully sloooooow code
              (out of my genial vector dot multiplication macros). GCC 4.8.3
              gives slightly better code than GCC 4.7.3. Long live GCC.
+
+14 Oct 2014 FLINT test-suite is consistently broken: it tests installed version 
+             rather than freshly-compiled. However, I keep my flint-20141001.ebuild
