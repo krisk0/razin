@@ -52,7 +52,7 @@ src_configure() {
 
 	# configure supports CFLAGS but not CXXFLAGS; Makefile supports both
  # No need to feed C*FLAGS to configure
- 
+
  ./configure \
 		--prefix="$p" \
 		--with-gmp="$p" \
@@ -64,7 +64,7 @@ src_configure() {
 		CXX=$(tc-getCXX)\
 		AR=$(tc-getAR) \
 		|| die 'configure failed'
-  
+
  # append soname voodoo to EXTRA_SHARED_FLAGS value, change shared lib name
  sed -e "s:^EXTRA_SHARED_FLAGS=.*:& $ESF:" \
      -e "s:^FLINT_LIB=.*:FLINT_LIB=$FLINT_LIB:" \
