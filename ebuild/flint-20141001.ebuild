@@ -77,6 +77,9 @@ src_compile() {
 }
 
 src_test() {
+ # With static-libs disabled, test suite checks installed version in /usr/lib
+ #  which is pointless
+ use static-libs || die "To perform test, you need to enable static-libs"
 	emake AT= QUIET_CC= QUIET_CXX= QUIET_AR= check
 }
 
