@@ -76,6 +76,35 @@ mpz_square_mat_init_transpose(mpz_square_mat_t R,const mpz_square_mat_t S)
    }
  }
 
+static __inline__ void 
+mpz_square_mat_init_transpose_fmpz(mpz_square_mat_t R,const fmpz_mat_t S)
+// TODO: find shortcut to `mpz_init(e); fmpz_get_mpz(e, g)'
+ {
+  R->mark=0;
+  slong i,j,siz=R->r=S->r;
+  mpz_ptr e=flint_malloc(siz*siz*sizeof(__mpz_struct));
+  R->entries=e;
+  R->rows=flint_malloc(siz*sizeof(mpz_ptr));
+  fmpz** const s_rows=S->rows;
+  fmpz* g=s_rows[0];
+  // transfer column 0, fill R->rows[]
+  for(i=0;i<siz;i++,e += siz,g++)
+   {
+    R->rows[i]=e;
+    mpz_init(e); fmpz_get_mpz(e, g);
+   }
+  for(j=1;j<siz;j++)
+   {
+    // transfer column j
+    g=s_rows[j];
+    e=R->entries+j;
+    for(i=siz;i--;e += siz,g++)
+     {
+      mpz_init(e); fmpz_get_mpz(e, g);
+     }
+   }
+ }
+
 static __inline__ void
 mpz_square_mat_mark_biggest(mpz_square_mat_t m)
 // mark[i] := FLINT_BITS*(2+limb-size of biggest entry in row i)
