@@ -122,4 +122,14 @@ det_divisor_init_b(mpz_ptr b,slong n,mpz_square_mat_t m)
    }
  }
 
+__inline__ static void
+det_divisor_init_zero_b(mpz_ptr b,slong n,mpz_square_mat_t m)
+ {
+  slong i;
+  mpz_ptr t;
+  slong* s=m->mark;
+  for(i=0,t=b;i<n;i++,t++)
+   mpz_init2(t, s[i]);
+ }
+
 #endif
