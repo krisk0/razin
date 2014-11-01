@@ -2,16 +2,15 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-// Subroutines in this file are machine-dependent and known to work on amd64
-//  with GMP
-
 static __inline__ mp_limb_t
-tmod_symm_abs( mp_limb_t y )
+tmod_symm_abs(mp_limb_t y)
 // return y or -y, whichever is smaller
  {
-  if( y & 0x8000000000000000 )
+  #define h UWORD(1)<<(FLINT_BITS-1)
+  if( y & (h) )
    return -y;
   return y;
+  #undef h
  }
 
 static __inline__ mp_limb_t 
