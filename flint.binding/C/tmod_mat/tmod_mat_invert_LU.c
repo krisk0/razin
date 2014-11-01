@@ -4,7 +4,7 @@
 
 #include <assert.h>
 
-void tmod_mat_mul_diag_tril( tmod_mat_t A, const mp_limb_t* D )
+void tmod_mat_mul_diag_tril(tmod_mat_t A, const mp_limb_t* D)
 // A := D*A, A square lower-triangular; D diagonal, represented by array
  {
   slong m=A->r,i,j;
@@ -23,7 +23,7 @@ void tmod_mat_mul_diag_tril( tmod_mat_t A, const mp_limb_t* D )
    }
  }
 
-void tmod_mat_mul_trilV_diag( tmod_mat_t A, const mp_limb_t* D )
+void tmod_mat_mul_trilV_diag(tmod_mat_t A, const mp_limb_t* D)
 // A := A*D, A square lower-triangular virgin; D diagonal, represented by array
  {
   slong m=A->r, i,j,k;
@@ -45,7 +45,7 @@ void tmod_mat_mul_trilV_diag( tmod_mat_t A, const mp_limb_t* D )
  }
 
 void 
-tmod_mat_invert_W_part( tmod_mat_t R, const mp_limb_t* D )
+tmod_mat_invert_W_part(tmod_mat_t R, const mp_limb_t* D)
 /*
 R on entry: m rows, m-1 cols, lower part W below diagonal
  
@@ -91,7 +91,7 @@ input R = 1  ~  W = 1    D = (1, 1/3)     output R =  1   ~
  }
 
 void
-tmod_mat_invert_L_part( tmod_mat_t R, const tmod_mat_t S)
+tmod_mat_invert_L_part(tmod_mat_t R, const tmod_mat_t S)
 /*
 S: m rows, m-1 cols, lower part L below diagonal
  
@@ -138,7 +138,7 @@ input S = 4  ~  L = 4  1     L.I= -4  1          output R =  ?  2
  }
 
 void
-tmod_mat_solver_3arg( tmod_mat_t R, mp_limb_t* PD, const tmod_mat_t LU )
+tmod_mat_solver_3arg(tmod_mat_t R, mp_limb_t* PD, const tmod_mat_t LU)
 /*
  PD, LU: jammed PR, jammed LU as returned by tmod_mat_PLU(), with m rows
   and m-1 columns
