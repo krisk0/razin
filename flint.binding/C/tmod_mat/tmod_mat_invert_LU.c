@@ -2,8 +2,6 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-#include <assert.h>
-
 void tmod_mat_mul_diag_tril(tmod_mat_t A, const mp_limb_t* D)
 // A := D*A, A square lower-triangular; D diagonal, represented by array
  {
