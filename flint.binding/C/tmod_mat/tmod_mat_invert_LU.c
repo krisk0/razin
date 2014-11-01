@@ -62,7 +62,7 @@ input R = 1  ~  W = 1    D = (1, 1/3)     output R =  1   ~
   slong m=R->r, i,j,k;
   slong cc=m-1;
   tmod_mat_t E;
-  tmod_mat_init( E, cc, cc );
+  tmod_mat_init_fast( E, cc, cc );
   mp_limb_t* Erow=E->entries;
   mp_limb_t* Wrow=R->rows[1];  // top-left entry of W is at row 1
   // un-compress W to E
@@ -108,7 +108,7 @@ input S = 4  ~  L = 4  1     L.I= -4  1          output R =  ?  2
   slong m=R->r, i,j;
   slong cc=m-1;
   tmod_mat_t E;
-  tmod_mat_init( E, m, m );
+  tmod_mat_init_fast(E, m, m);
   mp_limb_t* Erow=E->entries;
   mp_limb_t* Lrow; 
   // un-compress L to E
