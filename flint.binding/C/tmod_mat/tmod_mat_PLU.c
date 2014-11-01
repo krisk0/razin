@@ -87,7 +87,7 @@ This subroutine is machine-dependent. Known to work on amd64, don't know what
  {
   slong m=S->r, n=S->c, i,row,row_plus_1,length;
   for(i=m;i--;)
-   PR[i]=i;                // initialize permutation P
+   PR[i]=(mp_limb_t)i;                // initialize permutation P
   mp_limb_t** a=S->rows;
   mp_limb_t* alpha,* betta;
   mp_limb_t d,S_i_row,e;
@@ -96,7 +96,7 @@ This subroutine is machine-dependent. Known to work on amd64, don't know what
     d=tmod_mat_PLU_find_nonzero( S, PR, row );
     if( !d )
      return 0;    // failed to find invertible element in this column, goodbye
-    PR[m+row]=d; // not good if mp_limb_t is larger than long
+    PR[m+row]=d;
     row_plus_1 = row + 1;
     length = n - row_plus_1;
     alpha = a[row] + row_plus_1;
