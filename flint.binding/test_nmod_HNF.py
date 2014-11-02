@@ -123,6 +123,13 @@ def test_serie(dim):
  print 'dim=',dim
  test_serie_1(dim,vol,loud) 
 
+def unimodular_diag(dim):
+ r=identity_matrix(dim)
+ for i in range(dim):
+  if randint(0,1):
+   r[i,i]=-1
+ return r
+
 if __name__ == "__main__":
  a2=m( [ 5,5,-7,-8] )
  
