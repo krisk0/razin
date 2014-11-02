@@ -4,6 +4,7 @@
 
 void tmod_mat_mul_diag_tril(tmod_mat_t A, const mp_limb_t* D)
 // A := D*A, A square lower-triangular; D diagonal, represented by array
+// only lower part and diagonal of A modified
  {
   slong m=A->r,i,j;
   mp_limb_t d;
@@ -23,6 +24,7 @@ void tmod_mat_mul_diag_tril(tmod_mat_t A, const mp_limb_t* D)
 
 void tmod_mat_mul_trilV_diag(tmod_mat_t A, const mp_limb_t* D)
 // A := A*D, A square lower-triangular virgin; D diagonal, represented by array
+// only lower part and diagonal of A modified
  {
   slong m=A->r, i,j,k;
   slong m_plus=m+1;
