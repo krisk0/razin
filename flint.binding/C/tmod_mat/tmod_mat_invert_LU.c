@@ -166,10 +166,10 @@ tmod_mat_solver_3arg(tmod_mat_t R, mp_limb_t* PD, const tmod_mat_t LU)
   // invert L while it is in place
   tmod_mat_invert_L_part( R, LU );
   // put upper part of LU into lower part of R
-  slong i,j,k,m=LU->r;
+  slong i,k,m=LU->r;
   slong cc=m-1;
   mp_limb_t* on_tgt,* on_sou;
-  for ( i=0; i<cc; i++ )
+  for(i=0; i<cc; i++)
    {
     k = m-i-2;
     on_tgt = R->rows[1+i]+i;
