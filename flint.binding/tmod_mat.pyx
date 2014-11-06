@@ -29,6 +29,9 @@ cdef extern from 'C/tmod_mat/tmod_mat.c':
  int tmod_mat_PLU_mod_machine_word(mp_limb_t* PR, tmod_mat_t S)
  void tmod_mat_solver_3arg( tmod_mat_t R, mp_limb_t* PD, const tmod_mat_t LU )
 
+cdef extern from 'C/tmod_mat/invert_square.c':
+ slong tmod_mat_invert_transpose(tmod_mat_t R, const tmod_mat_t S)
+
 cdef mp_limb_t test_fmpz_to_t(fmpz_t n,flint_rand_t S,mp_bitcnt_t bits,
   int upto):
  ' return 0 iff test passes '
@@ -251,6 +254,21 @@ def tmod_mat_solver(agnostic_array PD, tmod_mat_single LU):
  tmod_mat_init_fast( R, m, m-1 )
  tmod_mat_solver_3arg( R, <mp_limb_t*>PD.array, LU.matT )
  return wrap_tmod_mat( R )
+
+def tmod_mat_invrt_trnspse(fmpz_mat A):
+ '''
+  call tmod_mat_invert_transpose()
+  
+  return result as Sage matrice. Return None if A is not invertible modulo 2**64
+ '''
+ cdef tmod_mat_t B,C
+ tmod_mat_set_fmpz_mat(B, A.matr)
+ tmod_mat_init_fast(C, B.r, B.r)
+ cdef slong rc=tmod_mat_invert_transpose(C,B)
+ tmod_mat_clear(B)
+ if rc:
+  return wrap_tmod_mat(C).export_sage()
+ tmod_mat_clear(C)
 
 def export_Wti( tmod_mat_single WL_ti ):
  '''
