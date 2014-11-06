@@ -25,6 +25,7 @@ mp_limb_t n_mulmod_preinv_4arg(mp_limb_t a, mp_limb_t b, mp_limb_t n,
 mp_limb_t inv_mod_pk(mp_limb_t a,mp_limb_t p,ulong t,
   mp_limb_t p_deg_t,mp_limb_t p_deg_t_norm,mp_limb_t p_deg_t_inv);
 mp_limb_t inv_mod_pk_3arg(mp_limb_t a,const p_k_pk_t pp,const nmod_t nn);
+void invert_permutation(mp_limb_t* r,mp_limb_t* s,slong n);
 
 static __inline__
 void max_degree(p_k_pk_t* s)

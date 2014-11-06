@@ -9,6 +9,9 @@ cdef extern from 'C/fmpz/AKS_trunc.c':
  int AKS_ui(mp_limb_t n)
  int AKS(fmpz_t n)
 
+cdef extern from 'C/ulong_extras/invert_permutation.c':
+ void invert_permutation(mp_limb_t* r,mp_limb_t* s,slong n)
+
 def n_is_prime_AKS(n):
  'n must be odd in range 3..ULONG_MAX where ULONG_MAX equals 2**64-1 for amd64'
  return AKS_ui(<mp_limb_t>n)
