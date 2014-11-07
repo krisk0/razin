@@ -23,8 +23,7 @@ tmod_mat_print_hex(char* m,const tmod_mat_t S)
    }
   // FLINT_BITS-j = max bit-length of S entries
   j=(FLINT_BITS-j+15)>>2;
-  if(!j)
-   j=1;
+  j += (!j);
   char fmt[10];
   sprintf(fmt,"%c%dMX ",'%',j);
   if(m)
