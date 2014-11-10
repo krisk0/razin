@@ -203,10 +203,10 @@ _20141102_shift_rows(tmod_mat_t R, mp_limb_t** C, mp_limb_t* P, slong n)
   memcpy(C,B,n*sizeof(mp_limb_t**));
   slong i;
   for(i=0;i<n;i++)
-   B[i]=C[ P[i] ];
+   B[ P[i] ]=C[ i ];
  }
 
-slong
+mp_limb_t
 tmod_mat_invert_transpose(tmod_mat_t R, const tmod_mat_t S)
 /*
 S,R square, virgin
@@ -220,18 +220,18 @@ Else return 0
   slong row_size=n*sizeof(mp_limb_t);
   memcpy(R->entries,S->entries,n*row_size);
   mp_limb_t* PR=flint_malloc(2*row_size);
-  int rC=tmod_mat_PLU_mod_machine_word(PR,R);
-  if(rC)
+  mp_limb_t d=0;
+  if(tmod_mat_PLU_mod_machine_word(PR,R))
    {
+    d=tmod_mat_diag_product_ZZ_ui(R);
     tmod_mat_t K; tmod_mat_init_fast(K,n,n);
     _20141102_Lo(K,R,n);
     _20141102_Up(K,R,PR+n,n);
     tmod_mat_virginize(R);
     _20141102_unLU(R,K,n);
-    invert_permutation(PR+n,PR,n);
-    _20141102_shift_rows(R,K->rows,PR+n,n);
+    _20141102_shift_rows(R,K->rows,PR,n);
     tmod_mat_clear(K);
    }
   flint_free(PR);
-  return (slong)rC;
+  return d;
  }
