@@ -2,8 +2,6 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-#undef NDEBUG
-#include <assert.h>
 #include "../ulong_extras/ulong_extras_.h"
 
 static void
