@@ -5,6 +5,8 @@
 #ifndef FMPZ__H
 #define FMPZ__H
 
+// mpz/mpq/fmpz manipulation macros/functions
+
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 
@@ -213,6 +215,27 @@ square_L2_fmpz(fmpz_t r,const fmpz* vec,slong n)
     fmpz_add(r,r,x);
    }
   fmpz_clear(x);
+ }
+
+__inline__ static void
+mpz_shift_right_1limb(mpz_t r)
+ {
+  slong limbs=r->_mp_size;
+  if(0==limbs)
+   return;
+  if(limbs>0)
+   {
+    --limbs;
+    --r->_mp_size;
+   }
+  else
+   {
+    limbs=(-limbs)-1;
+    ++r->_mp_size;
+   }
+  mp_limb_t* n=r->_mp_d;
+  for(;limbs--;++n)
+   n[0]=n[1];
  }
 
 #endif
