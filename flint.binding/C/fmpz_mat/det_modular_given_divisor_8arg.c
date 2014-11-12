@@ -9,8 +9,6 @@
 #include "../ulong_extras/ulong_extras_.h"
 #include "../fmpz/fmpz_.h"
 #include "../nmod_mat/nmod_mat_.h"
-#undef NDEBUG
-#include <assert.h>
 
 #define LOUD_DET_BOUND 0
 

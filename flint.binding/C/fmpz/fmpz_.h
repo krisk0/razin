@@ -8,8 +8,6 @@
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 
-#define LOUD_DET_BOUND 0
-
 // s should be fmpz, s evaluated multiple times
 #define fmpz_get_mpfr_slave(r, s, rnd)    \
  if( COEFF_IS_MPZ(s) )                      \

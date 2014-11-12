@@ -23,6 +23,7 @@
 #define LOUD_det_divisor_count_y 0
 #define DIXON_INTERNAL_CHECK 0
 #define LOUD_DET_RESULT 0
+#define LOUD_DET_BOUND 0
 
 mpfr_prec_t static
 hadamard_bits(const fmpz_mat_t m,flint_rand_t r_st)

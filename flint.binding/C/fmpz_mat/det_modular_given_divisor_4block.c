@@ -14,6 +14,7 @@
 #include <flint/flint.h>
 #include "../ulong_extras/ulong_extras_.h"
 #include "../fmpz/fmpz_.h"
+#define LOUD_DET_BOUND 0
 #define NDEBUG 1
 #include <assert.h>
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
