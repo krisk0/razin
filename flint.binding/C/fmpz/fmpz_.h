@@ -238,4 +238,17 @@ mpz_shift_right_1limb(mpz_t r)
    n[0]=n[1];
  }
 
+__inline__ static mp_limb_t
+mpz_mod_T(mpz_t r)
+ {
+  if( 0==r->_mp_size )
+   return 0;
+  mp_limb_t m;
+  if( 0<r->_mp_size )
+   m=r->mp_d[0];
+  else
+   m=-r->mp_d[0];
+  return m;
+ }
+
 #endif
