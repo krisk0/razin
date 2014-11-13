@@ -245,9 +245,9 @@ mpz_mod_T(mpz_t r)
    return 0;
   mp_limb_t m;
   if( 0<r->_mp_size )
-   m=r->mp_d[0];
+   m=r->_mp_d[0];
   else
-   m=-r->mp_d[0];
+   m=-r->_mp_d[0];
   return m;
  }
 
