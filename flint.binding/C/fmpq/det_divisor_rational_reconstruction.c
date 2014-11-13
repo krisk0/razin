@@ -15,9 +15,7 @@ Decreasing modulo/reusing discovered denominator trick learnt from solve1()
  subroutine implemented by V.Shoup
 */
 
-#define NDEBUG 1
 #define LOUD_RR_IO 0
-#include <assert.h>
 
 #include <flint/flint.h>
 #include <flint/fmpz.h>
