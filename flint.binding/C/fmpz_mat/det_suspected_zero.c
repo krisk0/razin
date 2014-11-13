@@ -231,13 +231,12 @@ det_divisor_y_to_x(mpz_t xI, slong i, const nmod_mat_t y, slong y_rows, slong y_
  {
   slong j=y_rows-1;
   mp_limb_t const * p=y->rows[j]+i;
-  mpz_set_ui(xI,*p);
-  // TODO: what if mp_limb_t is not unsigned long?
+  flint_mpz_set_ui(xI,*p);
   for(;j--;)
    {
     p -= y_cols;
-    mpz_mul_ui(xI,xI,q);
-    mpz_add_ui(xI,xI,*p);
+    flint_mpz_mul_ui(xI,xI,q);
+    flint_mpz_add_ui(xI,xI,*p);
    }
  }
 
