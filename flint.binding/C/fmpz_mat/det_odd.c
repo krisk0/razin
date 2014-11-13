@@ -16,7 +16,7 @@ void fmpz_mat_det_odd(fmpz_t r,const fmpz_mat_t a)
   fmpz_mat_print_pretty(a);
   abort();
   mp_limb_t det_mod_T;
-  mpz_t m; mpz_init(m);
+  mpz_t m; mpz_init_set_ui(m, 1);
   #if 0
   mp_limb_t hb=fmpz_mat_det_divisor_odd(m, &det_mod_T, a);
   if( hb )
