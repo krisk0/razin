@@ -16,6 +16,7 @@ Decreasing modulo/reusing discovered denominator trick learnt from solve1()
 */
 
 #define LOUD_RR_IO 0
+#define RR_SKIP_CHECK 1
 
 #include <flint/flint.h>
 #include <flint/fmpz.h>
@@ -317,18 +318,12 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
      mpz_mod(xI,xI,M);
     if( mpz_cmp_ui(d_mod_M,1) )
      MulMod( xI, d_mod_M, M );
-    // if not debugging, skip unnecessary check in rational rec. subroutine
-    #if NDEBUG 
-     #define SKIP_CHECK 1
-    #else
-     #define SKIP_CHECK 0
-    #endif
     if( fmpz_cmp_ui(D,0) )
      rc=reconstruct_rational_take_denominator(denom_i, xI, M, log2_N, D, 
-      SKIP_CHECK);
+      RR_SKIP_CHECK);
     else
      rc=reconstruct_rational_take_denominator_log2(denom_i, xI, M, log2_N, 
-      log2_D, SKIP_CHECK);
+      log2_D, RR_SKIP_CHECK);
     if(!rc)
      {
       flint_printf("Exception (det_divisor_rational_reconstruction): "
@@ -358,12 +353,9 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
      }
    }
   fmpz_clear(denom_i);
-  #if NDEBUG==0
-   flint_printf("det_divisor_rational_reconstruction(): check positive\n");
-  #endif
  }
 
-#undef SKIP_CHECK
+#undef RR_SKIP_CHECK
 #undef MulMod
 #undef NDEBUG
 #undef LOUD_RR_IO
