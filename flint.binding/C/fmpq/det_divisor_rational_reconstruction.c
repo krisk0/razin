@@ -352,7 +352,9 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
        }
      }
    }
+  fmpz_clear(D);
   fmpz_clear(denom_i);
+  mpz_clear(d_mod_M);
  }
 
 #undef RR_SKIP_CHECK
