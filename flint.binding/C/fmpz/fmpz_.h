@@ -251,4 +251,33 @@ mpz_mod_T(mpz_t r)
   return m;
  }
 
+__inline__ void
+mpz_mod_2x(mpz_t r,slong x)
+// reduce positive r modulo 2**x
+ {
+  slong r_limbs=r->_mp_size;
+  slong x_limbs=(x+FLINT_BITS-1)/FLINT_BITS;
+  if(r_limbs<x_limbs)
+   return;
+  if(r_limbs>x_limbs)
+   r->_mp_size=x_limbs;
+  // reduce senior limb
+  mp_limb_t m=(1<<(x-FLINT_BITS*x_limbs))-1;
+  mp_limb_t w=r->_mp_d[--r_limbs];
+  mp_limb_t u=w&m;
+  if(u<w)
+   {
+    r->_mp_d[r_limbs]=u;
+    if(u)
+     return;
+    // must decrease r->_mp_size that now equals r_limbs+1
+    while( r_limbs-- && (0==r->_mp_d[r_limbs]) )
+     ;
+    if(r_limbs>=0)
+     r->_mp_size=r_limbs+1;
+    else
+     r->_mp_size=0;
+   }
+ }
+
 #endif
