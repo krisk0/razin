@@ -303,7 +303,7 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
   slong i;
   int M_modified=0,rc;
   mpz_ptr xI;
-  fmpz_t denom_i; fmpz_init(denom_i);
+  fmpz_t found; fmpz_init(found);
   fmpz_t D; fmpz_init(D); // D=0
   #if RAT_REC_TAKES_D_SERIOUSLY
    // if d>1 then mix it into x[]
@@ -319,10 +319,10 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
     if( mpz_cmp_ui(d_mod_M,1) )
      MulMod( xI, d_mod_M, M );
     if( fmpz_cmp_ui(D,0) )
-     rc=reconstruct_rational_take_denominator(denom_i, xI, M, log2_N, D, 
+     rc=reconstruct_rational_take_denominator(found, xI, M, log2_N, D, 
       RR_SKIP_CHECK);
     else
-     rc=reconstruct_rational_take_denominator_log2(denom_i, xI, M, log2_N, 
+     rc=reconstruct_rational_take_denominator_log2(found, xI, M, log2_N, 
       log2_D, RR_SKIP_CHECK);
     if(!rc)
      {
@@ -330,9 +330,9 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
                      "Rational reconstruction failed.\n");
       abort();
      }
-    if( fmpz_cmp_ui(denom_i,1) )
+    if( fmpz_cmp_ui(found,1) )
      {
-      mul_mpz_fmpz( d, denom_i );
+      mul_mpz_fmpz( d, found );
       if( i != n-1 )
        {
         // Decrease denominator bound, maybe decrease M
@@ -340,21 +340,85 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
          {
           fmpz_set_ui(D,1); fmpz_mul_2exp(D,D,log2_D);
          }
-        fmpz_fdiv_q(D, D, denom_i);
-        M_modified=maybe_decrease_M(M,p,log2_N,D);
-        // multiply d_mod_M by denom_i and reduce result modulo M
+        fmpz_fdiv_q(D, D, found);
+        M_modified |= maybe_decrease_M(M,p,log2_N,D);
+        // multiply d_mod_M by found and reduce result modulo M
         if(M_modified)
          {
           mpz_mod(d_mod_M,d_mod_M,M);
-          fmpz_mod_2arg(denom_i,M);
+          fmpz_mod_2arg(found,M);
          }
-        MulMod_fmpz(d_mod_M, denom_i, M);
+        MulMod_fmpz(d_mod_M, found, M);
        }
      }
    }
   fmpz_clear(D);
-  fmpz_clear(denom_i);
+  fmpz_clear(found);
   mpz_clear(d_mod_M);
+ }
+
+void
+rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,slong log2_M,
+  mp_limb_t log2_N,mp_limb_t log2_D)
+/*
+d: on entry = 1, on exit common denominator of reconstructed salvation
+x: vector of length n, x*A equals B modulo M, 0 <= x[i] < M, det A is odd
+M=2**log2_M
+log2_N: upper approximation to log2(numerator bound)
+log2_D: upper approximation to log2(denominator bound)
+*/
+ {
+  #if 0
+  mpz_t d_mod_M; mpz_init_set_ui(d_mod_M,1);
+  fmpz_t found; fmpz_init(found);
+  fmpz_t D; fmpz_init(D); // D=0
+  slong i;
+  int M_modified=0,rc;
+  mpz_ptr xI;
+  for(i=0,xI=x; i<n; i++,xI++)
+   {
+    if(M_modified)
+     mpz_mod_2x(xI,log2_M);
+    if( mpz_cmp_ui(d_mod_M,1) )
+     MulMod_2x( xI, d_mod_M, log2_M );
+    if( fmpz_cmp_ui(D,0) )
+     rc=reconstruct_rational_take_denominator(found, xI, M, log2_N, D, 
+      RR_SKIP_CHECK);
+    else
+     rc=reconstruct_rational_take_denominator_log2(found, xI, M, log2_N, 
+      log2_D, RR_SKIP_CHECK);
+    if(!rc)
+     {
+      flint_printf("Exception (det_divisor_rational_reconstruction): "
+                     "Rational reconstruction failed.\n");
+      abort();
+     }
+    if( fmpz_cmp_ui(found,1) )
+     {
+      mul_mpz_fmpz( d, found );
+      if( i != n-1 )
+       {
+        // Decrease denominator bound, maybe decrease M
+        if( !fmpz_cmp_ui(D,0) )
+         {
+          fmpz_set_ui(D,1); fmpz_mul_2exp(D,D,log2_D);
+         }
+        fmpz_fdiv_q(D, D, found);
+        M_modified |= maybe_decrease_M_2x(M,&log2_M,log2_N,D);
+        // multiply d_mod_M by found and reduce result modulo M
+        if(M_modified)
+         {
+          mpz_mod_2x(d_mod_M,log2_M);
+          fmpz_mod_2x(found,log2_M);
+         }
+        MulMod_fmpz_2x(d_mod_M, found, log2_M);
+       }
+     }
+   }
+  fmpz_clear(D);
+  fmpz_clear(found);
+  mpz_clear(d_mod_M);
+  #endif
  }
 
 #undef RR_SKIP_CHECK
