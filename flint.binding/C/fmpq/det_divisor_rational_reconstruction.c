@@ -35,12 +35,35 @@ Decreasing modulo/reusing discovered denominator trick learnt from solve1()
 
 void __inline__ static
 MulMod_fmpz(mpz_t tgt,const fmpz_t sou,const mpz_t M)
+// multiply positive numbers modulo M
+ {
+  fmpz s=*sou;
+  if( COEFF_IS_MPZ(s) )
+   mpz_mul(tgt,tgt, COEFF_TO_PTR(s) );
+  else
+   mpz_mul_ui(tgt,tgt,s);
+  mpz_mod(tgt,tgt,M);
+ }
+
+void __inline__ static
+MulMod_2x(mpz_t tgt,const mpz_t sou,slong log2_M)
+// multiply positive numbers modulo 2**log2_M
+ {
+  // TODO: implement or find a recursive algorithm to multiply gmp integers
+  //  modulo degree of 2
+  mpz_mul(tgt,tgt,sou);
+  mpz_mod_2x(tgt,log2_M);
+ }
+
+void __inline__ static
+MulMod_fmpz_2x(mpz_t tgt,const fmpz_t sou,slong log2_M)
+// multiply positive numbers modulo 2**log2_M
  {
   if(fmpz_fits_si(sou))
    mpz_mul_si(tgt, tgt, fmpz_get_si(sou));
   else
    mpz_mul(tgt,tgt,COEFF_TO_PTR(*sou));
-  mpz_mod(tgt,tgt,M);
+  mpz_mod_2x(tgt,log2_M);
  }
 
 void lcm_2arg(mpz_t tgt,const fmpz_t sou)
@@ -57,7 +80,7 @@ void lcm_2arg(mpz_t tgt,const fmpz_t sou)
 
 int __inline__ static
 maybe_decrease_M(mpz_t M,mp_limb_t p,mp_limb_t log2_N,fmpz_t D)
-// divide M by p so new M is still bigger than 2*N*D
+// divide M by p so new M is still equal or greater than 2*N*D
  {
   int decreased=0;
   mpz_t b; mpz_init(b);
@@ -73,6 +96,20 @@ maybe_decrease_M(mpz_t M,mp_limb_t p,mp_limb_t log2_N,fmpz_t D)
    }
   mpz_clear(b);
   return decreased;
+ }
+
+int __inline__ static
+maybe_decrease_M_2x(mpz_t Mold,slong* log2_Mold,mp_limb_t log2_N,fmpz_t D)
+// possibly decrease M so it still a degree of 2 and not smaller than 2*N*D
+ {
+  slong log2_M=fmpz_clog_ui(D,2)+1+log2_N;
+  if(log2_M < *log2_Mold)
+   {
+    mpz_set_ui(Mold,1); mpz_mul_2exp(Mold,Mold,log2_M);
+    *log2_Mold = log2_M;
+    return 1;
+   }
+  return 0;
  }
 
 int __inline__ static
@@ -113,7 +150,7 @@ fmpz_cmp_log2(const fmpz_t x,mp_limb_t y)
 #define RR_tome0                   \
     fmpz_t q, r, s, t;              \
     int success = 0;                  \
-    if (fmpz_cmpabs_log2(a, N2) <= 0)    \
+    if (fmpz_cmpabs_log2(a, N2) <= 0)   \
     {                                 \
         fmpz_set(n, a);              \
         fmpz_one(d);                 \
@@ -366,9 +403,10 @@ x: vector of length n, x*A equals B modulo M, 0 <= x[i] < M, det A is odd
 M=2**log2_M
 log2_N: upper approximation to log2(numerator bound)
 log2_D: upper approximation to log2(denominator bound)
+ 
+essentially the same algorithm as det_divisor_rational_reconstruction() 
 */
  {
-  #if 0
   mpz_t d_mod_M; mpz_init_set_ui(d_mod_M,1);
   fmpz_t found; fmpz_init(found);
   fmpz_t D; fmpz_init(D); // D=0
@@ -418,9 +456,9 @@ log2_D: upper approximation to log2(denominator bound)
   fmpz_clear(D);
   fmpz_clear(found);
   mpz_clear(d_mod_M);
-  #endif
  }
 
+#undef ROT
 #undef RR_SKIP_CHECK
 #undef MulMod
 #undef NDEBUG
