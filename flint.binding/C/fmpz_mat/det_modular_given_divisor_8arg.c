@@ -114,7 +114,7 @@ iT on entry just found prime pp->p
 */
  {
   // loop bound = 2*H.B / known det divisor
-  decrease_bound_fmpz(hadamard_log2,pr,det);
+  decrease_bound_mpz(hadamard_log2,pr,det);
 
   #if 0
    flint_printf("det modulo %llX = %llX\n",pp->p_deg_k,xmod);

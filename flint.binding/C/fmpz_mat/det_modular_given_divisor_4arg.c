@@ -104,7 +104,7 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
   for(;;)
    {
     mp_limb_t divisor_inv=_choose_prime_20140912(&pp, &Amod->mod, iT, r);
-    mpz_mat_get_nmod_mat(Amod, A);
+    fmpz_mat_get_nmod_mat(Amod, A);
     mp_limb_t xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
     xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
     fmpz_CRT_ui(xnew, x,prod, xmod,pp.p_deg_k, 1);

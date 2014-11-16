@@ -346,9 +346,7 @@ Algorithm behind this subroutine inspired by Victor Shoup solve1() subroutine
   #if RAT_REC_TAKES_D_SERIOUSLY
    // if d>1 then mix it into x[]
    if( mpz_cmp_ui(d,1)>0 )
-    {
-     MulMod( x, d, M );
-    }
+    MulMod( x, d, M );
   #endif
   for(i=0,xI=x; i<n; i++,xI++)
    {
@@ -402,8 +400,8 @@ rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,slong log2_M,
 d: on entry = 1, on exit common denominator of reconstructed salvation
 x: vector of length n, x*A equals B modulo M, 0 <= x[i] < M, det A is odd
 M=2**log2_M
-log2_N: upper approximation to log2(numerator bound)
-log2_D: upper approximation to log2(denominator bound)
+log2_N: upper approximation to log2(numerator bound), >= FLINT_BITS
+log2_D: upper approximation to log2(denominator bound), >= FLINT_BITS
  
 essentially the same algorithm as det_divisor_rational_reconstruction() 
 */
@@ -428,7 +426,7 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
       log2_D, RR_SKIP_CHECK);
     if(!rc)
      {
-      flint_printf("Exception (det_divisor_rational_reconstruction): "
+      flint_printf("Exception (rational_reconstruction_2deg): "
                      "Rational reconstruction failed.\n");
       abort();
      }

@@ -8,16 +8,19 @@
 #include <flint/flint.h>
 #include "../fmpz_mat/fmpz_mat_.h"
 
-//#include "det_divisor_odd.c"
+#include "det_divisor_odd.c"
+mp_limb_t fmpz_mat_det_divisor_odd(mpz_t r, mp_limb_t* det_mod_T, fmpz_mat_t);
 
 void fmpz_mat_det_odd(fmpz_t r,const fmpz_mat_t a)
  {
-  flint_printf("fmpz_mat_det_odd() A:\n");
-  fmpz_mat_print_pretty(a);
-  abort();
+  #if 0
+   flint_printf("fmpz_mat_det_odd() A:\n");
+   fmpz_mat_print_pretty(a);
+   abort();
+  #endif
   mp_limb_t det_mod_T;
   mpz_t m; mpz_init_set_ui(m, 1);
-  #if 0
+  #if 1
   mp_limb_t hb=fmpz_mat_det_divisor_odd(m, &det_mod_T, a);
   if( hb )
    fmpz_mat_det_modular_given_divisor_4arg(m, hb, det_mod_T, a);

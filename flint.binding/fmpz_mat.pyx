@@ -30,6 +30,10 @@ cdef extern from 'C/fmpz_mat/det_modular_given_divisor_4block.c':
  void fmpz_mat_det_modular_given_divisor_4block(fmpz_t det,const fmpz_mat_t A,
   fmpz_t divisor)
 
+cdef extern from 'C/fmpz_mat/det_modular_given_divisor_4arg.c':
+ void fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
+  mp_limb_t det_mod_T, fmpz_mat_t A)
+
 cdef extern from 'C/fmpz_mat/det.c':
  void fmpz_mat_det_4block(fmpz_t r, const fmpz_mat_t A)
 

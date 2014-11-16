@@ -335,7 +335,7 @@ fmpz_mat_det_divisor_7arg(mpz_t r,const fmpz_mat_t Ao, nmod_mat_t Amod,
  {
   #if RAT_REC_TAKES_D_SERIOUSLY
    // divide denominator bound by known det divisor r
-   decrease_bound_fmpz(denominator_b,pr,r);
+   decrease_bound_mpz(denominator_b,pr,r);
    #if LOUD_DET_BOUND
     mpfr_printf("H.B. for Dixon (log2): %Rf\n",denominator_b);
    #endif
