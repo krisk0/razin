@@ -299,4 +299,23 @@ mpz_mod_2x(mpz_t r,slong x)
 
 #undef SURELY_REDUCE_SIZE
 
+__inline__ void
+fmpz_mod_2x(fmpz_t r,slong x)
+// reduce positive r modulo 2**x
+ {
+  fmpz c=*r;
+  if( COEFF_IS_MPZ(c) )
+   {
+    mpz_mod_2x(COEFF_TO_PTR(c), x);
+    // r might get very small
+    _fmpz_demote_val(r);
+   }
+  else
+   {
+    if(x >= FLINT_BITS)
+     return;   // r already smaller than 2**64<=2**x
+    *r &= (UWORD(1)<<x)-1;
+   }
+ }
+
 #endif
