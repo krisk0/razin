@@ -59,10 +59,11 @@ void __inline__ static
 MulMod_fmpz_2x(mpz_t tgt,const fmpz_t sou,slong log2_M)
 // multiply positive numbers modulo 2**log2_M
  {
-  if(fmpz_fits_si(sou))
-   mpz_mul_si(tgt, tgt, fmpz_get_si(sou));
+  fmpz s=*sou;
+  if( COEFF_IS_MPZ(s) )
+   mpz_mul(tgt,tgt, COEFF_TO_PTR(s) );
   else
-   mpz_mul(tgt,tgt,COEFF_TO_PTR(*sou));
+   mpz_mul_ui(tgt,tgt,s);
   mpz_mod_2x(tgt,log2_M);
  }
 
