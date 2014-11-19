@@ -10,6 +10,7 @@
 #include "../fmpz_mat/fmpz_mat_.h"
 
 #define LOUD_smallDet_matrice 0
+#define po(x) flint_printf("%s\n",x);
 
 static __inline__ void
 inverse_smallDet_HNF(fmpz_mat_t r,fmpz_t d,const nmod_mat_t a)
@@ -119,15 +120,24 @@ Otherwise
   fmpz_set_ui(r,d0); fmpz_mul_ui(r,r,d1);
   if( d1 < UWORD(1)<<(FLINT_BITS-1) )
    {
-    // b = b/a
-    inverse_smallDet_HNF(i,di, a);
-    nmod_mat_clear(a);
-    fmpz_mat_t c; 
-    _divide_away(c,b,i,di,n);
-    fmpz_mat_clear(b);
-    memcpy(b, c, sizeof(b));
-    fmpz_clear(di);
-    fmpz_mat_clear(i);
+    // b = b/a if d1>1
+    if(d1>1)
+     {
+      inverse_smallDet_HNF(i,di, a);
+      nmod_mat_clear(a);
+      fmpz_mat_t c; fmpz_mat_init(c,n,n);
+      _divide_away(c,b,i,di,n);
+      fmpz_mat_clear(b);
+      memcpy(b, c, sizeof(fmpz_mat_struct));
+      fmpz_clear(di);
+      fmpz_mat_clear(i);
+     }
+    else
+     {
+      nmod_mat_clear(a);
+      fmpz_clear(di);
+      fmpz_mat_clear(i);
+     }
     return 1;
    }
   nmod_mat_clear(a);
@@ -138,3 +148,4 @@ Otherwise
  }
 
 #undef NDEBUG
+#undef po
