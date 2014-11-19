@@ -5,7 +5,7 @@
 #ifndef FMPZ__H
 #define FMPZ__H
 
-// mpz/mpq/fmpz manipulation macros/functions
+// mpz/mpq/fmpz/mpfr manipulation macros/functions
 
 #include <flint/flint.h>
 #include <flint/fmpz.h>
@@ -331,5 +331,8 @@ fmpz_mod_2x(fmpz_t r,slong x)
     *r &= (UWORD(1)<<x)-1;
    }
  }
+
+#define MPFR_INIT(x) { mpfr_init(x); mpfr_set_ui(x,0,MPFR_RNDU); }
+#define MPFR_INIT2(x,y) { mpfr_init2(x,y); mpfr_set_ui(x,0,MPFR_RNDU); }
 
 #endif
