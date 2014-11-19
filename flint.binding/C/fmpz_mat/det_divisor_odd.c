@@ -72,13 +72,13 @@ _20140914_log2_L2(mpfr_t tgt,const fmpz* vec,slong n)
     i=2;
     i_is_big=1;
    }
-  mpfr_t normF; MPFR_INIT2(normF,i*FLINT_BITS);
+  mpfr_t normF; mpfr_init2(normF,i*FLINT_BITS);
   fmpz_get_mpfr(normF,norm,MPFR_RNDU);
   fmpz_clear(norm);
   if(i_is_big)
-   MPFR_INIT2(tgt,1+FLINT_BITS)
+   mpfr_init2(tgt,1+FLINT_BITS);
   else
-   MPFR_INIT(tgt);
+   mpfr_init(tgt);
   mpfr_log2(tgt, normF, MPFR_RNDU);
   //mpfr_printf("log2 of %Rf equals %Rf\n",normF,tgt);
   mpfr_clear(normF);
@@ -93,13 +93,13 @@ _20140914_Hadamard(__mpfr_struct* e,mpfr_prec_t* b,const fmpz_mat_t A,slong n)
   slong smallest_row=0,i;
   mpfr_prec_t pr_max,pr;
   pr_max=pr=_20140914_log2_L2(e, A->rows[0], n);
-  mpfr_printf("row0 L2 norm=%Rf\n",e);
+  //mpfr_printf("row0 L2 norm=%Rf\n",e);
   __mpfr_struct* eM=e;
   __mpfr_struct* eP;
   for(i=1,eP=e+1;i<n;i++,eP++)
    {
     pr=_20140914_log2_L2(eP, A->rows[i], n);
-    mpfr_printf("row %d L2 norm=%Rf\n",i,eP);
+    //mpfr_printf("row %d L2 norm=%Rf\n",i,eP);
     if(pr>pr_max)
      pr_max=pr;
     if( mpfr_cmp(eP,eM) < 0 )
@@ -115,7 +115,7 @@ _20140914_Hadamard(__mpfr_struct* e,mpfr_prec_t* b,const fmpz_mat_t A,slong n)
 static __inline__ void
 _20140914_lift_bound(mpfr_t x)
  {
-  if(mpfr_cmp_si(x,FLINT_BITS)<0)
+  if(mpfr_cmp_ui(x,FLINT_BITS)<0)
    mpfr_set_ui(x,FLINT_BITS,MPFR_RNDU);
  }
 
@@ -125,7 +125,7 @@ Hadamard_Cramer(mpfr_t h,mpfr_t c,mp_limb_t rp_norm,const fmpz_mat_t A,slong n)
   __mpfr_struct* e=flint_malloc( sizeof(__mpfr_struct)*n );
   mpfr_prec_t b;
   slong smallest_row=_20140914_Hadamard(e,&b,A,n);
-  MPFR_INIT2(h,b); MPFR_INIT2(c,b);
+  MPFR_INIT2(h,b); mpfr_init2(c,b);
   slong i;
   __mpfr_struct* t;
   for(i=0,t=e; i<n; i++,t++)
@@ -134,7 +134,7 @@ Hadamard_Cramer(mpfr_t h,mpfr_t c,mp_limb_t rp_norm,const fmpz_mat_t A,slong n)
   {
    mpfr_t q,r;
    mpfr_init_set_ui(q,rp_norm,MPFR_RNDU);
-   MPFR_INIT(r);
+   mpfr_init(r);
    mpfr_log2(r,q,MPFR_RNDU);
    mpfr_set(c,r,MPFR_RNDU);
    mpfr_clear(r);
@@ -163,7 +163,7 @@ h>=1+FLINT_BITS, c>=FLINT_BITS
 
 slong _20140914_max_i(mpfr_t Ha, mpfr_t Cr)
  {
-  mpfr_printf("hb=%Rf cb=%Rf\n",Ha,Cr);
+  //mpfr_printf("hb=%Rf cb=%Rf\n",Ha,Cr);
   return (mpfr_get_uj(Ha,MPFR_RNDU)-1+mpfr_get_uj(Cr,MPFR_RNDU)+
            FLINT_BITS-1)/FLINT_BITS;
  }
@@ -409,3 +409,5 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
 
 #undef STABLE_RP
 #undef SHOW_DIXON_RESULT
+#undef po
+
