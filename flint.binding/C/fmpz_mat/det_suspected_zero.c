@@ -210,10 +210,9 @@ det_divisor_mul_add_divide(mpz_ptr b,const mp_limb_t* y,
   for(i=0,pB=b;i<n;i++,pB++)
    {
     mpz_t s; mpz_init2(s, w[i]);
-    // TODO: what if mp_limb_t is not unsigned long?
     for(j=n,pM=m_rows[i],pY=y;j--;pM++,pY++)
      {
-      mpz_mul_ui(s, pM, *pY);
+      flint_mpz_mul_ui(s, pM, *pY);
       mpz_add(pB, pB, s);
      }
     mpz_clear(s);

@@ -343,9 +343,9 @@ _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
  {
   mpz_ptr xP,x=flint_malloc( sizeof(__mpz_struct)*n );
   slong i;
-  for(i=0,xP=x;i<n;xP++,i++)
+  for(i=0,xP=x; i<n; xP++,i++)
    {
-    mpz_init2(xP, max_i);
+    mpz_init2(xP, max_i*FLINT_BITS);
     _20140914_y_to_x(xP, i, y, max_i, n);
    }
   _20140914_x_to_d(r, x, n, max_i, hb, cb);
@@ -488,6 +488,11 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   mp_limb_t hb_i=mpfr_get_uj(hb,MPFR_RNDU);
   mpfr_clear(hb);
   flint_free(Bo);
+  #if SHOW_DIXON_RESULT
+   gmp_printf("fmpz_mat_det_divisor_odd() found divisor %Zd\n",r);
+   gmp_printf("det modulo t=%Md\n",det_mod_T[0]);
+   gmp_printf("fmpz_mat_det_divisor_odd() returning %Md\n",hb_i);
+  #endif
   return hb_i;
  }
 
