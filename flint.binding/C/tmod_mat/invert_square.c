@@ -193,6 +193,8 @@ R=         *
    }
  }
 
+
+
 static __inline__ void
 _20141102_shift_rows(tmod_mat_t R, tmod_mat_t Q, mp_limb_t* P, slong n, 
   int P_parity)
@@ -215,12 +217,10 @@ _20141102_shift_rows(tmod_mat_t R, tmod_mat_t Q, mp_limb_t* P, slong n,
    for(i=0;i<n;i++)
     memcpy(C[i],B[i],size);
    // matrix contents copied
+   R->rows=C; Q->rows=B;
   }
   {
-   tmod_mat_t S;
-   memcpy(S,R,sizeof(tmod_mat_struct));
-   memcpy(R,Q,sizeof(tmod_mat_struct));
-   memcpy(Q,S,sizeof(tmod_mat_struct));
+   MP_PTR_SWAP(R->entries,Q->entries);
   }
  }
 
