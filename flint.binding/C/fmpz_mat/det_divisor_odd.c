@@ -5,6 +5,9 @@
 #undef NDEBUG
 #include <assert.h>
 
+#define po(x) flint_printf("%s\n",x);
+#define SHOW_DIXON_RESULT 1
+
 void rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,
   slong log2_M,mp_limb_t log2_N,mp_limb_t log2_D);
 mp_limb_t tmod_mat_invert_transpose(tmod_mat_t R, const tmod_mat_t S);
@@ -18,7 +21,7 @@ mp_limb_t tmod_mat_invert_transpose(tmod_mat_t R, const tmod_mat_t S);
    if(0==b[m])              \
     break;                   \
   }                           \
- b[m]=2*(sign&1)-1; \
+ b[m]=2*(sign&1)-1;            \
  sign >>= 1;                   \
  ++thrown;
 
@@ -47,6 +50,12 @@ _20140914_form_b(mp_limb_t* b,slong n)
    }
   flint_randclear(rst);
   #undef THROW
+  #if SHOW_DIXON_RESULT
+   flint_printf("0 b=");
+   for(i=0;i<n;i++)
+    flint_printf("%d,",(slong)b[i]);
+   flint_printf("\n");
+  #endif
   return thrown;
  }
 
@@ -63,14 +72,15 @@ _20140914_log2_L2(mpfr_t tgt,const fmpz* vec,slong n)
     i=2;
     i_is_big=1;
    }
-  mpfr_t normF; mpfr_init2(normF,i*FLINT_BITS);
+  mpfr_t normF; MPFR_INIT2(normF,i*FLINT_BITS);
   fmpz_get_mpfr(normF,norm,MPFR_RNDU);
   fmpz_clear(norm);
   if(i_is_big)
-   mpfr_init2(tgt,1+FLINT_BITS);
+   MPFR_INIT2(tgt,1+FLINT_BITS)
   else
-   mpfr_init(tgt);
+   MPFR_INIT(tgt);
   mpfr_log2(tgt, normF, MPFR_RNDU);
+  //mpfr_printf("log2 of %Rf equals %Rf\n",normF,tgt);
   mpfr_clear(normF);
   if(i_is_big)
    return 1+FLINT_BITS;
@@ -83,11 +93,13 @@ _20140914_Hadamard(__mpfr_struct* e,mpfr_prec_t* b,const fmpz_mat_t A,slong n)
   slong smallest_row=0,i;
   mpfr_prec_t pr_max,pr;
   pr_max=pr=_20140914_log2_L2(e, A->rows[0], n);
+  mpfr_printf("row0 L2 norm=%Rf\n",e);
   __mpfr_struct* eM=e;
   __mpfr_struct* eP;
   for(i=1,eP=e+1;i<n;i++,eP++)
    {
     pr=_20140914_log2_L2(eP, A->rows[i], n);
+    mpfr_printf("row %d L2 norm=%Rf\n",i,eP);
     if(pr>pr_max)
      pr_max=pr;
     if( mpfr_cmp(eP,eM) < 0 )
@@ -103,7 +115,7 @@ _20140914_Hadamard(__mpfr_struct* e,mpfr_prec_t* b,const fmpz_mat_t A,slong n)
 static __inline__ void
 _20140914_lift_bound(mpfr_t x)
  {
-  if(mpfr_cmp_ui(x,FLINT_BITS)<0)
+  if(mpfr_cmp_si(x,FLINT_BITS)<0)
    mpfr_set_ui(x,FLINT_BITS,MPFR_RNDU);
  }
 
@@ -113,16 +125,16 @@ Hadamard_Cramer(mpfr_t h,mpfr_t c,mp_limb_t rp_norm,const fmpz_mat_t A,slong n)
   __mpfr_struct* e=flint_malloc( sizeof(__mpfr_struct)*n );
   mpfr_prec_t b;
   slong smallest_row=_20140914_Hadamard(e,&b,A,n);
-  mpfr_init2(h,b); mpfr_init2(c,b);
+  MPFR_INIT2(h,b); MPFR_INIT2(c,b);
   slong i;
   __mpfr_struct* t;
-  for(i=0,t=e;i<n;i++,t++)
+  for(i=0,t=e; i<n; i++,t++)
    if(i!=smallest_row)
     mpfr_add(h,h,t,MPFR_RNDU);
   {
    mpfr_t q,r;
    mpfr_init_set_ui(q,rp_norm,MPFR_RNDU);
-   mpfr_init(r);
+   MPFR_INIT(r);
    mpfr_log2(r,q,MPFR_RNDU);
    mpfr_set(c,r,MPFR_RNDU);
    mpfr_clear(r);
@@ -151,12 +163,9 @@ h>=1+FLINT_BITS, c>=FLINT_BITS
 
 slong _20140914_max_i(mpfr_t Ha, mpfr_t Cr)
  {
-  mpfr_t t; mpfr_init2(t, mpfr_get_prec(Ha));
-  mpfr_add(t,Ha,Cr,MPFR_RNDU);
-  mpfr_div_ui(t,t,FLINT_BITS,MPFR_RNDU);
-  slong r=mpfr_get_si(t,MPFR_RNDU);
-  mpfr_clear(t);
-  return r;
+  mpfr_printf("hb=%Rf cb=%Rf\n",Ha,Cr);
+  return (mpfr_get_uj(Ha,MPFR_RNDU)-1+mpfr_get_uj(Cr,MPFR_RNDU)+
+           FLINT_BITS-1)/FLINT_BITS;
  }
 
 static __inline__ mp_limb_t
@@ -170,6 +179,7 @@ _20140914_matrix(tmod_mat_t inv_tr,mpz_square_mat_t tr_neg,const fmpz_mat_t s,
   // mpz_square_mat_init_transpose_fmpz(tr_neg,s);
   {
    mpz_ptr t0=flint_malloc(n*n*sizeof(__mpz_struct));
+   tr_neg->rows=flint_malloc(n*sizeof(void*));
    tr_neg->entries=t0;
    tr_neg->r=n;
    fmpz** const s_rows=s->rows;
@@ -177,7 +187,7 @@ _20140914_matrix(tmod_mat_t inv_tr,mpz_square_mat_t tr_neg,const fmpz_mat_t s,
    mp_limb_t* t1=x->entries;
    slong i,j;
    // transfer row 0, fill tr_neg->rows[]
-   for(i=0;i<n;i++,g++,t0 += n,t1++)
+   for(i=0; i<n; i++,g++,t0 += n,t1++)
     {
      tr_neg->rows[i]=t0;
      mpz_init(t0); fmpz_get_mpz(t0, g);
@@ -308,6 +318,13 @@ _20140914_x_to_d(mpz_t d, mpz_ptr x, slong n, slong k,
 // feed correct args to rational_reconstruction_2deg()
  {
   mpz_t M; mpz_init_set_ui(M,1); mpz_mul_2exp(M,M,k *= FLINT_BITS);
+  #if SHOW_DIXON_RESULT
+   gmp_printf("x=");
+   int i;
+   for(i=0; i<n; i++)
+    gmp_printf("%Zd,",x+i);
+   gmp_printf("\n");
+  #endif
   rational_reconstruction_2deg(d,x,n,M,k,
     mpfr_get_uj(hb_plus_1,MPFR_RNDU)-1,
     mpfr_get_uj(cb,MPFR_RNDU)
@@ -317,7 +334,7 @@ _20140914_x_to_d(mpz_t d, mpz_ptr x, slong n, slong k,
 
 static __inline__ void
 _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
-  const mpfr_t hb,const mpfr_t cb)
+  const mpfr_t hb, const mpfr_t cb)
  {
   mpz_ptr xP,x=flint_malloc( sizeof(__mpz_struct)*n );
   slong i;
@@ -339,16 +356,20 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   slong n=Ao->r;
   mp_limb_t* Bo=flint_calloc(sizeof(mp_limb_t),n);
   mpfr_t hb,cb;
+  po("callin rp_Hadamard_Cramer()")
   rp_Hadamard_Cramer(Bo,hb,cb,Ao,n);
   // group 0: Bo, hb, cb
   slong max_i=_20140914_max_i(hb,cb);
+  flint_printf("max_i=%d\n",max_i);
   tmod_mat_t A_inv_tr;
   mpz_square_mat_t A_tr_neg;
   *det_mod_T=_20140914_matrix(A_inv_tr,A_tr_neg,Ao,n);
+  po("matrix end")
   // group 1: A_inv_tr, A_tr_neg
   tmod_mat_t Y; tmod_mat_init_fast(Y, max_i, n);
   mpz_ptr B=flint_malloc( sizeof(__mpz_struct)*n );
   det_divisor_init_zero_b(B, n, A_tr_neg);
+  po("B allocated")
   // group 2: Y, B
   #if 0
    for i in range(max_i):
@@ -358,16 +379,21 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
    rational reconstruction(x)
   #endif
   _20140914_count_y_step0( Y->entries, Bo, A_inv_tr, n );
+  po("y0 counted")
   _20140914_update_B_step0( B, A_tr_neg, Y->entries, Bo, n );
+  po("B 0 counted")
   slong i;
   for(i=1;i<max_i;i++)
    {
     _20140914_count_y_main( Y->rows[i], B, A_inv_tr, n );
     _20140914_update_B_main( B, A_tr_neg, Y->rows[i], n );
    }
+  po("loop done")
   // group 2
   clear_mpz_array(B, n);
+  po("rec st")
   _20140914_ratnl_rcnstrction(r, Y, max_i, n, hb, cb);
+  po("rec end")
   tmod_mat_clear(Y);
   // group 1
   mpz_square_mat_clear(A_tr_neg);
@@ -382,3 +408,4 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
  }
 
 #undef STABLE_RP
+#undef SHOW_DIXON_RESULT
