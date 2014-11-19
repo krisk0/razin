@@ -342,10 +342,10 @@ _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
   const mpfr_t hb, const mpfr_t cb)
  {
   mpz_ptr xP,x=flint_malloc( sizeof(__mpz_struct)*n );
-  slong i;
+  slong i,b=max_i*FLINT_BITS;
   for(i=0,xP=x; i<n; xP++,i++)
    {
-    mpz_init2(xP, max_i*FLINT_BITS);
+    mpz_init2(xP, b);
     _20140914_y_to_x(xP, i, y, max_i, n);
    }
   _20140914_x_to_d(r, x, n, max_i, hb, cb);
