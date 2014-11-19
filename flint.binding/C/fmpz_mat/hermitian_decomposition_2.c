@@ -91,7 +91,7 @@ Otherwise
   mp_limb_t d0=nmod_mat_diag_product_ZZ_ui(a);
   if(d0==1)
    {
-    memcpy(b, m, sizeof(fmpz_mat_t));
+    memcpy(b, m, sizeof(fmpz_mat_struct));
     nmod_mat_clear(a);
     fmpz_set_ui(r,UWORD(1));
     return 0;
