@@ -7,6 +7,7 @@
 
 #define po(x) flint_printf("%s\n",x);
 #define SHOW_DIXON_RESULT 1
+#define DIXON_INTERNAL_CHECK 1
 
 void rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,
   slong log2_M,mp_limb_t log2_N,mp_limb_t log2_D);
@@ -191,7 +192,7 @@ _20140914_matrix(tmod_mat_t inv_tr,mpz_square_mat_t tr_neg,const fmpz_mat_t s,
     {
      tr_neg->rows[i]=t0;
      mpz_init(t0); fmpz_get_mpz(t0, g);
-     t1[0]=flint_mpz_get_ui(t0);
+     t1[0]=mpz_to_t(t0);
     }
    for(j=1;j<n;j++)
     {
@@ -201,7 +202,7 @@ _20140914_matrix(tmod_mat_t inv_tr,mpz_square_mat_t tr_neg,const fmpz_mat_t s,
      for(i=n;i--;g++,t0 += n,t1++)
       {
        mpz_init(t0); fmpz_get_mpz(t0, g);
-       t1[0]=flint_mpz_get_ui(t0);
+       t1[0]=mpz_to_t(t0);
       }
     }
   }
@@ -264,7 +265,9 @@ a virgin
     mpz_set_si(bP, (unsigned long) b0[i]);
     for(j=0;j<n;j++,aP++)
      flint_mpz_addmul_ui(bP,aP,y[j]);
-    assert( 0==mpz_getlimbn(bP,0) );
+    #if DIXON_INTERNAL_CHECK
+     assert( 0==mpz_getlimbn(bP,0) );
+    #endif
     mpz_shift_right_1limb(bP);
    }
  }
@@ -285,7 +288,9 @@ a virgin
    {
     for(j=0;j<n;j++,aP++)
      flint_mpz_addmul_ui(bP,aP,y[j]);
-    assert( 0==mpz_getlimbn(bP,0) );
+    #if DIXON_INTERNAL_CHECK
+     assert( 0==mpz_getlimbn(bP,0) );
+    #endif
     mpz_shift_right_1limb(bP);
    }
  }
@@ -347,24 +352,96 @@ _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
   clear_mpz_array(x, n);
  }
 
+static void
+_20140914_check_y0(mp_limb_t* y, mp_limb_t* b, fmpz_mat_t a, slong n)
+// abort unless y*a equals b modulo T
+ {
+  slong i,j;
+  mp_limb_t sum;
+  for(i=0; i<n; i++)
+   {
+    sum=0;
+    for(j=0; j<n; j++)
+     sum += y[j] * fmpz_to_t( fmpz_mat_entry(a,j,i) );
+    if( sum != b[i] )
+     {
+      gmp_printf("%Mu != %Mu\n",sum,b[i]);
+      flint_printf("y*a not equals b, i=%d, y=",i);
+      for(j=0; j<n; j++)
+       gmp_printf("%Mu,",y[j]);
+      flint_printf("\n");
+      abort();
+     }
+   }
+ }
+
+static void
+_20140914_check_yI(mp_limb_t* y, mpz_ptr b, fmpz_mat_t a, slong n)
+// abort unless y*a equals b modulo T
+ {
+  slong i,j;
+  mp_limb_t sum;
+  for(i=0; i<n; i++)
+   {
+    sum=0;
+    for(j=0; j<n; j++)
+     sum += y[j] * fmpz_to_t( fmpz_mat_entry(a,j,i) );
+    if( sum != mpz_mod_T(b+i) )
+     {
+      flint_printf("y*a not equals b, i=%d\n",i);
+      abort();
+     }
+   }
+ }
+
+static void
+_20140914_check_A_inv_tr(tmod_mat_t inv_tr, fmpz_mat_t s, slong n)
+// abort unless inv_tr * s transposed equals identity
+ {
+  mp_limb_t e=0;
+  slong i,j;
+  for(i=0; i<n; i++)
+   for(j=0; j<n; j++)
+    {
+     mp_limb_t p=dot_modulo_t_kind0( inv_tr->rows[i], s->rows[j], n );
+     if( (i==j) && (p!=1) )
+      e=2;
+     if( (i!=j) && (p!=0) )
+      e=2;
+     if(e)
+      {
+       gmp_printf("i/j=%d/%d p=0x%MX\n",i,j,p);
+       gmp_printf("A_inv_tr check negative\n");
+       abort();
+      }
+    }
+ }
+
 mp_limb_t
 fmpz_mat_det_divisor_odd(mpz_t r, mp_limb_t* det_mod_T, fmpz_mat_t Ao)
 /*
 returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
 */
  {
+  flint_printf("det_divisor_odd() source matrice\n"); fmpz_mat_print_pretty(Ao);
   slong n=Ao->r;
   mp_limb_t* Bo=flint_calloc(sizeof(mp_limb_t),n);
   mpfr_t hb,cb;
   po("callin rp_Hadamard_Cramer()")
   rp_Hadamard_Cramer(Bo,hb,cb,Ao,n);
+  //TODO: run special algorithm when H.B. is small
   // group 0: Bo, hb, cb
   slong max_i=_20140914_max_i(hb,cb);
   flint_printf("max_i=%d\n",max_i);
   tmod_mat_t A_inv_tr;
   mpz_square_mat_t A_tr_neg;
   *det_mod_T=_20140914_matrix(A_inv_tr,A_tr_neg,Ao,n);
-  po("matrix end")
+  #if DIXON_INTERNAL_CHECK
+   tmod_mat_print_hex("A inv transposed modulo T:",A_inv_tr);
+   _20140914_check_A_inv_tr(A_inv_tr,Ao,n);
+  #else
+   po("matrix end")
+  #endif
   // group 1: A_inv_tr, A_tr_neg
   tmod_mat_t Y; tmod_mat_init_fast(Y, max_i, n);
   mpz_ptr B=flint_malloc( sizeof(__mpz_struct)*n );
@@ -379,13 +456,20 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
    rational reconstruction(x)
   #endif
   _20140914_count_y_step0( Y->entries, Bo, A_inv_tr, n );
-  po("y0 counted")
+  #if DIXON_INTERNAL_CHECK
+   _20140914_check_y0(Y->entries, Bo, Ao, n);
+   po("y0 counted")
+  #endif
   _20140914_update_B_step0( B, A_tr_neg, Y->entries, Bo, n );
   po("B 0 counted")
   slong i;
   for(i=1;i<max_i;i++)
    {
     _20140914_count_y_main( Y->rows[i], B, A_inv_tr, n );
+    #if DIXON_INTERNAL_CHECK
+     _20140914_check_yI(Y->rows[i], B, Ao, n);
+     po("yi counted")
+    #endif
     _20140914_update_B_main( B, A_tr_neg, Y->rows[i], n );
    }
   po("loop done")
@@ -410,4 +494,4 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
 #undef STABLE_RP
 #undef SHOW_DIXON_RESULT
 #undef po
-
+#undef DIXON_INTERNAL_CHECK

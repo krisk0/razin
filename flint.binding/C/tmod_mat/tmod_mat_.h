@@ -23,6 +23,8 @@ typedef tmod_mat_struct tmod_mat_t[1];
 
 void tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols);
 void tmod_mat_clear(tmod_mat_t mat);
+void tmod_mat_print_hex(char* m,const tmod_mat_t S);
+mp_limb_t dot_modulo_t_kind0(mp_limb_t* a, fmpz* b, slong n);
 
 // TODO: this number-oriented subroutine should be in /ulong_extras
 static mp_limb_t inv_mod__2_64__tab[13]={

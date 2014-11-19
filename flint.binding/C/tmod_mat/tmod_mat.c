@@ -98,6 +98,16 @@ fmpz_to_t(const fmpz_t f)
   return m;
  }
 
+mp_limb_t
+dot_modulo_t_kind0( mp_limb_t*a, fmpz* b, slong n )
+// a * b
+ {
+  mp_limb_t s=0;
+  for(;n--; a++,b++)
+   s += a[0] * fmpz_to_t( b );
+  return s;
+ }
+
 #include "tmod_mat_PLU.c"
 #include "tmod_mat_window_unsh.c"
 #include "tmod_mat_invert_LU.c"

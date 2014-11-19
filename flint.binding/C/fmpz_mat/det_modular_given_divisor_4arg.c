@@ -90,6 +90,7 @@ void
 fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
   mp_limb_t det_mod_T, fmpz_mat_t A)
  {
+  // TODO: short-cut when hb<FLINT_BITS
   p_k_pk_t pp; pp.p=0;
   n_primes_rev_t iT;
 

@@ -4,7 +4,7 @@
 
 #include "../ulong_extras/ulong_extras_.h"
 
-static void
+void
 tmod_mat_print_hex(char* m,const tmod_mat_t S)
  {
   slong i,j=FLINT_BITS;
@@ -194,14 +194,32 @@ R=         *
  }
 
 static __inline__ void
-_20141102_shift_rows(tmod_mat_t R, mp_limb_t** C, mp_limb_t* P, slong n)
-// multiply R by permutation matrice on the left. Use C as scratch
+_20141102_shift_rows(tmod_mat_t R, tmod_mat_t Q, mp_limb_t* P, slong n)
+// multiply R by permutation matrice on the left. Use Q as scratch
  {
-  mp_limb_t** B=R->rows;
-  memcpy(C,B,n*sizeof(mp_limb_t**));
-  slong i;
-  for(i=0;i<n;i++)
-   B[ P[i] ]=C[ i ];
+  if(is_identity_permutation(P,n))
+   return;
+  {
+   mp_limb_t** C=Q->rows;
+   mp_limb_t** B=R->rows;
+   memcpy(C,B,n*sizeof(mp_limb_t**));
+   slong i;
+   for(i=0;i<n;i++)
+    B[ P[i] ]=C[ i ];
+   // C destroyed
+   tmod_mat_virginize(Q);
+   // C restored to virgin state
+   slong size=n*sizeof(mp_limb_t);
+   for(i=0;i<n;i++)
+    memcpy(C[i],B[i],size);
+   // matrix contents copied
+  }
+  {
+   tmod_mat_t S;
+   memcpy(S,R,sizeof(tmod_mat_struct));
+   memcpy(R,Q,sizeof(tmod_mat_struct));
+   memcpy(Q,S,sizeof(tmod_mat_struct));
+  }
  }
 
 mp_limb_t
@@ -209,7 +227,7 @@ tmod_mat_invert_transpose(tmod_mat_t R, const tmod_mat_t S)
 /*
 S,R square, virgin
 
-If S in inverible, R:=S inverted transposed, return 1
+If S in inverible, R:=S inverted transposed in virgin state, return 1
 
 Else return 0
 */
@@ -227,7 +245,7 @@ Else return 0
     _20141102_Up(K,R,PR+n,n);
     tmod_mat_virginize(R);
     _20141102_unLU(R,K,n);
-    _20141102_shift_rows(R,K->rows,PR,n);
+    _20141102_shift_rows(R,K,PR,n);
     tmod_mat_clear(K);
    }
   flint_free(PR);

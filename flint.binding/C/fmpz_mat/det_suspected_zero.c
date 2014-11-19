@@ -587,3 +587,8 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
  }
 
 #undef NDEBUG
+#undef DIXON_INTERNAL_CHECK
+#undef LOUD_nmod_mat_in_det_divisor
+#undef LOUD_det_divisor_count_y
+#undef LOUD_DET_RESULT
+#undef LOUD_DET_BOUND

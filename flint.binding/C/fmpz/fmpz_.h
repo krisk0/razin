@@ -335,4 +335,25 @@ fmpz_mod_2x(fmpz_t r,slong x)
 #define MPFR_INIT(x) { mpfr_init(x); mpfr_set_ui(x,0,MPFR_RNDU); }
 #define MPFR_INIT2(x,y) { mpfr_init2(x,y); mpfr_set_ui(x,0,MPFR_RNDU); }
 
+__inline__ mp_limb_t
+mpz_to_t(mpz_ptr x)
+ {
+  slong s=x->_mp_size;
+  if( 0==s )
+   return 0;
+  return s>0 ? x->_mp_d[0] : -x->_mp_d[0];
+ }
+
+__inline__ int
+is_identity_permutation(mp_limb_t* p,slong n)
+ {
+  slong i;
+  for(i=0; i<n; i++)
+   {
+    if( p[i] != (mp_limb_t)i )
+     return 0;
+   }
+  return 1;
+ }
+
 #endif
