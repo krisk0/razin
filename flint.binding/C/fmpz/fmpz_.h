@@ -356,4 +356,35 @@ is_identity_permutation(mp_limb_t* p,slong n)
   return 1;
  }
 
+__inline__ int
+count_permutation_parity(mp_limb_t* P,slong n)
+/*
+linear in space and time
+
+inspired by public-domain code found at 
+ http://www.cap-lore.com/code/ocaml/parity.html
+
+P represented with lower-line
+return 1 iff P is even, -1 otherwise
+*/
+ {
+  int p=0; 
+  mp_limb_t* v=flint_calloc(n,sizeof(mp_limb_t));
+  slong j=n; 
+  while(j--)
+   if(v[j])
+    ++p;
+   else
+    {
+     slong x=j;
+     do 
+      {
+       x = P[x]; v[x]=1;
+      }
+     while(x!=j);
+    }
+  flint_free(v);
+  return 1-2*(p&1);
+ }
+
 #endif

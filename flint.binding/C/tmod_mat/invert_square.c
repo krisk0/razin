@@ -194,10 +194,12 @@ R=         *
  }
 
 static __inline__ void
-_20141102_shift_rows(tmod_mat_t R, tmod_mat_t Q, mp_limb_t* P, slong n)
+_20141102_shift_rows(tmod_mat_t R, tmod_mat_t Q, mp_limb_t* P, slong n, 
+  int P_parity)
 // multiply R by permutation matrice on the left. Use Q as scratch
  {
-  if(is_identity_permutation(P,n))
+  // if P_parity is negative then P is not identity
+  if( (1==P_parity) && is_identity_permutation(P,n) )
    return;
   {
    mp_limb_t** C=Q->rows;
@@ -239,13 +241,14 @@ Else return 0
   mp_limb_t d=0;
   if(tmod_mat_PLU_mod_machine_word(PR,R))
    {
-    d=tmod_mat_diag_product_ZZ_ui(R);
+    int p_parity=count_permutation_parity(PR,n);
+    d=tmod_mat_diag_product_ZZ_ui(R)*p_parity;
     tmod_mat_t K; tmod_mat_init_fast(K,n,n);
     _20141102_Lo(K,R,n);
     _20141102_Up(K,R,PR+n,n);
     tmod_mat_virginize(R);
     _20141102_unLU(R,K,n);
-    _20141102_shift_rows(R,K,PR,n);
+    _20141102_shift_rows(R,K,PR,n,p_parity);
     tmod_mat_clear(K);
    }
   flint_free(PR);
