@@ -112,13 +112,14 @@ def matrix_with_det( n, d ):
 
 def test_for_dim(n):
  '''
+ do with small upper-triangular matrix
+ 
  generate 10 non-singular matrix and one singular
  for x in range 2..100, generate matrice with determinant 2**x and y*2**x,
   where y is a random number in range 3..33
  
  for all the matrix, count its determinant two ways, compare results
  '''
- # do with small upper-triangular matrix
  for i in range(10):
   test_matrice( unimodular_triU(n,5) )
   for k in range(n):
@@ -145,6 +146,7 @@ def test_for_dim(n):
  if singular_count==0:
   a=generate_singular_matrice(n)
   assert det_hermitian(a) == 0
+
  t0=t1=0
  for x in range(2,301):
   test_this_det( n, 1<<x )
