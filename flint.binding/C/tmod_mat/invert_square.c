@@ -227,9 +227,9 @@ tmod_mat_invert_transpose(tmod_mat_t R, const tmod_mat_t S)
 /*
 S,R square, virgin
 
-If S in inverible, R:=S inverted transposed in virgin state, return 1
+If S in inverible, R:=S inverted transposed in virgin state 
 
-Else return 0
+Return S deterimant modulo t
 */
  {
   slong n=S->r;
