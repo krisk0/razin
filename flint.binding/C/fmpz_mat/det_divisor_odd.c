@@ -243,7 +243,7 @@ _20140914_count_y_main(mp_limb_t* y,mpz_ptr b,tmod_mat_t a,slong n)
     mp_limb_t sum=0;
     mpz_ptr bP=b;
     for(j=n;j--;bP++)
-     sum += mpz_mod_T(bP) * *q++;
+     sum += mpz_to_t(bP) * *q++;
     y[i]=sum;
    }
  }
@@ -317,9 +317,18 @@ _20140914_y_to_x(mpz_t x,slong i,const tmod_mat_t y, slong y_rows, slong y_cols)
   *q = *p;
  }
 
+static void
+_20140914_check_x(mpz_ptr x,fmpz_mat_t a,mp_limb_t* b,mpz_t m,slong n)
+ {
+ }
+
 static __inline__ void
 _20140914_x_to_d(mpz_t d, mpz_ptr x, slong n, slong k, 
-  const mpfr_t hb_plus_1, const mpfr_t cb)
+   const mpfr_t hb_plus_1, const mpfr_t cb
+    #if DIXON_INTERNAL_CHECK
+     ,fmpz_mat_t a, mp_limb_t* b
+    #endif
+  )
 // feed correct args to rational_reconstruction_2deg()
  {
   mpz_t M; mpz_init_set_ui(M,1); mpz_mul_2exp(M,M,k *= FLINT_BITS);
@@ -330,6 +339,9 @@ _20140914_x_to_d(mpz_t d, mpz_ptr x, slong n, slong k,
     gmp_printf("%Zd,",x+i);
    gmp_printf("\n");
   #endif
+    #if DIXON_INTERNAL_CHECK
+     _20140914_check_x(x,a,b,M,n);
+    #endif
   rational_reconstruction_2deg(d,x,n,M,k,
     mpfr_get_uj(hb_plus_1,MPFR_RNDU)-1,
     mpfr_get_uj(cb,MPFR_RNDU)
@@ -339,7 +351,11 @@ _20140914_x_to_d(mpz_t d, mpz_ptr x, slong n, slong k,
 
 static __inline__ void
 _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
-  const mpfr_t hb, const mpfr_t cb)
+   const mpfr_t hb, const mpfr_t cb
+   #if DIXON_INTERNAL_CHECK
+    ,fmpz_mat_t a, mp_limb_t* b
+   #endif
+  )
  {
   mpz_ptr xP,x=flint_malloc( sizeof(__mpz_struct)*n );
   slong i,b=max_i*FLINT_BITS;
@@ -348,7 +364,11 @@ _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
     mpz_init2(xP, b);
     _20140914_y_to_x(xP, i, y, max_i, n);
    }
-  _20140914_x_to_d(r, x, n, max_i, hb, cb);
+  _20140914_x_to_d(r, x, n, max_i, hb, cb
+    #if DIXON_INTERNAL_CHECK
+     ,a, b
+    #endif
+  );
   clear_mpz_array(x, n);
  }
 
@@ -386,7 +406,7 @@ _20140914_check_yI(mp_limb_t* y, mpz_ptr b, fmpz_mat_t a, slong n)
     sum=0;
     for(j=0; j<n; j++)
      sum += y[j] * fmpz_to_t( fmpz_mat_entry(a,j,i) );
-    if( sum != mpz_mod_T(b+i) )
+    if( sum != mpz_to_t(b+i) )
      {
       flint_printf("y*a not equals b, i=%d\n",i);
       abort();
@@ -476,7 +496,11 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   // group 2
   clear_mpz_array(B, n);
   po("rec st")
-  _20140914_ratnl_rcnstrction(r, Y, max_i, n, hb, cb);
+  _20140914_ratnl_rcnstrction(r, Y, max_i, n, hb, cb
+   #if DIXON_INTERNAL_CHECK
+    ,Ao,Bo
+   #endif
+  );
   po("rec end")
   tmod_mat_clear(Y);
   // group 1
