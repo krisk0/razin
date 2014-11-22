@@ -193,8 +193,6 @@ R=         *
    }
  }
 
-
-
 static __inline__ void
 _20141102_shift_rows(tmod_mat_t R, tmod_mat_t Q, mp_limb_t* P, slong n, 
   int P_parity)
