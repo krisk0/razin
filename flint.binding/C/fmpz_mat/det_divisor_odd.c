@@ -164,8 +164,10 @@ h>=1+FLINT_BITS, c>=FLINT_BITS
 
 slong _20140914_max_i(mpfr_t Ha, mpfr_t Cr)
  {
-  //mpfr_printf("hb=%Rf cb=%Rf\n",Ha,Cr);
-  return (mpfr_get_uj(Ha,MPFR_RNDU)-1+mpfr_get_uj(Cr,MPFR_RNDU)+
+  #if DIXON_INTERNAL_CHECK
+   mpfr_printf("hb=%Rf cb=%Rf\n",Ha,Cr);
+  #endif
+  return (mpfr_get_uj(Ha,MPFR_RNDU)+mpfr_get_uj(Cr,MPFR_RNDU)+
            FLINT_BITS-1)/FLINT_BITS;
  }
 
@@ -351,15 +353,16 @@ _20140914_check_x(mpz_ptr x,fmpz_mat_t a,mp_limb_t* b,mpz_t m,slong n)
  }
 
 static __inline__ void
-_20140914_x_to_d(mpz_t d, mpz_ptr x, slong n, slong k, 
-   const mpfr_t hb_plus_1, const mpfr_t cb
+_20140914_x_to_d(mpz_t d, mpz_ptr x, slong n, 
+   slong bits,
+   mp_limb_t hb, mp_limb_t cb
     #if DIXON_INTERNAL_CHECK
      ,fmpz_mat_t a, mp_limb_t* b
     #endif
   )
 // feed correct args to rational_reconstruction_2deg()
  {
-  mpz_t M; mpz_init_set_ui(M,1); mpz_mul_2exp(M,M,k *= FLINT_BITS);
+  mpz_t M; mpz_init_set_ui(M,1); mpz_mul_2exp(M,M,bits);
   #if SHOW_DIXON_RESULT
    gmp_printf("x=");
    int i;
@@ -367,13 +370,11 @@ _20140914_x_to_d(mpz_t d, mpz_ptr x, slong n, slong k,
     gmp_printf("%Zd,",x+i);
    gmp_printf("\n");
   #endif
-    #if DIXON_INTERNAL_CHECK
-     _20140914_check_x(x,a,b,M,n);
-    #endif
-  rational_reconstruction_2deg(d,x,n,M,k,
-    mpfr_get_uj(hb_plus_1,MPFR_RNDU)-1,
-    mpfr_get_uj(cb,MPFR_RNDU)
-   );
+  #if DIXON_INTERNAL_CHECK
+   gmp_printf("hb=%d cb=%d M=2**%d\n",hb,cb,bits);
+   _20140914_check_x(x,a,b,M,n);
+  #endif
+  rational_reconstruction_2deg(d,x,n,M,bits,cb,hb);
   mpz_clear(M);
  }
 
@@ -387,12 +388,19 @@ _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
  {
   mpz_ptr xP,x=flint_malloc( sizeof(__mpz_struct)*n );
   slong i,p=max_i*FLINT_BITS;
+  mp_limb_t hb_i=mpfr_get_uj(hb,MPFR_RNDU);
+  mp_limb_t cb_i=mpfr_get_uj(cb,MPFR_RNDU);
+  slong k=hb_i+cb_i;
+  if(k==max_i*FLINT_BITS)
+   k=-k;
   for(i=0,xP=x; i<n; xP++,i++)
    {
     mpz_init2(xP, p);
     _20140914_y_to_x(xP, i, y, max_i, n);
+    if(k>0)
+     mpz_mod_2x(xP, k);
    }
-  _20140914_x_to_d(r, x, n, max_i, hb, cb
+  _20140914_x_to_d(r, x, n, abs(k), hb_i-1, cb_i
     #if DIXON_INTERNAL_CHECK
      ,a, b
     #endif
@@ -475,7 +483,6 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   slong n=Ao->r;
   mp_limb_t* Bo=flint_calloc(sizeof(mp_limb_t),n);
   mpfr_t hb,cb;
-  po("callin rp_Hadamard_Cramer()")
   rp_Hadamard_Cramer(Bo,hb,cb,Ao,n);
   //TODO: run special algorithm when H.B. is small
   // group 0: Bo, hb, cb
@@ -487,14 +494,11 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   #if DIXON_INTERNAL_CHECK
    tmod_mat_print_hex("A inv transposed modulo T:",A_inv_tr);
    _20140914_check_A_inv_tr(A_inv_tr,Ao,n);
-  #else
-   po("matrix end")
   #endif
   // group 1: A_inv_tr, A_tr_neg
   tmod_mat_t Y; tmod_mat_init_fast(Y, max_i, n);
   mpz_ptr B=flint_malloc( sizeof(__mpz_struct)*n );
   det_divisor_init_zero_b(B, n, A_tr_neg);
-  po("B allocated")
   // group 2: Y, B
   #if 0
    for i in range(max_i):
@@ -509,7 +513,6 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
    po("y0 counted")
   #endif
   _20140914_update_B_step0( B, A_tr_neg, Y->entries, Bo, n );
-  po("B 0 counted")
   slong i;
   for(i=1;i<max_i;i++)
    {
@@ -520,16 +523,13 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
     #endif
     _20140914_update_B_main( B, A_tr_neg, Y->rows[i], n );
    }
-  po("loop done")
   // group 2
   clear_mpz_array(B, n);
-  po("rec st")
   _20140914_ratnl_rcnstrction(r, Y, max_i, n, hb, cb
    #if DIXON_INTERNAL_CHECK
     ,Ao,Bo
    #endif
   );
-  po("rec end")
   tmod_mat_clear(Y);
   // group 1
   mpz_square_mat_clear(A_tr_neg);
