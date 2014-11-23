@@ -6,8 +6,8 @@
 #include <assert.h>
 
 #define po(x) flint_printf("%s\n",x);
-#define SHOW_DIXON_RESULT 1
-#define DIXON_INTERNAL_CHECK 1
+#define SHOW_DIXON_RESULT 0
+#define DIXON_INTERNAL_CHECK 0
 
 void rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,
   slong log2_M,mp_limb_t log2_N,mp_limb_t log2_D);
@@ -479,7 +479,9 @@ fmpz_mat_det_divisor_odd(mpz_t r, mp_limb_t* det_mod_T, fmpz_mat_t Ao)
 returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
 */
  {
-  flint_printf("det_divisor_odd() source matrice\n"); fmpz_mat_print_pretty(Ao);
+  #if DIXON_INTERNAL_CHECK
+   flint_printf("det_divisor_odd() source matrice\n"); fmpz_mat_print_pretty(Ao);
+  #endif
   slong n=Ao->r;
   mp_limb_t* Bo=flint_calloc(sizeof(mp_limb_t),n);
   mpfr_t hb,cb;
@@ -487,7 +489,9 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   //TODO: run special algorithm when H.B. is small
   // group 0: Bo, hb, cb
   slong max_i=_20140914_max_i(hb,cb);
-  flint_printf("max_i=%d\n",max_i);
+  #if DIXON_INTERNAL_CHECK
+   flint_printf("max_i=%d\n",max_i);
+  #endif
   tmod_mat_t A_inv_tr;
   mpz_square_mat_t A_tr_neg;
   *det_mod_T=_20140914_matrix(A_inv_tr,A_tr_neg,Ao,n);

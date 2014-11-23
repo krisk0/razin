@@ -138,8 +138,9 @@ def test_for_dim(n):
    singular_count += 1
   else:
    i += 1
-  print 'a=\n',a
-  print 'a det=%s=%s' % (d0,sage.all.factor(d0))
+  if n<11:
+   print 'a=\n',a
+   print 'a det=%s=%s' % (d0,sage.all.factor(d0))
   assert det_hermitian(a) == d0
   if i==10:
    break
@@ -160,7 +161,7 @@ def test_this_det( n, y ):
  z=count_det(fmpz_mat(a))
  m1=time.time()
  assert abs(z)==y
- print 'source matrice A with det=%d:\n' % z,a
+ #print 'source matrice A with det=%d:\n' % z,a
  h,m2=det_hermitian_time(a)
  if h != z:
   print 'det mismatch: z=%X != %X' % (z,h)
