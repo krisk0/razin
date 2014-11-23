@@ -13,6 +13,8 @@ This file contains modified subroutine _fmpq_reconstruct_fmpz_2() owned by
 
 Decreasing modulo/reusing discovered denominator trick learnt from solve1()
  subroutine implemented by V.Shoup
+
+Code in this file might malfunction if mp_limb_t is not unsigned long
 */
 
 #define LOUD_RR_IO 0
@@ -41,7 +43,7 @@ MulMod_fmpz(mpz_t tgt,const fmpz_t sou,const mpz_t M)
   if( COEFF_IS_MPZ(s) )
    mpz_mul(tgt,tgt, COEFF_TO_PTR(s) );
   else
-   mpz_mul_ui(tgt,tgt,s);
+   flint_mpz_mul_ui(tgt,tgt,s);
   mpz_mod(tgt,tgt,M);
  }
 
@@ -63,7 +65,7 @@ MulMod_fmpz_2x(mpz_t tgt,const fmpz_t sou,slong log2_M)
   if( COEFF_IS_MPZ(s) )
    mpz_mul(tgt,tgt, COEFF_TO_PTR(s) );
   else
-   mpz_mul_ui(tgt,tgt,s);
+   flint_mpz_mul_ui(tgt,tgt,s);
   mpz_mod_2x(tgt,log2_M);
  }
 
@@ -72,6 +74,7 @@ void lcm_2arg(mpz_t tgt,const fmpz_t sou)
   register fmpz s=*sou;
   if(!COEFF_IS_MPZ(s))
    {
+    // TODO: bad if fmpz larger than unsigned long
     if(s != 1)
      mpz_lcm_ui(tgt, tgt, (mp_limb_t)s);    // sou is small but not 1
    }
@@ -88,11 +91,12 @@ maybe_decrease_M(mpz_t M,mp_limb_t p,mp_limb_t log2_N,fmpz_t D)
   fmpz_get_mpz(b,D);
   mpz_mul_2exp(b,b,1+log2_N);
   // M must be decreased iff b*p <= M
-  mpz_mul_ui(b,b,p);
+  flint_mpz_mul_ui(b,b,p);
   // M must be decreased iff b <= M
   while( mpz_cmp(b,M) <= 0 )
    {
     decreased=1;
+    // TODO: bad if mp_limb_t larger than unsigned long
     mpz_divexact_ui(M,M,p);
    }
   mpz_clear(b);
