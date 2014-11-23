@@ -373,4 +373,20 @@ return 1 iff P is even, -1 otherwise
   return 1-2*(p&1);
  }
 
+__inline__ void
+muladd_mpz_fmpz(mpz_t r,mpz_t a,fmpz_t b)
+// r += a*b
+ {
+  fmpz bb=*b;
+  if( COEFF_IS_MPZ(bb) )
+   mpz_addmul(r, a, COEFF_TO_PTR(bb));
+  else
+   {
+    if(bb<0)
+     flint_mpz_submul_ui(r,a,-bb);
+    else
+     flint_mpz_addmul_ui(r,a,bb);
+   }
+ }
+
 #endif
