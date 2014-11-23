@@ -319,7 +319,35 @@ _20140914_y_to_x(mpz_t x,slong i,const tmod_mat_t y, slong y_rows, slong y_cols)
 
 static void
 _20140914_check_x(mpz_ptr x,fmpz_mat_t a,mp_limb_t* b,mpz_t m,slong n)
+// abort unless x*a-b is zero modulo m
  {
+  mpz_ptr sI,s=flint_malloc(sizeof(__mpz_struct)*n);
+  slong i,j;
+  for(i=0,sI=s; i<n; i++,sI++)
+   {
+    mpz_init_set_si(sI, -(signed long) (b[i]) );
+    for(j=0; j<n; j++)
+     muladd_mpz_fmpz(sI, x+j, fmpz_mat_entry(a,j,i));
+    mpz_mod(sI,sI,m);
+   }
+  j=0;
+  for(i=0; i<n; i++)
+   if(mpz_cmp_ui(s+i,0))
+    {
+     j=1;
+     break;
+    }
+  if(0==j)
+   return;
+  flint_printf("x*A-B = ");
+  for(i=0; i<n; i++)
+   {
+    if(i<n-1)
+     gmp_printf("%ZX,",s+i);
+    else
+     gmp_printf("%ZX\n",s+i);
+   }
+  abort();
  }
 
 static __inline__ void
@@ -358,10 +386,10 @@ _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
   )
  {
   mpz_ptr xP,x=flint_malloc( sizeof(__mpz_struct)*n );
-  slong i,b=max_i*FLINT_BITS;
+  slong i,p=max_i*FLINT_BITS;
   for(i=0,xP=x; i<n; xP++,i++)
    {
-    mpz_init2(xP, b);
+    mpz_init2(xP, p);
     _20140914_y_to_x(xP, i, y, max_i, n);
    }
   _20140914_x_to_d(r, x, n, max_i, hb, cb
