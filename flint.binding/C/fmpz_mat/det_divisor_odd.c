@@ -521,7 +521,7 @@ else
   mpfr_div_ui(h,h,2,MPFR_RNDU);
   mpfr_add_ui(h,h,1,MPFR_RNDU);
   mp_limb_t hb_i=mpfr_get_uj(h,MPFR_RNDU);
-  if(hb_i <= 2*FLINT_BITS)
+  if(hb_i < 2*FLINT_BITS)
    {
     mpfr_clear(h);
     mpfr_clear(c);
