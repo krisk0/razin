@@ -548,7 +548,7 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   hb_i=_20140914_Hadamard_bound(hb,cb,Ao,n);
   if(hb_i)
    {
-    // skip Dixon algorithm if H.B. is small, leave r=1
+    //  if H.B. is small, skip Dixon algorithm and leave r=1
     *det_mod_T=det_mod_t(Ao);
     return hb_i;
    }
