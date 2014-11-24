@@ -4,6 +4,7 @@
 
 #include <gmp.h>
 #include <flint/flint.h>
+#include <flint/fmpz_mat.h>
 #include <flint/ulong_extras.h>
 #include <flint/fmpz.h>
 #include "tmod_mat_.h"
@@ -45,6 +46,23 @@ tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols)
   mat->c = cols;
   for(i=0; i<rows;  i++, e += cols)
     mat->rows[i] = e;
+ }
+
+void 
+tmod_mat_init_set_fmpz_mat(tmod_mat_t tgt, const fmpz_mat sou)
+ {
+  slong i, j, rows=sou->r, cols=sou->c;
+  mp_limb_t* e = tgt->entries = flint_malloc(rows * cols * sizeof(mp_limb_t));
+  mp_limb_t* tgt_rows = tgt->rows = flint_malloc( rows * sizeof(mp_limb_t*) );
+  tgt->r = rows;
+  tgt->c = cols;
+  fmpz* souP;
+  for(i=0; i<rows;  i++, e += cols)
+   {
+    tgt_rows[i] = e;
+    for(j=0,souP=sou->rows[i]; j<cols; j++,souP++)
+     e[j]=fmpz_to_t( souP );
+   }
  }
 
 void
