@@ -392,7 +392,7 @@ muladd_mpz_fmpz(mpz_t r,mpz_t a,fmpz_t b)
 mp_limb_t
 fmpz_to_t(const fmpz_t f)
 /*
- This function calculates f modulo 2**64 on amd64. 
+ This function calculates f modulo 2**FLINT_BITS on amd64. 
  Don't know what it does on other arch
 */
  {
