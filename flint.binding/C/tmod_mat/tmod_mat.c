@@ -7,12 +7,12 @@
 #include <flint/ulong_extras.h>
 #include <flint/fmpz.h>
 #include "tmod_mat_.h"
+#include "../fmpz/fmpz_.h"
 
 // Subroutines in this file are machine-dependent and known to work on amd64
 
 // Some code borrowed from flint nmod_mat/*.c, data layout is different
 
-#include "tmod_mat_.h"
 
 void 
 tmod_mat_init(tmod_mat_t mat, long rows, long cols)
@@ -77,25 +77,6 @@ tmod_mat_diag_product_ZZ_ui(const tmod_mat_t m)
   for( ; cc--; )
    r *= rows[cc][cc];
   return r;
- }
-
-mp_limb_t
-fmpz_to_t(const fmpz_t f)
-/*
- This function calculates f modulo 2**64 on amd64. 
- Don't know what it does on other arch
-*/
- {
-  register slong n=(slong)(*f);
-  register mp_limb_t m;
-  if(!COEFF_IS_MPZ(n))
-   {
-    m=n;
-    return m;
-   }
-  m=flint_mpz_get_ui(COEFF_TO_PTR(n));
-  m *= (mp_limb_t)fmpz_sgn(f);
-  return m;
  }
 
 mp_limb_t

@@ -389,4 +389,23 @@ muladd_mpz_fmpz(mpz_t r,mpz_t a,fmpz_t b)
    }
  }
 
+mp_limb_t
+fmpz_to_t(const fmpz_t f)
+/*
+ This function calculates f modulo 2**64 on amd64. 
+ Don't know what it does on other arch
+*/
+ {
+  register slong n=(slong)(*f);
+  register mp_limb_t m;
+  if(!COEFF_IS_MPZ(n))
+   {
+    m=n;
+    return m;
+   }
+  m=flint_mpz_get_ui(COEFF_TO_PTR(n));
+  m *= (mp_limb_t)fmpz_sgn(f);
+  return m;
+ }
+
 #endif
