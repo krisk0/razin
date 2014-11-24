@@ -32,7 +32,7 @@ _CRT_data_init_20140912(fmpz_t x0,fmpz_t x1,fmpz_t prod,mp_limb_t det_mod_T,
   // prod = T
   fmpz_init_set_ui(prod,UWORD(1)); fmpz_mul_2exp(prod,prod,FLINT_BITS);
   // x0 = (det_mod_T / dd) symmmod T
-  mp_limb_t t=div_modulo_T(det_mod_T,mpz_get_ui(dd)); // dd is positive
+  mp_limb_t t=div_modulo_T(det_mod_T,flint_mpz_get_ui(dd)); // dd is positive
   fmpz_init_set_ui(x0,t);
   if( t & (UWORD(1)<<(FLINT_BITS-1)) )
    fmpz_sub(x0,x0,prod); // symmetric range CRT, must not exceed M/2
@@ -86,42 +86,77 @@ _choose_prime_20140912(p_k_pk_t* pp, nmod_t* mod, n_primes_rev_t it,
    }
  }
 
+__inline__ static void
+_20140912_no_CRT(mpz_t r,mp_limb_t det_mod_t)
+ {
+  mp_limb_t high_bit=(UWORD(1)<<(FLINT_BITS-1));
+  if(mpz_cmp_ui(r,1))
+   {
+    // r *= symm_abs(det_mod_t / r mod t, t)
+    det_mod_t=div_modulo_T(det_mod_t, flint_mpz_get_ui(r)); // r is positive
+    if( det_mod_t & high_bit )
+     {
+      flint_mpz_mul_ui(r,r,-det_mod_t);
+      mpz_neg(r,r);
+     }
+    else
+     flint_mpz_mul_ui(r,r,det_mod_t);
+   }
+  else
+   {
+    // r = symm_abs(det_mod_T,t)
+    if( det_mod_t & high_bit )
+     {
+      flint_mpz_set_ui(r, -det_mod_t);
+      mpz_neg(r,r);
+     }
+    else
+     flint_mpz_set_ui(r, det_mod_t);
+   }
+ }
+
 void
 fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
   mp_limb_t det_mod_T, fmpz_mat_t A)
  {
-  // TODO: short-cut when hb<FLINT_BITS
-  p_k_pk_t pp; pp.p=0;
-  n_primes_rev_t iT;
-
-  fmpz_t x,xnew,prod;
-  _CRT_data_init_20140912(x,xnew,prod,det_mod_T,r);
-  
-  mp_limb_t n=A->r;
-  mp_limb_t* scratch=flint_malloc( 4*(n-4)*sizeof(mp_limb_t) );
-  nmod_mat_t Amod;
-  nmod_mat_init_square_2arg(Amod,n);
-  
-  for(;;)
-   {
-    mp_limb_t divisor_inv=_choose_prime_20140912(&pp, &Amod->mod, iT, r);
-    fmpz_mat_get_nmod_mat(Amod, A);
-    mp_limb_t xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
-    xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
-    fmpz_CRT_ui(xnew, x,prod, xmod,pp.p_deg_k, 1);
-    fmpz_mul_ui(prod, prod, pp.p_deg_k);
-    if(cmp_positive_log2(prod,hb) >= 0)
-     break;
-    fmpz_set(x, xnew);
+  if(hb <= FLINT_BITS)
+   {// don't need Chinese Remaider or det modulo prime
+    _20140912_no_CRT(r,det_mod_T);
+    return;
    }
-
-  n_primes_rev_clear(iT);
-  nmod_mat_clear(Amod);
-  free(scratch);
-  mpz_fmpz_mul_det_2arg(r,xnew);
-  fmpz_clear(xnew);
-  fmpz_clear(x);
-  fmpz_clear(prod);
+  {
+   p_k_pk_t pp; pp.p=0;
+   n_primes_rev_t iT;
+ 
+   fmpz_t x,xnew,prod;
+   _CRT_data_init_20140912(x,xnew,prod,det_mod_T,r);
+   
+   mp_limb_t n=A->r;
+   mp_limb_t* scratch=flint_malloc( 4*(n-4)*sizeof(mp_limb_t) );
+   nmod_mat_t Amod;
+   nmod_mat_init_square_2arg(Amod,n);
+   
+   for(;;)
+    {
+     mp_limb_t divisor_inv=_choose_prime_20140912(&pp, &Amod->mod, iT, r);
+     fmpz_mat_get_nmod_mat(Amod, A);
+     mp_limb_t xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
+     xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
+     fmpz_CRT_ui(xnew, x,prod, xmod,pp.p_deg_k, 1);
+     fmpz_mul_ui(prod, prod, pp.p_deg_k);
+     if(cmp_positive_log2(prod,hb) >= 0)
+      break;
+     fmpz_set(x, xnew);
+    }
+ 
+   n_primes_rev_clear(iT);
+   nmod_mat_clear(Amod);
+   free(scratch);
+   mpz_fmpz_mul_det_2arg(r,xnew);
+   fmpz_clear(xnew);
+   fmpz_clear(x);
+   fmpz_clear(prod);
+  }
  }
 
 #undef NDEBUG
