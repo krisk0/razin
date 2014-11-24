@@ -162,6 +162,24 @@ h>=1+FLINT_BITS, c>=FLINT_BITS
   _20140914_lift_bound(c);
  }
 
+static __inline__ void
+_20140914_rp_Cramer(mp_limb_t* b, mpfr_t c, 
+  const mpfr_t h, fmpz_mat_t A, slong n)
+ {
+  mp_limb_t b_norm=_20140914_form_b(b,n);
+  {
+   // add log2( b_norm )
+   mpfr_t q,r;
+   mpfr_init_set_ui(q,b_norm,MPFR_RNDU);
+   mpfr_init(r);
+   mpfr_log2(r,q,MPFR_RNDU);
+   mpfr_add(c,c,r,MPFR_RNDU);
+   mpfr_clear(r);
+   mpfr_clear(q);
+  }
+  _20140914_lift_bound(c);
+ }
+
 slong _20140914_max_i(mpfr_t Ha, mpfr_t Cr)
  {
   #if DIXON_INTERNAL_CHECK
@@ -473,9 +491,50 @@ _20140914_check_A_inv_tr(tmod_mat_t inv_tr, fmpz_mat_t s, slong n)
     }
  }
 
+
+static __inline__ mp_limb_t
+_20140914_Hadamard_bound(mpfr_t h, mpfr_t c, fmpz_mat_t A, slong n)
+/*
+on entry h,c uninitialized
+
+if 2*H.B. is larger than 2**(2*FLINT_BITS), 
+ calculate h:=H.B.
+ pre-calculate c:=C.B.
+ return 0
+else
+ deinitialize h,c
+ return log2( 2*H.B. ) rounded up
+*/
+ {
+  __mpfr_struct* e=flint_malloc( sizeof(__mpfr_struct)*n );
+  mpfr_prec_t b;
+  slong smallest_row=_20140914_Hadamard(e,&b,A,n);
+  MPFR_INIT2(h,b); mpfr_init2(c,b);
+  slong i;
+  __mpfr_struct* t;
+  for(i=0,t=e; i<n; i++,t++)
+   if(i!=smallest_row)
+    mpfr_add(h,h,t,MPFR_RNDU);
+  mpfr_set(c,h,MPFR_RNDU);   // c=sum log2 norm(i) excluding smallest_row
+  mpfr_add(h,h,e+smallest_row,MPFR_RNDU);
+  clear_mpfr_array(e,n);
+  mpfr_div_ui(h,h,2,MPFR_RNDU);
+  mpfr_add_ui(h,h,1,MPFR_RNDU);
+  mp_limb_t hb_i=mpfr_get_uj(h,MPFR_RNDU);
+  if(hb_i <= 2*FLINT_BITS)
+   {
+    mpfr_clear(h);
+    mpfr_clear(c);
+    return hb_i;
+   }
+  return 0;
+ }
+
 mp_limb_t
 fmpz_mat_det_divisor_odd(mpz_t r, mp_limb_t* det_mod_T, fmpz_mat_t Ao)
 /*
+on entry r equals 1
+ 
 returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
 */
  {
@@ -483,10 +542,18 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
    flint_printf("det_divisor_odd() source matrice\n"); fmpz_mat_print_pretty(Ao);
   #endif
   slong n=Ao->r;
-  mp_limb_t* Bo=flint_calloc(sizeof(mp_limb_t),n);
+  mp_limb_t hb_i;
+  //rp_Hadamard_Cramer(Bo,hb,cb,Ao,n);
   mpfr_t hb,cb;
-  rp_Hadamard_Cramer(Bo,hb,cb,Ao,n);
-  //TODO: run special algorithm when H.B. is small
+  hb_i=_20140914_Hadamard_bound(hb,cb,Ao,n);
+  if(hb_i)
+   {
+    // skip Dixon algorithm if H.B. is small, leave r=1
+    *det_mod_T=det_mod_t(Ao);
+    return hb_i;
+   }
+  mp_limb_t* Bo=flint_calloc(sizeof(mp_limb_t),n);
+  _20140914_rp_Cramer(Bo,cb,hb,Ao,n);
   // group 0: Bo, hb, cb
   slong max_i=_20140914_max_i(hb,cb);
   #if DIXON_INTERNAL_CHECK
@@ -541,7 +608,7 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   // group 0
   mpfr_clear(cb);
   decrease_bound_mpz_2arg(hb,r);
-  mp_limb_t hb_i=mpfr_get_uj(hb,MPFR_RNDU);
+  hb_i=mpfr_get_uj(hb,MPFR_RNDU);
   mpfr_clear(hb);
   flint_free(Bo);
   #if SHOW_DIXON_RESULT
