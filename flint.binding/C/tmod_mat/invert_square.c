@@ -252,3 +252,17 @@ Return S deterimant modulo t
   flint_free(PR);
   return d;
  }
+
+mp_limb_t
+det_mod_t(const fmpz_mat_t aI)
+ {
+  tmod_mat_t a;
+  slong n=a->r;
+  tmod_mat_init_set_fmpz_mat(a, aI);
+  mp_limb_t* PR=flint_malloc(2 * n * sizeof(mp_limb_t));
+  mp_limb_t d=0;
+  if(tmod_mat_PLU_mod_machine_word(PR,a))
+   d=tmod_mat_diag_product_ZZ_ui(a)*count_permutation_parity(PR,n);
+  flint_free(PR);
+  tmod_mat_clear(a);
+ }

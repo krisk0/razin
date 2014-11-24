@@ -9,6 +9,7 @@
 #define TMOD_MAT__H
 
 #include <flint/flint.h>
+#include <flint/fmpz_mat.h>
 
 typedef struct
  {
@@ -25,7 +26,8 @@ void tmod_mat_init_fast(tmod_mat_t mat, long rows, long cols);
 void tmod_mat_clear(tmod_mat_t mat);
 void tmod_mat_print_hex(char* m,const tmod_mat_t S);
 mp_limb_t dot_modulo_t_kind0(mp_limb_t* a, fmpz* b, slong n);
-void tmod_mat_init_set_fmpz_mat(tmod_mat_t tgt, const fmpz_mat sou);
+void tmod_mat_init_set_fmpz_mat(tmod_mat_t tgt, const fmpz_mat_t sou);
+mp_limb_t det_mod_t(const fmpz_mat_t S);
 
 // TODO: this number-oriented subroutine should be in /ulong_extras
 static mp_limb_t inv_mod__2_64__tab[13]={
