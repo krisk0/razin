@@ -177,6 +177,7 @@ _20140914_rp_Cramer(mp_limb_t* b, mpfr_t c,
    mpfr_clear(r);
    mpfr_clear(q);
   }
+  mpfr_div_ui(c,c,2,MPFR_RNDU);
   _20140914_lift_bound(c);
  }
 
