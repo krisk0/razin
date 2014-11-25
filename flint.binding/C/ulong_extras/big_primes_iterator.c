@@ -19,6 +19,8 @@
 //  maximal native prime and MIN_n_primes_rev=299210839 is minimal number for
 //  which trial_gcd_test_then_big_sureprime_test() works correctly
 
+#define LOUD_ALLOC 1
+
 #if (defined (__amd64__) || defined (__i386__) || defined (__i486__)) 
  #define GCD n_gcd_odd_odd
  mp_limb_t n_gcd_odd_odd(mp_limb_t x,mp_limb_t y);
@@ -103,8 +105,22 @@ n_primes_rev_shift(n_primes_rev_t i)
    {
     // if previous number was odd, advance index
     if( i->index == i->allocated_size )
-     i->numbers=realloc( i->numbers, 
-      sizeof(mp_limb_t)*(i->allocated_size += 10) );
+     {
+      #if LOUD_ALLOC
+       flint_printf("n_primes_rev_shift(): %d==%d",i->index,i->allocated_size);
+      #endif
+      i->numbers=realloc( i->numbers, 
+       sizeof(mp_limb_t)*(i->allocated_size += 10) );
+      #if LOUD_ALLOC
+       flint_printf(", reallocated %d\n",i->allocated_size);
+      #endif
+     }
+    #if LOUD_ALLOC
+     else
+      {
+       flint_printf("n_primes_rev_shift(): %d<%d\n",i->index,i->allocated_size);
+      }
+    #endif
     i->numbers[ ++i->index ] = curr;
    }
   else
@@ -117,6 +133,9 @@ mp_limb_t
 n_primes_rev_reset(n_primes_rev_t i)
 // un-iterate back, to re-iterate from the start
  {
+  #if LOUD_ALLOC
+   flint_printf("n_primes_rev_reset() setting allocated_size to %d\n",i->index+1);
+  #endif
   i->allocated_size=i->index+1;
   i->index=0;
   i->last_output_mod_30=-33;
@@ -139,6 +158,9 @@ return the first prime
   i->index=0;
   i->allocated_size=10;
   i->numbers=flint_malloc( 10 * sizeof(mp_limb_t) );
+  #if LOUD_ALLOC
+   flint_printf("allocated_size initialized with 10\n");
+  #endif
   if( !stArt )
    stArt=WORD( 0xFFFFFFFFFFFFFFC5 );
   i->numbers[0] = stArt;
@@ -152,6 +174,9 @@ return the first prime
 void 
 n_primes_rev_clear(n_primes_rev_t i)
  {
+  #if LOUD_ALLOC
+   flint_printf("n_primes_rev_clear()\n");
+  #endif
   flint_free(i->numbers);
  }
 
@@ -175,3 +200,6 @@ return previous prime down to MIN_n_primes_rev,
   n_primes_rev_shift(i);
   return i->numbers[i->index];
  }
+
+#undef LOUD_ALLOC
+
