@@ -129,6 +129,7 @@ def test_for_dim(n):
    test_matrice(a)
   
  global t0,t1
+ t0=t1=0
  singular_count=i=0
  while 1:
   a,d0=generate_matrice(n)
@@ -138,29 +139,32 @@ def test_for_dim(n):
    singular_count += 1
   else:
    i += 1
-  if n<11:
+  if n<11 and 0:
    print 'a=\n',a
    print 'a det=%s=%s' % (d0,sage.all.factor(d0))
-  assert det_hermitian(a) == d0
+  test_matrice_mind_time(a)
   if i==10:
    break
  if singular_count==0:
   a=generate_singular_matrice(n)
-  assert det_hermitian(a) == 0
-
+  test_matrice_mind_time(a)
+ print 'test1 t0,1=',t0,t1
+ 
  t0=t1=0
  for x in range(2,301):
   test_this_det( n, 1<<x )
   test_this_det( n, randint(3,34)<<x )
- print 't0,1=',t0,t1
+ print 'test2 t0,1=',t0,t1
   
 def test_this_det( n, y ):
+ a=matrix_with_det( n, y )
+ test_matrice_mind_time( a )
+ 
+def test_matrice_mind_time(a):
  global t0,t1
- a=matrix_with_det( dim, y )
  m0=time.time()
  z=count_det(fmpz_mat(a))
  m1=time.time()
- assert abs(z)==y
  #print 'source matrice A with det=%d:\n' % z,a
  h,m2=det_hermitian_time(a)
  if h != z:
@@ -192,7 +196,7 @@ sage.all.set_random_seed('20140831')
 
 t0=t1=0
 for dim in range(3,30):
- write( '%s ' % dim )
+ write( 'dim=%s\n' % dim )
  test_for_dim(dim)
 
 print '\ntest passed'
