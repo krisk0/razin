@@ -17,11 +17,11 @@ mp_limb_t tmod_mat_invert_transpose(tmod_mat_t R, const tmod_mat_t S);
 
 #define THROW        \
  for(;;)                \
-  {                       \
-   m=n_randlimb(rst) % n;  \
-   if(0==b[m])              \
-    break;                   \
-  }                           \
+  {                        \
+   m=gmp_urandomm_ui(rst,n); \
+   if(0==b[m])                \
+    break;                     \
+  }                            \
  b[m]=2*(sign&1)-1;            \
  sign >>= 1;                   \
  ++thrown;
@@ -34,22 +34,22 @@ static __inline__ mp_limb_t
 _20140914_form_b(mp_limb_t* b,slong n)
 // throw 1 to 4 +1 or -1 into vector b (without collision)
  {
-  flint_rand_t rst; flint_randinit(rst);
-  // no good way to randomize in FLINT
+  // no good way to randomize in FLINT, using gmp procedures
+  gmp_randstate_t rst; gmp_randinit_default(rst);
   #if 0==STABLE_RP
-   rst->__randval ^= (mp_limb_t)clock();
+   gmp_randseed_ui(rst, (unsigned long)clock());
   #endif
-  mp_limb_t sign=n_randlimb(rst),thrown=0;
+  mp_limb_t sign=gmp_urandomb_ui(rst,4),thrown=0;
   slong i=13,k,m;
   THROW
   for(k=3;k--;)
    {
-    if(  n_randlimb(rst) % 23 < i  ) // 13/23 17/23 21/23
+    if(  gmp_urandomm_ui(rst,23) < i  ) // 13/23 17/23 21/23
      break;
     THROW
     i += 4;
    }
-  flint_randclear(rst);
+  gmp_randclear(rst);
   #undef THROW
   #if SHOW_DIXON_RESULT
    flint_printf("0 b=");
