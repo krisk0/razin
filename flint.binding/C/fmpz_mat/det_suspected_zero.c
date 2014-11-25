@@ -449,7 +449,7 @@ w: known divisor of A determinant, w>1
   MARK_TIME(t1);
   fmpz_mat_det_modular_given_divisor_8arg(tgt_det,Amod,hb0,pr,&pp,it,xmod,A);
   #if LOUD_DET_RESULT
-   gmp_printf("fmpz_mat_det_9arg() result: %ZX\n",tgt_det);
+   gmp_printf("fmpz_mat_det_8arg() result: %ZX\n",tgt_det);
   #endif
   DUMP_TIME("fmpz_mat_det_modular_given_divisor_8arg()",t1);
   mpfr_clear(hb0);
