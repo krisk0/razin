@@ -13,7 +13,7 @@ void rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,
   slong log2_M,mp_limb_t log2_N,mp_limb_t log2_D);
 mp_limb_t tmod_mat_invert_transpose(tmod_mat_t R, const tmod_mat_t S);
 
-#define STABLE_RP 1
+#define STABLE_RP 0
 
 #define THROW        \
  for(;;)                \
