@@ -14,11 +14,6 @@ mp_limb_t fmpz_mat_det_divisor_odd(mpz_t r, mp_limb_t* det_mod_T, fmpz_mat_t);
 
 void fmpz_mat_det_odd(fmpz_t r,const fmpz_mat_t a)
  {
-  #if 0
-   flint_printf("fmpz_mat_det_odd() A:\n");
-   fmpz_mat_print_pretty(a);
-   abort();
-  #endif
   mp_limb_t det_mod_T;
   mpz_t m; mpz_init_set_ui(m, 1);
   MARK_TIME(t0);
