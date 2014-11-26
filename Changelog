@@ -203,4 +203,5 @@
              arbitrary matrice modulo 2**64 added today: 
              tmod_mat_invert_transpose()
 
-26 Nov 2014 fmpz_mat_det_hermitian_decomposition() is working (slowly)
+26 Nov 2014 fmpz_mat_det_hermitian_decomposition() is working (slow but faster
+             than FLINT on fat matrix)
