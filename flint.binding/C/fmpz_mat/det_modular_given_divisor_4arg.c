@@ -13,6 +13,8 @@
 #undef NDEBUG
 #include <assert.h>
 
+#define LOUD_DET_BOUND 1
+
 //mpz_get_ui (const mpz t op)
 
 static __inline__ mp_limb_t
@@ -125,6 +127,12 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
     return;
    }
   {
+   // looks like small primes are better than large primes
+   // TODO: use small primes produces with n_nextprime() instead of big primes
+   #if LOUD_DET_BOUND
+    gmp_printf("fmpz_mat_det_modular_given_divisor_4arg(): bound=%Md\n",hb);
+    slong primes_used=0;
+   #endif
    p_k_pk_t pp; pp.p=0;
    n_primes_rev_t iT;
  
@@ -144,6 +152,9 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
      xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
      fmpz_CRT_ui(xnew, x,prod, xmod,pp.p_deg_k, 1);
      fmpz_mul_ui(prod, prod, pp.p_deg_k);
+     #if LOUD_DET_BOUND
+      primes_used++;
+     #endif
      if(cmp_positive_log2(prod,hb) >= 0)
       break;
      fmpz_set(x, xnew);
@@ -156,6 +167,10 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
    fmpz_clear(xnew);
    fmpz_clear(x);
    fmpz_clear(prod);
+   #if LOUD_DET_BOUND
+    flint_printf("fmpz_mat_det_modular_given_divisor_4arg() primes used: %d\n",
+     primes_used);
+   #endif
   }
  }
 
