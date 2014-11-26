@@ -51,8 +51,7 @@ void __inline__ static
 MulMod_2x(mpz_t tgt,const mpz_t sou,slong log2_M)
 // multiply positive numbers modulo 2**log2_M
  {
-  // TODO: implement or find a recursive algorithm to multiply gmp integers
-  //  modulo degree of 2
+  // TODO: use GMP mpn_mullow if bit-length of tgt+sou is big enough
   mpz_mul(tgt,tgt,sou);
   mpz_mod_2x(tgt,log2_M);
  }
