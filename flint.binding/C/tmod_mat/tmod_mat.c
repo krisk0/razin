@@ -52,7 +52,7 @@ tmod_mat_init_set_fmpz_mat(tmod_mat_t tgt, const fmpz_mat_t sou)
  {
   slong i, j, rows=sou->r, cols=sou->c;
   mp_limb_t* e = tgt->entries = flint_malloc(rows * cols * sizeof(mp_limb_t));
-  mp_limb_t* tgt_rows = tgt->rows = flint_malloc( rows * sizeof(mp_limb_t*) );
+  mp_limb_t** tgt_rows = tgt->rows = flint_malloc( rows * sizeof(mp_limb_t*) );
   tgt->r = rows;
   tgt->c = cols;
   fmpz* souP;
