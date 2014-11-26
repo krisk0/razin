@@ -104,15 +104,17 @@ n_primes_rev_shift(n_primes_rev_t i)
   if(grow_index)
    {
     // if previous number was odd, advance index
-    if( i->index == i->allocated_size )
+    if( ++i->index >= i->allocated_size )
      {
       #if LOUD_ALLOC
-       flint_printf("n_primes_rev_shift(): %d==%d",i->index,i->allocated_size);
+       gmp_printf("n_primes_rev_shift(): %d==%d, old ptr=%MX",i->index,
+        i->allocated_size,(mp_limb_t)i->numbers);
       #endif
       i->numbers=realloc( i->numbers, 
        sizeof(mp_limb_t)*(i->allocated_size += 10) );
       #if LOUD_ALLOC
-       flint_printf(", reallocated %d\n",i->allocated_size);
+       gmp_printf(", reallocated %d, new ptr=%MX\n",i->allocated_size,
+        (mp_limb_t)i->numbers);
       #endif
      }
     #if LOUD_ALLOC
@@ -121,7 +123,7 @@ n_primes_rev_shift(n_primes_rev_t i)
        flint_printf("n_primes_rev_shift(): %d<%d\n",i->index,i->allocated_size);
       }
     #endif
-    i->numbers[ ++i->index ] = curr;
+    i->numbers[ i->index ] = curr;
    }
   else
    // if previous number was even, replace it
@@ -159,7 +161,7 @@ return the first prime
   i->allocated_size=10;
   i->numbers=flint_malloc( 10 * sizeof(mp_limb_t) );
   #if LOUD_ALLOC
-   flint_printf("allocated_size initialized with 10\n");
+   gmp_printf("allocated_size initialized with 10, ptr=%MX\n",(mp_limb_t)i->numbers);
   #endif
   if( !stArt )
    stArt=WORD( 0xFFFFFFFFFFFFFFC5 );
@@ -201,5 +203,34 @@ return previous prime down to MIN_n_primes_rev,
   return i->numbers[i->index];
  }
 
-#undef LOUD_ALLOC
+mp_limb_t
+count_primes_in_range(mp_limb_t lo,mp_limb_t up)
+/*
+return count of primes in range lo..up, up=0 means FFFFFFFFFFFFFFC5
+lo should be in range MIN_n_primes_rev..2**64
+*/
+ {
+  n_primes_rev_t i;
+  mp_limb_t x=n_primes_rev_init(i,up);
+  mp_limb_t co=0;
+  while(1)
+   {
+    if(x<lo)
+     {
+      n_primes_rev_clear(i);
+      return co;
+     }
+    ++co;
+    x=n_primes_rev_next(i);
+   }
+ }
 
+void
+loud_primes_count(mp_limb_t lo)
+ {
+  gmp_printf("count of primes not smaller than 0x%MX\n",lo);
+  mp_limb_t c=count_primes_in_range(lo,0);
+  gmp_printf("... = 0x%MX\n",c);
+ }
+
+#undef LOUD_ALLOC
