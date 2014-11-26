@@ -15,8 +15,6 @@
 #include "../ulong_extras/ulong_extras_.h"
 #include "../fmpz/fmpz_.h"
 #define LOUD_DET_BOUND 0
-#define NDEBUG 1
-#include <assert.h>
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);
 mp_limb_t nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,
   mp_limb_t* scrtch);
@@ -29,7 +27,6 @@ select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const fmpz_t divisor)
    {
     pp->p = n_nextprime(pp->p, 0); // in FLINT 2.4.4 this is prime
     max_degree( pp );
-    assert( pp->p_deg_k );
     // fmpz_fdiv_ui() calls flint_mpz_fdiv_ui() which chooses not to use
     //  function mpz_fdiv_ui() and instead goes a hard way. Using optimized
     //  function fmpz_fdiv_ui_positive()

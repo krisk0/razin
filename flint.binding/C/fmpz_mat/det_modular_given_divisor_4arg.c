@@ -13,7 +13,7 @@
 #undef NDEBUG
 #include <assert.h>
 
-#define LOUD_DET_BOUND 1
+#define LOUD_DET_BOUND 0
 
 //mpz_get_ui (const mpz t op)
 
