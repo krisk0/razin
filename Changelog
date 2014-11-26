@@ -198,6 +198,9 @@
              rather than freshly-compiled. However, I keep my 
              flint-20141001.ebuild
 
-06 Nov 2014 Since spring 2014, RAZIN had a subroutine to invert a lower-triangular
-             matrice modulo 2**64. A subroutine to invert an arbitrary matrice 
-             modulo 2**64 added today: tmod_mat_invert_transpose()
+06 Nov 2014 Since spring 2014, RAZIN had a subroutine to invert a 
+             lower-triangular matrice modulo 2**64. A subroutine to invert an 
+             arbitrary matrice modulo 2**64 added today: 
+             tmod_mat_invert_transpose()
+
+26 Nov 2014 fmpz_mat_det_hermitian_decomposition() is working (slowly)
