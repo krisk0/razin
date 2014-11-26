@@ -10,6 +10,8 @@ This program benchmarks C subroutine fmpz_mat_det_hermitian_decomposition()
  against fmpz_mat_det_4block() or fmpz_mat_det()
 
 1000-bits entries matrix with varying size taken (5 matrix per one dimension)
+
+some results are in the bottom of the file
 '''
 
 import sage.all
@@ -67,3 +69,14 @@ for i in range(5):
  test_for_dim(200+i*100)
 
 print '\ntest passed'
+
+'''
+My method appears to be asymptotically better
+
+100 12.8778271675 9.85142207146
+200 172.378462076 110.319196224
+300 689.339381933 404.530629873
+400 1796.41489267 970.717617989
+500 3727.82309914 1934.79675388
+600 7395.46039391 3358.61122966
+'''
