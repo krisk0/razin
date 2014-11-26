@@ -21,7 +21,7 @@
 // no asserts in code below, if checks disabled
 #define LOUD_nmod_mat_in_det_divisor 0
 #define LOUD_det_divisor_count_y 0
-#define DIXON_INTERNAL_CHECK 1
+#define DIXON_INTERNAL_CHECK 0
 #define LOUD_DET_RESULT 0
 #define LOUD_DET_BOUND 0
 

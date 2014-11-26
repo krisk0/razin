@@ -19,7 +19,7 @@
 //  maximal native prime and MIN_n_primes_rev=299210839 is minimal number for
 //  which trial_gcd_test_then_big_sureprime_test() works correctly
 
-#define LOUD_ALLOC 1
+#define LOUD_ALLOC 0
 
 #if (defined (__amd64__) || defined (__i386__) || defined (__i486__)) 
  #define GCD n_gcd_odd_odd
