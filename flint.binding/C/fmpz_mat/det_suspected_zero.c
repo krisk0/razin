@@ -21,7 +21,7 @@
 // no asserts in code below, if checks disabled
 #define LOUD_nmod_mat_in_det_divisor 0
 #define LOUD_det_divisor_count_y 0
-#define DIXON_INTERNAL_CHECK 0
+#define DIXON_INTERNAL_CHECK 1
 #define LOUD_DET_RESULT 0
 #define LOUD_DET_BOUND 0
 
@@ -250,7 +250,7 @@ det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,const mpz_t M,slong n)
   for(i=0,zp=xA;i<n;zp++,i++)
    {
     //mpz_add_si(zp,-((i&1) ? 1 : -1)); // this addition should give zero 
-    gmp_printf("xA[%d]=%ZX\n",i,zp);
+    //gmp_printf("xA[%d]=%ZX\n",i,zp);
     if( i&1 )
      mpz_sub_ui(zp, zp, 1);
     else
@@ -576,6 +576,7 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
     mpfr_clear(p);
     flint_free(scratch);
     n_primes_rev_clear(it);
+    nmod_mat_clear(Amod_ori);
     nmod_mat_clear(Amod);
    }
   if(pp.p != UWORD_MAX)
