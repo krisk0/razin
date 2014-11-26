@@ -128,7 +128,7 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
    }
   {
    // looks like small primes are better than large primes
-   // TODO: use small primes produces with n_nextprime() instead of big primes
+   // TODO: use small primes produced with n_nextprime() instead of big primes
    #if LOUD_DET_BOUND
     gmp_printf("fmpz_mat_det_modular_given_divisor_4arg(): bound=%Md\n",hb);
     slong primes_used=0;
