@@ -53,7 +53,7 @@ MulMod_fmpz_2x(mpz_t tgt,const fmpz_t sou,slong log2_M)
  {
   fmpz s=*sou;
   if( COEFF_IS_MPZ(s) )
-   MulMod_2x(tgt, COEFF_TO_PTR(s), log2_M);
+   MulMod_2x_positive(tgt, COEFF_TO_PTR(s), log2_M);
   else
    {
     flint_mpz_mul_ui(tgt,tgt,s);
@@ -413,7 +413,7 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
     if(M_modified)
      mpz_mod_2x(xI,log2_M);
     if( mpz_cmp_ui(d_mod_M,1) )
-     MulMod_2x(xI, d_mod_M, log2_M);
+     MulMod_2x_positive(xI, d_mod_M, log2_M);
     if( fmpz_cmp_ui(D,0) )
      rc=reconstruct_rational_take_denominator(found, xI, M, log2_N, D, 
       RR_SKIP_CHECK);

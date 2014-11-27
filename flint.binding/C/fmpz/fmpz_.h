@@ -409,12 +409,20 @@ fmpz_to_t(const fmpz_t f)
  }
 
 void __inline__ static
-MulMod_2x(mpz_t tgt,const mpz_t sou,slong log2_M)
-// multiply positive numbers modulo 2**log2_M
+MulMod_2x_stupid(mpz_t tgt,const mpz_t sou,slong log2_M)
+// multiply modulo 2**log2_M
  {
-  // TODO: use GMP mpn_mullow if bit-length of tgt+sou is big enough
   mpz_mul(tgt,tgt,sou);
   mpz_mod_2x(tgt,log2_M);
  }
+
+/*
+MulMod_2x_positive(tgt,sou,log2_M):
+ tgt is zero or positive and has enough place for log2_M bits
+ sou is positive and has enough place for log2_M bits
+
+auto-generated file defining subroutine MulMod_2x_positive():
+*/
+#include "MulMod_2x_positive.c"
 
 #endif
