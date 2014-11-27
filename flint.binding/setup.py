@@ -121,6 +121,14 @@ def fix_include( c, ii ):
  for i in ii:
   os.system( p % (i,i,c) )
 
+def find_flint_so_in_dir(d):
+ # user forgot to specify FLINT shared object name, however specified directory
+ # Which means user wants any libflint.so in the directory
+ for x in glob.glob(d+'/libflint.so*'):
+  return x
+ print 'Warning: no file matching libflint.so* in '+d
+ return 0
+
 sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat/nmod_mat_HNF-debug.c' )
 
 '''
@@ -151,9 +159,11 @@ if my_so != None:
  if os.path.isdir(my_so):
   library_dirs=[ my_so ]
   runtime_library_dirs=[ my_so ]
-  bad_path=0
+  flint_so=find_flint_so_in_dir( my_so )
+  if 0 != flint_so:
+   bad_path=0
  if bad_path:
-  die( 'no such file or directory '+my_so )
+  die( 'no such file or directory '+my_so+', or FLINT .so not found' )
 
 print 'libraries taken via -l:',libraries
 print 'libraries taken as extra objects:',extra_objects
@@ -211,7 +221,7 @@ def ctypedef( c ):
  d=d.replace(';','').strip().replace('typedef',' ctypedef')
  return d
 
-def mp_limb_t( gmpH, mpfrH, CC ):
+def mp_limb_t( gmpH, mpfrH ):
  ' invoke C pre-processor to extract 2 type definitions from gmp.h '
  c_pattern="%s -E %s|grep '%s;'|grep typedef"
  if not os.path.isfile( gmpH ):
@@ -238,7 +248,7 @@ def take_define( f, q ):
     return k[2]
  die( 'failed to find definition of %s in %s' % (q,f) )
 
-def slong( p, CC ):
+def slong( p ):
  if not os.path.isfile( p ):
   die('Failed to find FLINT includes')
  tU,tS=take_define( p, 'ulong' ),take_define( p, 'slong' )
@@ -261,12 +271,35 @@ def slong__mp_limb_t( x ):
   assume FLINT, GMP and MPFR headers share same directory. 
   Extract basic number type definitions 
  '''
- CC=os.environ.get('CC','gcc')
- mp_limb_t( x+'/gmp.h', x+'/mpfr.h', CC )
- slong( x+'/flint/flint.h', CC )
+ mp_limb_t( x+'/gmp.h', x+'/mpfr.h' )
+ slong( x+'/flint/flint.h' )
 
 def mullow_n( so ):
+ global delete_us
+ if 0==so:
+  so='-lflint'
+ if p0==None:
+  incl=' '
+  libr=' '
+ else:
+  incl=' "-I'+p0+'/usr/include"'
+  libr=' "'+p0+'"'
+ rc=os.system( CC+incl+' C/mullow_n.c -c -omullow_n.o -O2 -g' )
+ if rc:
+  die( 'mullow_n: compilation problem. FLINT header not found?' )
+ delete_us.append('mullow_n.o')
+ exe='mullow.exe'
+ rc=os.system( CC+' mullow_n.o '+so+libr+' -lgmp -o'+exe )
+ if rc:
+  # TODO: assume gmp version is wrong, extract gmp .so name from flint .so with
+  #  objdump -p or some other way, re-link
+  return 0
+ delete_us.append(exe)
+ rc=os.system('./%s %s' % (exe,(int(os.stat(exe).st_atime)|1) % 2**32))
+ if 0==rc:
+  print 'mullo workin!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
  return 0
+ return 0==rc
 
 def MulMod_2x( p ):
  if mullow_n( flint_so ):
@@ -278,6 +311,7 @@ def MulMod_2x( p ):
  global delete_us
  delete_us.append(tgt)
 
+CC=os.environ.get('CC','gcc')
 include_dirs=[include_0,include_1]
 if p0 == None:
  slong__mp_limb_t( '/usr/include' )
