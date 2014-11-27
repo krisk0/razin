@@ -47,6 +47,7 @@ MulMod_fmpz(mpz_t tgt,const fmpz_t sou,const mpz_t M)
   mpz_mod(tgt,tgt,M);
  }
 
+#if 0
 void __inline__ static
 MulMod_fmpz_2x(mpz_t tgt,const fmpz_t sou,slong log2_M)
 // multiply positive numbers modulo 2**log2_M
@@ -60,6 +61,44 @@ MulMod_fmpz_2x(mpz_t tgt,const fmpz_t sou,slong log2_M)
     mpz_mod_2x(tgt,log2_M);
    }
  }
+
+void __inline__ static
+MulMod_fmpz_mpz_2x(fmpz_t tgt,mpz_t sou,mp_limb_t* scratch,slong log2)
+ {
+  fmpz t=*tgt;
+  if( COEFF_IS_MPZ(t) )
+   {
+    mpz_t tgt_mpz=COEFF_TO_PTR(t);
+    #if defined(MULLO_N)
+     // if using mpn level subroutine, operands must be fat enough
+     slong n=(log2_M+FLINT_BITS-1)/FLINT_BITS;
+     inflate_mp_d(sou, n);
+     inflate_mp_d(tgt_mpz, n);
+    #endif
+    MulMod_2x_positive(tgt_mpz,sou,scratch,log2);
+    _fmpz_demote_val(tgt);
+   }
+  else
+   {
+    if(log2>FLINT_BITS)
+     {
+      mpz_t temp;
+      mpz_init2(temp,log2);
+      flint_mpz_set_ui(temp,t);
+      MulMod_2x_positive(temp,sou,scratch,log2);
+      fmpz_set_mpz(tgt,temp);
+      mpz_clear(temp);
+     }
+    else
+     {
+      mp_limb_t q=t*sou->_mp_d[0];
+      if(FLINT_BITS>log2)
+       q &= (UWORD(1)<<log2)-1;
+      flint_mpz_set_ui(q);
+     }
+   }
+ }
+#endif
 
 void lcm_2arg(mpz_t tgt,const fmpz_t sou)
  {
@@ -395,6 +434,7 @@ rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,slong log2_M,
 /*
 d: on entry = 1, on exit common denominator of reconstructed salvation
 x: vector of length n, x*A equals B modulo M, 0 <= x[i] < M, det A is odd
+    entries of x can hold log2_M bits
 M=2**log2_M >= 2 * 2**log2_N * 2**log2_D
 log2_N: upper approximation to log2(numerator bound), >= FLINT_BITS
 log2_D: upper approximation to log2(denominator bound), >= FLINT_BITS
@@ -408,12 +448,13 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
   slong i;
   int M_modified=0,rc;
   mpz_ptr xI;
+  mp_limb_t* scratch=x->_mp_d;
   for(i=0,xI=x; i<n; i++,xI++)
    {
     if(M_modified)
      mpz_mod_2x(xI,log2_M);
     if( mpz_cmp_ui(d_mod_M,1) )
-     MulMod_2x_positive(xI, d_mod_M, log2_M);
+     MulMod_2x_positive(xI, d_mod_M, scratch, log2_M);
     if( fmpz_cmp_ui(D,0) )
      rc=reconstruct_rational_take_denominator(found, xI, M, log2_N, D, 
       RR_SKIP_CHECK);
@@ -426,9 +467,19 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
                      "Rational reconstruction failed.\n");
       abort();
      }
-    if( fmpz_cmp_ui(found,1) )
+    slong found_si=*found;
+    if(1 != found_si)
      {
-      mul_mpz_fmpz( d, found );
+      mpz_ptr found_mpz=0;
+      // d *= found
+      if( COEFF_IS_MPZ(found_si) )
+       {
+        found_mpz=COEFF_TO_PTR(found_si);
+        found_si=0;   
+        mpz_mul( d, d, found_mpz );
+       }
+      else
+       flint_mpz_mul_si(d, d, found_si);
       if( i != n-1 )
        {
         // Decrease denominator bound, maybe decrease M
@@ -436,15 +487,19 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
          {
           fmpz_set_ui(D,1); fmpz_mul_2exp(D,D,log2_D);
          }
-        fmpz_fdiv_q(D, D, found);
-        M_modified |= maybe_decrease_M_2x(M,&log2_M,log2_N,D);
+        if(0==found_si)
+         fmpz_fdiv_q(D, D, found);
+        else
+         fmpz_fdiv_q_si(D, D, found_si);
+        maybe_decrease_M_2x(M,&log2_M,log2_N,D);
         // multiply d_mod_M by found and reduce result modulo M
-        if(M_modified)
+        if(0==found_si)
+         MulMod_2x_positive(d_mod_M, found_mpz, scratch, log2_M);
+        else
          {
-          mpz_mod_2x(d_mod_M,log2_M);
-          fmpz_mod_2x(found,log2_M);
+          mpz_mul_si(d_mod_M, d_mod_M, found_si);
+          mpz_mod_2x(d_mod_M, log2_M);
          }
-        MulMod_fmpz_2x(d_mod_M, found, log2_M);
        }
      }
    }

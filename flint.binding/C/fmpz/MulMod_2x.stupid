@@ -1,1 +1,6 @@
-#define MulMod_2x_positive MulMod_2x_stupid
+// This program is part of RAZIN
+// Copyright Денис Крыськов 2014
+// Licence: GNU General Public License (GPL)
+
+#define MulMod_2x_positive(t,s,z,m) MulMod_2x_stupid(t,s,m)
+

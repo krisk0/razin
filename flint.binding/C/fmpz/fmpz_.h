@@ -427,8 +427,16 @@ mpz_zero_upper(mpz_t i,slong n)
    y[x]=0;
  }
 
+void __inline__
+inflate_mp_d(mpz_t i,slong n)
+// make sure positive i can hold n limbs
+ {
+  if(i->_mp_size < n)
+   i->_mp_d=realloc(i->_mp_d,sizeof(mp_limb_t)*n);
+ }
+
 /*
-MulMod_2x_positive(mpz_t tgt,const mpz_t sou,slong log2_M):
+MulMod_2x_positive(mpz_t tgt,mpz_t sou,mp_limb_t* scr,slong log2_M):
  tgt is zero or positive and has enough place for log2_M bits
  sou is positive and has enough place for log2_M bits
 
