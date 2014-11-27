@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <flint/flint.h>
 
 char* 
