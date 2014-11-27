@@ -41,7 +41,7 @@ def test_for_dim(n):
  for u in range(5):
   a=random_matrix(ZZ, n, x=-xy_par, y=xy_par)
   test_matrice_mind_time(a)
- print 'test0 t0,1=',t0,t1
+ print n,t0,t1
  print '**************************************************************\n\n'
   
 def test_matrice_mind_time(a):
