@@ -408,7 +408,7 @@ fmpz_to_t(const fmpz_t f)
   return m;
  }
 
-void __inline__ static
+void __inline__
 MulMod_2x_stupid(mpz_t tgt,const mpz_t sou,slong log2_M)
 // multiply modulo 2**log2_M
  {
@@ -416,8 +416,19 @@ MulMod_2x_stupid(mpz_t tgt,const mpz_t sou,slong log2_M)
   mpz_mod_2x(tgt,log2_M);
  }
 
+void __inline__
+mpz_zero_upper(mpz_t i,slong n)
+// zero-fill y[x] y[x+1] ... y[n-1] where x=limb-size of i and 
+//  y is limb-array of i
+ {
+  slong x=i->_mp_size;
+  mp_limb_t* y=i->_mp_d;
+  for(;x<n;x++)
+   y[x]=0;
+ }
+
 /*
-MulMod_2x_positive(tgt,sou,log2_M):
+MulMod_2x_positive(mpz_t tgt,const mpz_t sou,slong log2_M):
  tgt is zero or positive and has enough place for log2_M bits
  sou is positive and has enough place for log2_M bits
 
