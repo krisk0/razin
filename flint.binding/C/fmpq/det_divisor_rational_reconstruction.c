@@ -48,24 +48,17 @@ MulMod_fmpz(mpz_t tgt,const fmpz_t sou,const mpz_t M)
  }
 
 void __inline__ static
-MulMod_2x(mpz_t tgt,const mpz_t sou,slong log2_M)
-// multiply positive numbers modulo 2**log2_M
- {
-  // TODO: use GMP mpn_mullow if bit-length of tgt+sou is big enough
-  mpz_mul(tgt,tgt,sou);
-  mpz_mod_2x(tgt,log2_M);
- }
-
-void __inline__ static
 MulMod_fmpz_2x(mpz_t tgt,const fmpz_t sou,slong log2_M)
 // multiply positive numbers modulo 2**log2_M
  {
   fmpz s=*sou;
   if( COEFF_IS_MPZ(s) )
-   mpz_mul(tgt,tgt, COEFF_TO_PTR(s) );
+   MulMod_2x(tgt, COEFF_TO_PTR(s), log2_M);
   else
-   flint_mpz_mul_ui(tgt,tgt,s);
-  mpz_mod_2x(tgt,log2_M);
+   {
+    flint_mpz_mul_ui(tgt,tgt,s);
+    mpz_mod_2x(tgt,log2_M);
+   }
  }
 
 void lcm_2arg(mpz_t tgt,const fmpz_t sou)
