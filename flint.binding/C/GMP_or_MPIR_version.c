@@ -1,3 +1,7 @@
+// This program is part of RAZIN
+// Copyright Денис Крыськов 2014
+// Licence: GNU General Public License (GPL)
+
 #include <stdio.h>
 #include <string.h>
 #include <flint/flint.h>
