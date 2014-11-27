@@ -204,4 +204,9 @@
              tmod_mat_invert_transpose()
 
 26 Nov 2014 fmpz_mat_det_hermitian_decomposition() is working (slow but faster
-             than FLINT on fat matrix)
+             than FLINT on fat matrix). My question about multiplication modulo
+             degree of two answered at FLINT forum 
+             
+             https://groups.google.com/forum/#!forum/flint-devel 
+             
+             F.Johansson, thanks
