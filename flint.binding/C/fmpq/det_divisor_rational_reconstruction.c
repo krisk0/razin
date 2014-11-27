@@ -127,8 +127,7 @@ maybe_decrease_M(mpz_t M,mp_limb_t p,mp_limb_t log2_N,fmpz_t D)
   while( mpz_cmp(b,M) <= 0 )
    {
     decreased=1;
-    // TODO: bad if mp_limb_t larger than unsigned long
-    mpz_divexact_ui(M,M,p);
+    flint_mpz_divexact_ui(M,M,p);
    }
   mpz_clear(b);
   return decreased;
