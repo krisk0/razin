@@ -100,19 +100,6 @@ MulMod_fmpz_mpz_2x(fmpz_t tgt,mpz_t sou,mp_limb_t* scratch,slong log2)
  }
 #endif
 
-void lcm_2arg(mpz_t tgt,const fmpz_t sou)
- {
-  register fmpz s=*sou;
-  if(!COEFF_IS_MPZ(s))
-   {
-    // TODO: bad if fmpz larger than unsigned long
-    if(s != 1)
-     mpz_lcm_ui(tgt, tgt, (mp_limb_t)s);    // sou is small but not 1
-   }
-  else
-   mpz_lcm(tgt, tgt, COEFF_TO_PTR(s));      // sou is big
- }
-
 int __inline__ static
 maybe_decrease_M(mpz_t M,mp_limb_t p,mp_limb_t log2_N,fmpz_t D)
 // divide M by p so new M is still equal or greater than 2*N*D
