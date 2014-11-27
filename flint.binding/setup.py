@@ -265,9 +265,16 @@ def slong__mp_limb_t( x ):
  mp_limb_t( x+'/gmp.h', x+'/mpfr.h', CC )
  slong( x+'/flint/flint.h', CC )
 
+def mullow_n( so ):
+ return 0
+
 def MulMod_2x( p ):
+ if mullow_n( flint_so ):
+  smart='smaart'
+ else:
+  smart='stupid'
  tgt=p+'_positive.c'
- os.system( "cp %s.stupid %s" % (p,tgt) )
+ os.system( "cp %s.%s %s" % (p,smart,tgt) )
  global delete_us
  delete_us.append(tgt)
 
