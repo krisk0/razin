@@ -442,7 +442,7 @@ log2_D: upper approximation to log2(denominator bound), >= FLINT_BITS
 essentially the same algorithm as det_divisor_rational_reconstruction() 
 */
  {
-  mpz_t d_mod_M; mpz_init_set_ui(d_mod_M,1);
+  mpz_t d_mod_M; mpz_init2(d_mod_M,log2_M); mpz_set_ui(d_mod_M,1);
   fmpz_t found; fmpz_init(found);
   fmpz_t D; fmpz_init(D); // D=0
   slong i;
@@ -494,12 +494,21 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
         maybe_decrease_M_2x(M,&log2_M,log2_N,D);
         // multiply d_mod_M by found and reduce result modulo M
         if(0==found_si)
-         MulMod_2x_positive(d_mod_M, found_mpz, scratch, log2_M);
+         {
+          #if defined(MULLO_N)
+           // operands to MulMod_2x_positive must be fat enough
+           inflate_mp_d(found_mpz,log2_M+FLINT_BITS-1)/FLINT_BITS);
+          #endif
+          MulMod_2x_positive(d_mod_M, found_mpz, scratch, log2_M);
+         }
         else
          {
           mpz_mul_si(d_mod_M, d_mod_M, found_si);
           mpz_mod_2x(d_mod_M, log2_M);
          }
+        #if defined(MULLO_N)
+         inflate_mp_d(d_mod_M,log2_M+FLINT_BITS-1)/FLINT_BITS);
+        #endif
        }
      }
    }
