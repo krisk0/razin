@@ -402,7 +402,7 @@ rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,slong log2_M,
 /*
 d: on entry = 1, on exit common denominator of reconstructed salvation
 x: vector of length n, x*A equals B modulo M, 0 <= x[i] < M, det A is odd
-M=2**log2_M
+M=2**log2_M >= 2 * 2**log2_N * 2**log2_D
 log2_N: upper approximation to log2(numerator bound), >= FLINT_BITS
 log2_D: upper approximation to log2(denominator bound), >= FLINT_BITS
  
@@ -420,7 +420,7 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
     if(M_modified)
      mpz_mod_2x(xI,log2_M);
     if( mpz_cmp_ui(d_mod_M,1) )
-     MulMod_2x( xI, d_mod_M, log2_M );
+     MulMod_2x(xI, d_mod_M, log2_M);
     if( fmpz_cmp_ui(D,0) )
      rc=reconstruct_rational_take_denominator(found, xI, M, log2_N, D, 
       RR_SKIP_CHECK);
