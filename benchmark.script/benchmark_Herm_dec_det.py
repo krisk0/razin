@@ -27,9 +27,11 @@ randint=sage.all.randint
 random_matrix,identity_matrix=sage.all.random_matrix,sage.all.identity_matrix
 fmpz_mat=flint.fmpz_mat
 
+' 3 subroutines have similar interface, flint.det calls FLINT fmpz_mat_det() '
 #count_det=flint.det_20140704
 count_det=flint.det
-count_hd_det=flint.det_hermitian_decomposition
+count_hd_det=flint.det_hermitian_decomposition 
+        # fmpz_mat_det_hermitian_decomposition
 
 bits=1000
 xy_par=1<<bits
