@@ -428,6 +428,14 @@ mpz_zero_upper(mpz_t i,slong n)
  }
 
 void __inline__
+mpz_zero_upper_3arg(mpz_t i,slong x,slong n)
+ {
+  mp_limb_t* y=i->_mp_d;
+  for(;x<n;x++)
+   y[x]=0;
+ }
+
+void __inline__
 inflate_mp_d(mpz_t i,slong n)
 // make sure positive i can hold n limbs
  {
