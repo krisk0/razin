@@ -35,6 +35,10 @@ If you want to try FLINT shared library installed in no-standard location (such 
 
  # MY_SAGE_IS_HERE=/home/of/lmonade/prefix/local/lib
 
+If you have more than one version of FLINT run-time library, set MY_FLINT_IS_HERE to point to the one you want.
+
+ # MY_FLINT_IS_HERE="$lmonade_prefix/usr/lib/flint.so.2.4.5"
+
 After successful compilation with MY_SAGE_IS_HERE=... directive, flint_sage.so will tie to a flint*.so from that location (and would not work if flint*.so is not there).
 
 Two files are installed: flint_sage.so and FLINT_...egg-info. With portage, documentation (this file) will be installed, too.
@@ -104,3 +108,6 @@ A9. Use Unix-like shell and GNU C compiler. Install GMP and FLINT (CC=gcc CFLAGS
 
 Qa. Can you make it so that your software compiles under <specific OS> with <specific compiler>? Can you port your software to <specific platform>? Can you write a documentation? a documentation in <specific language>?
 Aa. I can do everything, if you hire me. Of course, I will need to access that OS/platform, directly or via command-line. I will fix a bug in my code for free, if you fill in a good bug-report.
+
+Qb. Your setup.py is Linux-specific because it looks for .so files.
+Ab. No, only a subroutine that runs in a special case when user supplied directory name but not file name. Set MY_FLINT_IS_HERE to point to exact file location, and you will be fine.
