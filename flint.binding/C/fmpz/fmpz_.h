@@ -437,7 +437,7 @@ inflate_mp_d(mpz_t i,slong n)
 
 /*
 MulMod_2x_positive(mpz_t tgt,mpz_t sou,mp_limb_t* scr,slong log2_M):
- tgt is zero or positive and has enough place for log2_M bits
+ on entry tgt is zero or positive and has enough place for log2_M bits
  sou is positive and has enough place for log2_M bits
 
 auto-generated file defining subroutine MulMod_2x_positive():
