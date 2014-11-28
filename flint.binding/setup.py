@@ -124,6 +124,7 @@ def fix_include( c, ii ):
 def find_flint_so_in_dir(d):
  # user forgot to specify FLINT shared object name, however specified directory
  # Which means user wants any libflint.so in the directory
+ import glob
  for x in glob.glob(d+'/libflint.so*'):
   return x
  print 'Warning: no file matching libflint.so* in '+d
@@ -286,7 +287,7 @@ def mullow_n( so ):
   libr=' "'+p0+'"'
  rc=os.system( CC+incl+' C/mullow_n.c -c -omullow_n.o -O2 -g' )
  if rc:
-  die( 'mullow_n: compilation problem. FLINT header not found?' )
+  die( 'mullow_n(): compilation problem. FLINT header not found?' )
  delete_us.append('mullow_n.o')
  exe='mullow.exe'
  rc=os.system( CC+' mullow_n.o '+so+libr+' -lgmp -o'+exe )
@@ -296,9 +297,11 @@ def mullow_n( so ):
   return 0
  delete_us.append(exe)
  rc=os.system('./%s %s' % (exe,(int(os.stat(exe).st_atime)|1) % 2**32))
- if 0==rc:
-  print 'mullo workin!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
- return 0
+ '''
+  if 0==rc:
+   print 'mullo workin!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+  return 0
+ '''
  return 0==rc
 
 def MulMod_2x( p ):

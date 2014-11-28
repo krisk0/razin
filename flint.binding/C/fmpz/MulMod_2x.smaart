@@ -1,0 +1,42 @@
+// This program is part of RAZIN
+// Copyright Денис Крыськов 2014
+// Licence: GNU General Public License (GPL)
+
+#define MULLO_N __gmpn_mullo_n
+
+void MULLO_N(mp_ptr rp, mp_srcptr xp, mp_srcptr yp, mp_size_t n);
+
+void
+MulMod_2x_positive(mpz_t tgt,mpz_t sou,mp_limb_t* scr,slong log2_M)
+ {
+  slong tgt_size=tgt->_mp_size;
+  if(0==tgt_size)
+   return;
+  // tgt and sou are positive
+  slong sou_size=sou->_mp_size;
+  slong n=(log2_M+FLINT_BITS-1)/FLINT_BITS;
+  // if operands are short do it stupidly
+  if( n==1 || (tgt_size+sou_size)*2 < 3*n )
+   {
+    MulMod_2x_stupid(tgt,sou,log2_M);
+    return;
+   }
+  // stuff zeroes
+  mpz_zero_upper_3arg(tgt,tgt_size,n);
+  mpz_zero_upper_3arg(sou,sou_size,n);
+  MULLO_N(scr, tgt->_mp_d, sou->_mp_d, n);
+  // find result size
+  while(n)
+   {
+    if( scr[--n] )
+     break;
+   }
+  if( 0==n && 0==scr[0] ) // zero?
+   {
+    tgt->_mp_size=0;
+    return;
+   }
+  // result non-zero, copy some limbs
+  tgt->_mp_size = ++n;
+  memcpy(tgt->_mp_d, scr, n*sizeof(mp_limb_t));
+ }
