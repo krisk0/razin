@@ -481,7 +481,7 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
          {
           #if defined(MULLO_N)
            // operands to MulMod_2x_positive must be fat enough
-           inflate_mp_d(found_mpz, log2_M+FLINT_BITS-1)/FLINT_BITS);
+           inflate_mp_d(found_mpz, (log2_M+FLINT_BITS-1)/FLINT_BITS);
           #endif
           MulMod_2x_positive(d_mod_M, found_mpz, scratch, log2_M);
          }
@@ -491,7 +491,7 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
           mpz_mod_2x(d_mod_M, log2_M);
          }
         #if defined(MULLO_N)
-         inflate_mp_d(d_mod_M, log2_M+FLINT_BITS-1)/FLINT_BITS);
+         inflate_mp_d(d_mod_M, (log2_M+FLINT_BITS-1)/FLINT_BITS);
         #endif
        }
      }
