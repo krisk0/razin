@@ -74,7 +74,7 @@ print '\ntest passed'
 
 '''
 My method appears to be asymptotically better
-
+     FLINT        my fmpz_mat_det_hermitian_decomposition()
 100 12.8778271675 9.85142207146
 200 172.378462076 110.319196224
 300 689.339381933 404.530629873
