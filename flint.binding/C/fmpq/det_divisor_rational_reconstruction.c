@@ -13,8 +13,6 @@ This file contains modified subroutine _fmpq_reconstruct_fmpz_2() owned by
 
 Decreasing modulo/reusing discovered denominator trick learnt from solve1()
  subroutine implemented by V.Shoup
-
-Code in this file might malfunction if mp_limb_t is not unsigned long
 */
 
 #define LOUD_RR_IO 0
@@ -477,13 +475,13 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
          fmpz_fdiv_q(D, D, found);
         else
          fmpz_fdiv_q_si(D, D, found_si);
-        maybe_decrease_M_2x(M,&log2_M,log2_N,D);
+        maybe_decrease_M_2x(M, &log2_M, log2_N, D);
         // multiply d_mod_M by found and reduce result modulo M
         if(0==found_si)
          {
           #if defined(MULLO_N)
            // operands to MulMod_2x_positive must be fat enough
-           inflate_mp_d(found_mpz,log2_M+FLINT_BITS-1)/FLINT_BITS);
+           inflate_mp_d(found_mpz, log2_M+FLINT_BITS-1)/FLINT_BITS);
           #endif
           MulMod_2x_positive(d_mod_M, found_mpz, scratch, log2_M);
          }
@@ -493,7 +491,7 @@ essentially the same algorithm as det_divisor_rational_reconstruction()
           mpz_mod_2x(d_mod_M, log2_M);
          }
         #if defined(MULLO_N)
-         inflate_mp_d(d_mod_M,log2_M+FLINT_BITS-1)/FLINT_BITS);
+         inflate_mp_d(d_mod_M, log2_M+FLINT_BITS-1)/FLINT_BITS);
         #endif
        }
      }
