@@ -163,8 +163,8 @@ h>=1+FLINT_BITS, c>=FLINT_BITS
  }
 
 static __inline__ void
-_20140914_rp_Cramer(mp_limb_t* b, mpfr_t c, 
-  const mpfr_t h, fmpz_mat_t A, slong n)
+_20140914_rp_Cramer(mp_limb_t* b, mpfr_t c,
+  const mpfr_t h, slong n)
  {
   mp_limb_t b_norm=_20140914_form_b(b,n);
   {
@@ -494,7 +494,7 @@ _20140914_check_A_inv_tr(tmod_mat_t inv_tr, fmpz_mat_t s, slong n)
 
 
 static __inline__ mp_limb_t
-_20140914_Hadamard_bound(mpfr_t h, mpfr_t c, fmpz_mat_t A, slong n)
+_20140914_Hadamard_bound(mpfr_t h, mpfr_t c, const fmpz_mat_t A, slong n)
 /*
 on entry h,c uninitialized
 
@@ -532,7 +532,7 @@ else
  }
 
 mp_limb_t
-fmpz_mat_det_divisor_odd(mpz_t r, mp_limb_t* det_mod_T, fmpz_mat_t Ao)
+fmpz_mat_det_divisor_odd(mpz_t r, mp_limb_t* det_mod_T, const fmpz_mat_t Ao)
 /*
 on entry r equals 1
  
@@ -554,7 +554,7 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
     return hb_i;
    }
   mp_limb_t* Bo=flint_calloc(sizeof(mp_limb_t),n);
-  _20140914_rp_Cramer(Bo,cb,hb,Ao,n);
+  _20140914_rp_Cramer(Bo,cb,hb,n);
   // group 0: Bo, hb, cb
   slong max_i=_20140914_max_i(hb,cb);
   #if DIXON_INTERNAL_CHECK

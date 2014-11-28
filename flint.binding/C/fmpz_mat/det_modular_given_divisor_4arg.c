@@ -119,7 +119,7 @@ _20140912_no_CRT(mpz_t r,mp_limb_t det_mod_t)
 
 void
 fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
-  mp_limb_t det_mod_T, fmpz_mat_t A)
+  mp_limb_t det_mod_T, const fmpz_mat_t A)
  {
   if(hb <= FLINT_BITS)
    {// don't need Chinese Remaider or det modulo prime
