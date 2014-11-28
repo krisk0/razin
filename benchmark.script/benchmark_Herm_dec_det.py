@@ -35,16 +35,19 @@ count_hd_det=flint.det_hermitian_decomposition
 
 bits=1000
 xy_par=1<<bits
+profile_on=0
 
 def test_for_dim(n):
  global t0,t1
  t0=t1=0
- print 'dim=%s' % n 
+ if profile_on:
+  print 'dim=%s' % n 
  for u in range(5):
   a=random_matrix(ZZ, n, x=-xy_par, y=xy_par)
   test_matrice_mind_time(a)
  print '=',n,t0,t1
- print '**************************************************************\n\n'
+ if profile_on:
+  print '**************************************************************\n\n'
   
 def test_matrice_mind_time(a):
  global t0,t1
@@ -52,14 +55,16 @@ def test_matrice_mind_time(a):
  z0=count_det( fmpz_mat(a) )
  m1=time.time()
  t0 += m1-m0
- print '--------------------------------------------------------------\n'
+ if profile_on:
+  print '--------------------------------------------------------------\n'
  m0=time.time()
  z1=count_hd_det( fmpz_mat(a) )
  m1=time.time()
  if z1 != z0:
   print 'det mismatch: %X != %X' % (z0,z1)
   assert 0
- print '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+ if profile_on:
+  print '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
  t1 += m1-m0
 
 sage.all.set_random_seed('20141126')
