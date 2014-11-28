@@ -297,11 +297,6 @@ def mullow_n( so ):
   return 0
  delete_us.append(exe)
  rc=os.system('./%s %s' % (exe,(int(os.stat(exe).st_atime)|1) % 2**32))
- '''
-  if 0==rc:
-   print 'mullo workin!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-  return 0
- '''
  return 0==rc
 
 def MulMod_2x( p ):
