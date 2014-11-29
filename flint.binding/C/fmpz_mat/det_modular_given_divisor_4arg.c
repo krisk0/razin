@@ -88,6 +88,31 @@ _choose_prime_20140912(p_k_pk_t* pp, nmod_t* mod, n_primes_rev_t it,
    }
  }
 
+static __inline__ mp_limb_t
+_20141128_select_prime_and_degree(p_k_pk_t* pp,nmod_t* mod,const mpz_t divisor)
+ {
+  mp_limb_t r,t,r_mod_p;
+  while(1)
+   {
+    pp->p = n_nextprime(pp->p, 0); // in FLINT 2.4.4 this is prime
+    max_degree( pp );
+    r=mpz_fdiv_ui( divisor, pp->p_deg_k );
+    r_mod_p=r % pp->p;
+    if(r_mod_p)
+     {
+      count_leading_zeros( t, pp->p_deg_k );
+      mod->n = pp->p_deg_k << t;
+      invert_limb(mod->ninv, mod->n);
+      // save 44 ticks by re-using r % pp->p
+      #if SPEEDUP_NMOD_RED3
+       t = - mod->n;
+       mod->norm = n_mulmod_preinv_4arg( t,t, mod->n,mod->ninv );
+      #endif
+      return inv_mod_pk_4arg(r,r_mod_p,pp[0],mod[0]);
+     }
+   }
+ }
+
 __inline__ static void
 _20140912_no_CRT(mpz_t r,mp_limb_t det_mod_t)
  {
@@ -152,13 +177,16 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
     return;
    }
   {
-   // looks like small primes are better than large primes for this subroutine
-   // TODO: use small primes produced with n_nextprime() instead of big primes
    #if LOUD_DET_BOUND
     gmp_printf("fmpz_mat_det_modular_given_divisor_4arg(): hb=%Md\n",hb);
     slong primes_used=0;
    #endif
-   p_k_pk_t pp; pp.p=0;
+   p_k_pk_t pp;
+   #if DESCENDING_PRIMES
+    pp.p=0;
+   #else
+    pp.p=2;
+   #endif
  
    fmpz_t x,xnew,prod;
    _CRT_data_init_20140912(x,xnew,prod,det_mod_T,r);
@@ -184,10 +212,17 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
     }
    else
     {
-     n_primes_rev_t iT;
+     #if DESCENDING_PRIMES
+      n_primes_rev_t iT;
+     #endif
      for(;;)
       {
-       mp_limb_t divisor_inv=_choose_prime_20140912(&pp, &Amod->mod, iT, r);
+       mp_limb_t divisor_inv=
+        #if DESCENDING_PRIMES
+         _choose_prime_20140912(&pp, &Amod->mod, iT, r);
+        #else
+         _20141128_select_prime_and_degree(  &pp, &Amod->mod, r );
+        #endif
        fmpz_mat_get_nmod_mat(Amod, A);
        mp_limb_t xmod=nmod_mat_det_mod_pk_4block(Amod,pp,scratch);
        xmod=n_mulmod2_preinv(xmod,divisor_inv, Amod->mod.n,Amod->mod.ninv);
@@ -200,7 +235,9 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
         break;
        fmpz_set(x, xnew);
       }
-     n_primes_rev_clear(iT);
+     #if DESCENDING_PRIMES
+      n_primes_rev_clear(iT);
+     #endif
     }
    nmod_mat_clear(Amod);
    free(scratch);
@@ -216,3 +253,4 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
  }
 
 #undef NDEBUG
+#undef DESCENDING_PRIMES
