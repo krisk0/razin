@@ -24,6 +24,24 @@
   fmpz_get_mpfr_slave(r,_sR,rnd);    \
  }
 
+#define SURELY_REDUCE_SIZE \
+ while( r_limbs-- && (0==r->_mp_d[r_limbs]) ) \
+  ;                                            \
+ if(r_limbs >= 0)                               \
+  r->_mp_size=r_limbs+1;                        \
+ else                                           \
+  r->_mp_size=0;                                
+
+__inline__ static mp_limb_t
+mpz_limb_size(mpz_ptr r,slong n)
+ {
+  while( n-- && (0==r->_mp_d[n]) )
+   ;
+  if(n >= 0)
+   return 1+n;
+  return 0;
+ }
+
 void __inline__ static
 mul_mpz_fmpz(mpz_t r,fmpz_t s)
 // this trick is documented in FLINT manual
@@ -232,6 +250,39 @@ square_L2_fmpz(fmpz_t r,const fmpz* vec,slong n)
  }
 
 __inline__ static void
+mpz_zap_senior_limbs(mpz_ptr r,slong w)
+// throw away senior limbs so result has no more than w limbs
+ {
+  slong s=r->_mp_size;
+  if(s >= 0)
+   {
+    if(s < w)
+     return;
+    r->_mp_size=mpz_limb_size(r,w);
+   }
+  else
+   {
+    if(-s < w)
+     return;
+    r->_mp_size=-mpz_limb_size(r,w);
+   }
+ }
+
+__inline__ static void
+mpz_reduce_mul_add_ui(mpz_ptr r,mpz_ptr a,slong w,mp_limb_t b)
+/*
+shorten r and a so they contain no more than w limbs (cut-off senior limbs)
+r = r+a*b
+again shorten r
+*/
+ {
+  mpz_zap_senior_limbs(r,w);
+  mpz_zap_senior_limbs(a,w);
+  flint_mpz_addmul_ui(r,a,b);
+  mpz_zap_senior_limbs(r,w);
+ }
+
+__inline__ static void
 mpz_shift_right_1limb(mpz_t r)
  {
   slong limbs=r->_mp_size;
@@ -251,14 +302,6 @@ mpz_shift_right_1limb(mpz_t r)
   for(;limbs--;++n)
    n[0]=n[1];
  }
-
-#define SURELY_REDUCE_SIZE \
- while( r_limbs-- && (0==r->_mp_d[r_limbs]) ) \
-  ;                                            \
- if(r_limbs >= 0)                               \
-  r->_mp_size=r_limbs+1;                        \
- else                                           \
-  r->_mp_size=0;                                
 
 __inline__ void
 mpz_mod_2x(mpz_t r,slong x)
