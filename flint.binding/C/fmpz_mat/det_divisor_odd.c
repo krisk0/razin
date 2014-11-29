@@ -14,6 +14,7 @@ void rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,
 mp_limb_t tmod_mat_invert_transpose(tmod_mat_t R, const tmod_mat_t S);
 
 #define STABLE_RP 0
+#define CUT_B 1
 
 #define THROW        \
  for(;;)                \
@@ -317,6 +318,37 @@ a virgin
  }
 
 static __inline__ void
+_20141129_update_B_i(mpz_ptr b, mpz_square_mat_t a, slong w, mp_limb_t* y,
+  slong n)
+/*
+b=(b+y*a transposed) / 2**64
+
+a virgin
+
+not more than w limbs of product or sum are added; a entries can be reduced too
+*/
+ {
+  mpz_ptr bP=b;
+  mpz_ptr aP=a->entries;
+  slong i,j;
+  for(i=0;i<n;i++,bP++)
+   {
+    for(j=0;j<n;j++,aP++)
+     {
+      mpz_zap_senior_limbs(bP,w); 
+      mpz_zap_senior_limbs(aP,w); 
+      flint_mpz_addmul_ui(bP,aP,y[j]);
+     }
+    #if DIXON_INTERNAL_CHECK
+     assert( 0==mpz_getlimbn(bP,0) );
+    #endif
+    //mpz_zap_senior_limbs(bP,w);
+    mpz_zap_senior_limbs(bP,w);
+    mpz_shift_right_1limb(bP); 
+   }
+ }
+
+static __inline__ void
 _20140914_y_to_x(mpz_t x,slong i,const tmod_mat_t y, slong y_rows, slong y_cols)
  {
   slong j=y_rows-1;
@@ -499,7 +531,7 @@ _20140914_Hadamard_bound(mpfr_t h, mpfr_t c, const fmpz_mat_t A, slong n)
 on entry h,c uninitialized
 
 if 2*H.B. is larger than 2**(2*FLINT_BITS), 
- calculate h:=H.B.
+ calculate h:=2*H.B.
  pre-calculate c:=C.B.
  return 0
 else
@@ -529,6 +561,28 @@ else
     return hb_i;
    }
   return 0;
+ }
+
+static __inline__ slong
+count_avg_limb_len(const mpz_square_mat_t a,slong n)
+ {
+  mp_limb_t log2_n;
+  count_leading_zeros_opt(log2_n,n);
+  log2_n=63-log2_n; // 0 < log2_n <= log2(n)
+  gmp_randstate_t rst;
+  gmp_randinit_default(rst); gmp_randseed_ui(rst, (unsigned long)clock());
+  slong i,j;
+  i=gmp_urandomb_ui(rst,log2_n);
+  slong* mark=a->mark;
+  slong r=mark[i];
+  for(j=7;j--;)
+   {
+    i += gmp_urandomb_ui(rst,log2_n);
+    i -= n*(i>=n);
+    r += mark[i];
+   }
+  gmp_randclear(rst);
+  return (r>>3)/FLINT_BITS-2;
  }
 
 mp_limb_t
@@ -563,6 +617,7 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   tmod_mat_t A_inv_tr;
   mpz_square_mat_t A_tr_neg;
   *det_mod_T=_20140914_matrix(A_inv_tr,A_tr_neg,Ao,n);
+  slong avg_limb_len=count_avg_limb_len(A_tr_neg,n)-1;
   #if DIXON_INTERNAL_CHECK
    tmod_mat_print_hex("A inv transposed modulo T:",A_inv_tr);
    _20140914_check_A_inv_tr(A_inv_tr,Ao,n);
@@ -584,8 +639,9 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
    _20140914_check_y0(Y->entries, Bo, Ao, n);
    po("y0 counted")
   #endif
+  slong i,j;
   _20140914_update_B_step0( B, A_tr_neg, Y->entries, Bo, n );
-  slong i;
+  //flint_printf("avg limb-length: %d  dim=%d  max_i=%d\n",avg_limb_len,n,max_i);
   for(i=1;i<max_i;i++)
    {
     _20140914_count_y_main( Y->rows[i], B, A_inv_tr, n );
@@ -593,7 +649,18 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
      _20140914_check_yI(Y->rows[i], B, Ao, n);
      po("yi counted")
     #endif
-    _20140914_update_B_main( B, A_tr_neg, Y->rows[i], n );
+    j=max_i-1-i;
+    if(j)
+     {
+      #if CUT_B
+       if(j<avg_limb_len)
+        _20141129_update_B_i( B, A_tr_neg, j+1, Y->rows[i], n );
+       else
+        _20140914_update_B_main( B, A_tr_neg, Y->rows[i], n );
+      #else
+        _20140914_update_B_main( B, A_tr_neg, Y->rows[i], n );
+      #endif
+     }
    }
   // group 2
   clear_mpz_array(B, n);
@@ -624,3 +691,5 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
 #undef SHOW_DIXON_RESULT
 #undef po
 #undef DIXON_INTERNAL_CHECK
+#undef CUT_B
+
