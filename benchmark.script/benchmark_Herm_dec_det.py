@@ -11,7 +11,7 @@ This program benchmarks C subroutine fmpz_mat_det_hermitian_decomposition()
 
 1000-bits entries matrix with varying size taken (5 matrix per one dimension)
 
-some results are in the bottom of the file
+20141129 benchmark results in the bottom of the file
 '''
 
 import sage.all
@@ -79,11 +79,11 @@ print '\ntest passed'
 
 '''
 My method appears to be asymptotically better
-     FLINT        my fmpz_mat_det_hermitian_decomposition()
-100 12.8778271675 9.85142207146
-200 172.378462076 110.319196224
-300 689.339381933 404.530629873
-400 1796.41489267 970.717617989
-500 3727.82309914 1934.79675388
-600 7395.46039391 3358.61122966
+     FLINT        fmpz_mat_det_hermitian_decomposition()
+100 12.8463242054 9.4831635952
+200 169.630519152 110.104531765
+300 688.357366323 388.271833897
+400 1793.7264452 961.077443123
+500 3725.16406798 1881.69160128
+600 7468.16601181 3322.10169816
 '''
