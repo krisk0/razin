@@ -28,7 +28,7 @@ MulMod_2x_positive(mpz_t tgt,mpz_t sou,mp_limb_t* scr,slong log2_M)
   // apply mask onto senior limb
   tgt_size=n*FLINT_BITS-log2_M;
   if(tgt_size)
-   scr[n-1] &= UWORD(1)<<(FLINT_BITS-tgt_size)-1;
+   scr[n-1] &= (UWORD(1)<<(FLINT_BITS-tgt_size))-1;
   // find result size
   while(n)
    {
