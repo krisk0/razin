@@ -114,7 +114,28 @@ mpz_hex_print(const char* m,const mpz_t n,int CR)
   if(CR)
    flint_printf("\n");
  }
- 
+
+void static
+fmpz_adr_print(const char* m,const fmpz_t n,int CR)
+ {
+  flint_printf(m);
+  if(fmpz_fits_si(n))
+   {
+    flint_printf("%wd (1limb:",(slong)(*n)); gmp_printf(" %MX)\n",(mp_limb_t)n);
+   }
+  else
+   {
+    #define nn (fmpz*)n
+    __mpz_struct* t = _fmpz_promote(nn);
+    gmp_printf("%ZX (%d/%d:%MX / %MX)",t,t->_mp_size,(mp_limb_t)t->_mp_d,
+     (mp_limb_t)t);
+    _fmpz_demote_val(nn);
+    #undef nn
+   }
+  if(CR)
+   flint_printf("\n");
+ }
+
 ulong __inline__ static
 fmpz_fdiv_ui_positive(const fmpz_t g, ulong h)
  {
