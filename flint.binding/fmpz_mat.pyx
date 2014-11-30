@@ -20,6 +20,9 @@ cdef extern from 'flint/fmpz_mat.h':
  int fmpz_mat_inv(fmpz_mat_t tgt, fmpz_t den, const fmpz_mat_t sou)
  void fmpz_mat_init_set(fmpz_mat_t tgt, const fmpz_mat_t src)
 
+cdef extern from 'C/fmpz_mat/fmpz_array_set_mpz.c':
+ void fmpz_array_set_mpz(fmpz* tgt,mpz_t* sou,slong siz)
+
 cdef extern from 'C/fmpz_mat/window_unsh.c':
  void fmpz_triU_inverse_smallDet(fmpz_mat_t T, fmpz_t d, const fmpz_mat_t S)
 
@@ -74,7 +77,7 @@ cdef class fmpz_mat:
    m is Matrix_integer_dense or tuple (rows,cols,li) where 
     li is list or array of sage Integers
   '''
-  cdef Py_ssize_t size,i
+  cdef slong i,size
   if isinstance(m,tuple):
    fmpz_mat_init(self.matr,m[0],m[1])
    size=m[0]*m[1]
@@ -82,12 +85,18 @@ cdef class fmpz_mat:
    for i from 0 <= i < size:
     fmpz_set_mpz(self.matr[0].entries+i, (<Integer>m[i]).value )
   else:
+   '''   
    fmpz_mat_init(self.matr, (<Matrix_integer_dense>m)._nrows, \
     (<Matrix_integer_dense>m)._ncols)
    size=(<Matrix_integer_dense>m)._nrows * (<Matrix_integer_dense>m)._ncols
    for i from 0 <= i < size:
     fmpz_set_mpz(self.matr[0].entries+i, \
      (<Matrix_integer_dense>m)._entries[i] )
+     
+   fmpz_set_mpz() in loop above seg-faults after switching Sage from 6.1.1-r2
+    to 6.4-r1
+   '''
+   fmpz_mat_init_set(self.matr, (<Matrix_integer_dense>m)._matrix)
  
  def __repr__(self):
    return "fmpz_mat(%i, %i, [%s])" % (self.matr[0].r, self.matr[0].c,
@@ -101,18 +110,24 @@ cdef class fmpz_mat:
 
  def export_sage(self):
   ' export self as sage Matrix_integer_dense '
+  '''
   cdef Matrix_integer_dense r=Matrix( self.matr[0].r, self.matr[0].c )
   cdef Py_ssize_t i,j,k=0
-  cdef slong* on_row
+  cdef fmpz* on_row
   for i in range(self.matr[0].r):
    on_row=self.matr[0].rows[i]
    for j in range(self.matr[0].c):
     fmpz_get_mpz( r._entries[k], on_row+j )
     k += 1
   return r
+  
+  loop above seg-faults under Sage 6.4-r1, reimplemented
+  '''
+  return Matrix(ZZ, self.matr[0].r, self.matr[0].c, self.entries())
 
  def entries(self):
   ' return flat list of entries converted to Python int '
+  " this function appear to work under Sage 6.1.1-r2 and 6.4-r1 "
   cdef Py_ssize_t i,j
   cdef Integer t
   cdef slong* on_row
