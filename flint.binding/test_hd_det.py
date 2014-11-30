@@ -120,6 +120,7 @@ def test_for_dim(n):
  
  for all the matrix, count its determinant two ways, compare results
  '''
+ print 'dim=%s triU test start' % dim
  for i in range(10):
   test_matrice( unimodular_triU(n,5) )
   for k in range(n):
@@ -128,6 +129,7 @@ def test_for_dim(n):
     a[j,j]=randint(-7,7)
    test_matrice(a)
   
+ print 'dim=%s singular-nonsingular test start' % dim
  global t0,t1
  t0=t1=0
  singular_count=i=0
@@ -196,7 +198,6 @@ sage.all.set_random_seed('20140831')
 
 t0=t1=0
 for dim in range(3,30):
- write( 'dim=%s\n' % dim )
  test_for_dim(dim)
 
 print '\ntest passed'
