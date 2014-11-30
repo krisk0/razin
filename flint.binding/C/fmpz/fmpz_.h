@@ -482,8 +482,11 @@ void __inline__
 inflate_mp_d(mpz_t i,slong n)
 // make sure positive i can hold n limbs
  {
-  if(i->_mp_size < n)
-   i->_mp_d=realloc(i->_mp_d,sizeof(mp_limb_t)*n);
+  if(i->_mp_alloc < n)
+   {
+    i->_mp_d=realloc(i->_mp_d,sizeof(mp_limb_t)*n);
+    i->_mp_alloc=n;
+   }
  }
 
 /*
