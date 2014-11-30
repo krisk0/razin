@@ -2,8 +2,6 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-#undef NDEBUG
-#include <assert.h>
 #include <time.h>
 #include <flint/flint.h>
 #include "../ulong_extras/profile_.h"
