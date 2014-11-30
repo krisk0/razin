@@ -166,28 +166,25 @@ fmpz_cmp_log2(const fmpz_t x,mp_limb_t y)
   return fmpz_cmpabs_log2(x,y);
  }
 
-// replace fmpz_cmp with fmpz_cmpabs because a is non-negative
+// replace fmpz_cmp with fmpz_cmpabs when a and d are non-negative
 #define RR_tome0                   \
     fmpz_t q, r, s, t;              \
     int success = 0;                  \
-    if (fmpz_cmpabs_log2(a, N2) <= 0)   \
+    fmpz_one(d);                       \
+    if (fmpz_cmpabs_log2(a, N2) <= 0)  \
     {                                 \
         fmpz_set(n, a);              \
-        fmpz_one(d);                 \
         return 1;                    \
     }                                \
     fmpz_sub(n, a, m);                \
     if (fmpz_cmpabs_log2(n, N2) <= 0) \
-    {                                 \
-        fmpz_one(d);                 \
         return 1;                    \
-    }                                \
     fmpz_init(q);                     \
     fmpz_init(r);                       \
     fmpz_init(s);                          \
     fmpz_init(t);                             \
-    fmpz_set(r, m); fmpz_zero(s);                \
-    fmpz_set(n, a); fmpz_one(d);                    \
+    fmpz_set(r, m);                              \
+    fmpz_set(n, a);                                \
     while (fmpz_cmpabs_log2(n, N2) > 0)               \
     {                                                   \
         fmpz_fdiv_q(q, r, n);                             \
@@ -247,6 +244,10 @@ int reconstruct_rational_log2_log2(fmpz_t n, fmpz_t d,
   int skip_check)
 // like reconstruct_rational_log2_plain(), but denominator bound is logarithmic
  {
+  #if LOUD_RR_IO
+   fmpz_hex_print("RR        m=",m,1);
+   fmpz_adr_print("          m=",m,1);
+  #endif
   RR_tome0
   #if LOUD_RR_IO
    fmpz_hex_print("RR inside n=",n,1);
@@ -275,6 +276,11 @@ int reconstruct_rational_log2_log2(fmpz_t n, fmpz_t d,
         success = !fmpz_cmp(s,t);
        }
      }
+   }
+  if(!success)
+   {
+    printf("RR failed\n");
+    fprintf(stderr,"RR failed\n");
    }
   RR_tome1
  }
