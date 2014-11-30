@@ -18,7 +18,7 @@ cdef extern from 'stdint.h':
  pass
 
 from sage.rings.integer cimport Integer
-#from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ
 from sage.rings.rational cimport Rational
 from sage.rings.rational_field import QQ
 from sage.matrix.constructor import Matrix
@@ -39,7 +39,7 @@ cdef extern from 'flint/flint.h':
 # numbers imported
 include "mp_limb_t.pyx"
 
-ctypedef __mpz_struct* mpz_ptr
+#ctypedef __mpz_struct* mpz_ptr # already defined by whom?
 
 cdef extern from 'mpfr.h':
  ctypedef struct __mpfr_struct:
