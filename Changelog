@@ -217,3 +217,8 @@
             Optimized slightly some fmpz_mat_det_hermitian_decomposition()
              subroutines. For dim=100 new time/old time=9.48/9.85 (ratio 
              close to 1 within margin of error)
+
+30 Nov 2014 switched to Sage 6.4-r1. Good news: Sage Matrix_integer_dense has
+             FLINT fmpz_mat inside. Bad news:
+              1) My flint_sage wrapper no longer compiles.
+              2) With some easy changes is compiles but does not work
