@@ -353,7 +353,7 @@ _20140914_y_to_x(mpz_t x,slong i,const tmod_mat_t y, slong y_rows, slong y_cols)
  {
   slong j=y_rows-1;
   mp_limb_t const * p=y->rows[j]+i;
-  while( (0==p[0]) && (j>=0) )
+  while( (j>=0) && (0==p[0]) )
    {
     --j;
     p -= y_cols;
