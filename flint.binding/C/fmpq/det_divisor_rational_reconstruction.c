@@ -45,59 +45,6 @@ MulMod_fmpz(mpz_t tgt,const fmpz_t sou,const mpz_t M)
   mpz_mod(tgt,tgt,M);
  }
 
-#if 0
-void __inline__ static
-MulMod_fmpz_2x(mpz_t tgt,const fmpz_t sou,slong log2_M)
-// multiply positive numbers modulo 2**log2_M
- {
-  fmpz s=*sou;
-  if( COEFF_IS_MPZ(s) )
-   MulMod_2x_positive(tgt, COEFF_TO_PTR(s), log2_M);
-  else
-   {
-    flint_mpz_mul_ui(tgt,tgt,s);
-    mpz_mod_2x(tgt,log2_M);
-   }
- }
-
-void __inline__ static
-MulMod_fmpz_mpz_2x(fmpz_t tgt,mpz_t sou,mp_limb_t* scratch,slong log2)
- {
-  fmpz t=*tgt;
-  if( COEFF_IS_MPZ(t) )
-   {
-    mpz_t tgt_mpz=COEFF_TO_PTR(t);
-    #if defined(MULLO_N)
-     // if using mpn level subroutine, operands must be fat enough
-     slong n=(log2_M+FLINT_BITS-1)/FLINT_BITS;
-     inflate_mp_d(sou, n);
-     inflate_mp_d(tgt_mpz, n);
-    #endif
-    MulMod_2x_positive(tgt_mpz,sou,scratch,log2);
-    _fmpz_demote_val(tgt);
-   }
-  else
-   {
-    if(log2>FLINT_BITS)
-     {
-      mpz_t temp;
-      mpz_init2(temp,log2);
-      flint_mpz_set_ui(temp,t);
-      MulMod_2x_positive(temp,sou,scratch,log2);
-      fmpz_set_mpz(tgt,temp);
-      mpz_clear(temp);
-     }
-    else
-     {
-      mp_limb_t q=t*sou->_mp_d[0];
-      if(FLINT_BITS>log2)
-       q &= (UWORD(1)<<log2)-1;
-      flint_mpz_set_ui(q);
-     }
-   }
- }
-#endif
-
 int __inline__ static
 maybe_decrease_M(mpz_t M,mp_limb_t p,mp_limb_t log2_N,fmpz_t D)
 // divide M by p so new M is still equal or greater than 2*N*D
