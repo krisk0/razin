@@ -88,8 +88,15 @@ def random_permutation(n):
 def print_time(n, i):
  write('%3s ' % n)
  for k in range(algo_count):
-  write( '%8f ' % (time_array[k]/i) )
+  write( pretty_float(time_array[k]/i) )
  print
+
+def pretty_float(x):
+ r='%8f' % x
+ if len(r)>8:
+  p=r.find('.')
+  r=('%'+str(p)+'.'+str(7-p)+'f') % x
+ return r
 
 def test_for_dim(n,i):
  global time_array
