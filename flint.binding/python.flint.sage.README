@@ -41,7 +41,7 @@ If you have more than one version of FLINT run-time library, set MY_FLINT_IS_HER
 
  # MY_FLINT_IS_HERE="$lmonade_prefix/usr/lib/flint.so.2.4.5"
 
-After successful compilation with MY_SAGE_IS_HERE=... directive, flint_sage.so will tie to a flint*.so from that location (and would not work if flint*.so is not there).
+After successful compilation with MY_FLINT_IS_HERE=... directive, flint_sage.so will tie to a flint*.so from that location (and would not work if flint*.so is not there).
 
 Two files are installed: flint_sage.so and FLINT_...egg-info. With portage, documentation (this file) will be installed, too.
 
