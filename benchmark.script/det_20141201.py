@@ -9,8 +9,6 @@
 This program benchmarks C subroutine fmpz_mat_det_hermitian_decomposition() 
  against 2 friends
 
-Sage benchmark is only testing speed of Python code calling FLINT fmpz_mat_det()
-
 1000-bits entries matrix with varying size taken (3 to 5 matrix per one 
  dimension)
 '''
@@ -96,7 +94,7 @@ def pretty_float(x):
  if len(r)>8:
   p=r.find('.')
   r=('%'+str(p)+'.'+str(7-p)+'f') % x
- return r
+ return r+' '
 
 def test_for_dim(n,i):
  global time_array
@@ -126,3 +124,22 @@ for i in range(5):
  test_for_dim(200+i*100,3)
 
 print '\ntest passed'
+
+'''
+        NTL    FLINT    RAZIN
+ 10 0.003694 0.001931 0.007580 
+ 20 0.020731 0.046580 0.030419 
+ 30 0.067207 0.064358 0.076191 
+ 40 0.162976 0.145595 0.152476 
+ 50 0.333073 0.276550 0.268342 
+ 60 0.604188 0.488104 0.428026 
+ 70 1.010379 0.786394 0.638998 
+ 80 1.592109 1.192350 0.949766 
+ 90 2.387420 1.719387 1.299230 
+100 3.446775 2.406923 1.747062 
+200 42.66874 27.10363 14.20206 
+300 193.9239 104.4795 51.76172 
+400 578.4427 286.5325 119.4558 
+500 1360.423 634.7976 235.8863
+600 2757.359 1221.985 417.2345 
+'''
