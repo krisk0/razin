@@ -10,6 +10,7 @@ This program benchmarks C subroutine fmpz_mat_det_hermitian_decomposition()
  against 3 friends
 
 Sage benchmark is only testing speed of Python code calling FLINT fmpz_mat_det()
+Therefore you better run det_20141201.py instead of this program
 
 1000-bits entries matrix with varying size taken (3 to 5 matrix per one 
  dimension)
@@ -90,8 +91,15 @@ def random_permutation(n):
 def print_time(n, i):
  write('%3s ' % n)
  for k in range(algo_count):
-  write( '%8f ' % (time_array[k]/i) )
+  write( pretty_float(time_array[k]/i) )
  print
+
+def pretty_float(x):
+ r='%8f' % x
+ if len(r)>8:
+  p=r.find('.')
+  r=('%'+str(p)+'.'+str(7-p)+'f') % x
+ return r+' '
 
 def test_for_dim(n,i):
  global time_array
