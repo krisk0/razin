@@ -222,3 +222,5 @@
              FLINT fmpz_mat inside. Bad news:
               1) My flint_sage wrapper no longer compiles.
               2) With some easy changes is compiles but does not work
+
+07 Dec 2014 my README.rst was terribly lagging behind, fixed
