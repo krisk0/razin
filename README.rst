@@ -2,33 +2,27 @@ RAZIN - Rigorous algebraic zero impeding numeration
 =====
 
 For now, I offer
-  a) Two subroutines to quickly calculate HNF of an integer matrice in two practically important cases:
-         a) it is non-singular;
-         b) its determinant is known and lies in range 2..2^64-1 where 2^64-1 is maximal native unsigned integer;
-  b) PLU decomposition of a matrice modulo 2^64;
-  c) inversion of a lower-triangular matrice modulo 2^64;
-  d) inversion of an integer upper-triangular matrice with small determinant and positive diagonal;
-  e) a fast(est in the open-source world) subroutine to count an integer matrice determinant;
-  f) Python binding to some methods of FLINT, called flint_sage;
-  g) some algorithms benchmarks (such as determinant, linear equations solver)
+  a) A subroutine to calculate HNF of a matrice whose determinant is small in absolute value;
+  b) PLU decomposition and inversion of a matrice modulo 2^64;
+  c) inversion of an integer upper-triangular matrice with small determinant and positive diagonal;
+  c) Python binding to some methods of FLINT, called flint_sage;
+  e) a subroutine to count an integer matrice determinant.
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
-See *filelist.txt*.
+See *filelist.txt*
 
-The fastest in open-source world subroutines to compute HNF of a matrice with small in absolute value determinant are callable from C or Python; C subroutines are called ```mod_mat_HNF_nonsquare()``` and ```mod_mat_HNF()```; see file *flint.binding/nmod_mat_HNF.c*
+My new algorithm to compute integer matrice determinant: fmpz_mat_det_hermitian_decomposition()
 
-W.Stein double-deteminant algorithm to compute HNF specialized for non-singular matrice and instructed to sometimes use faster low-level routines like FLINT Dixon lifting instead of Sage method is in *benchmark.script/profile_Sage_hnf_square.py*. The modified procedure is faster than original, see bottom of *profile-dd_algorithm.cout* for details.
-
-PLU decomposition modulo 2^64 test: *flint.binding/test_tmod_mat.py*
+Small-det HNF: ```mod_mat_HNF_nonsquare()``` and ```mod_mat_HNF()```
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^
 Mid-range target of the project is fast HNF computation with a new algorithm inspired by W.Stein double-determinant. Python wrapper is minimalistic and only contains functions required to reach the goal or to test/benchmark subroutines/algorithms.
 
-Only FLINT functions will be used for solving hard sub-problems, unless a function from another library (NTL, IML, LinBox, ...) turn to be faster or a serious problem with FLINT discovered. Presently components of FLINT wrapped into flint_sage Python package work as they should. If you think otherwise, your bug-report is welcome.
+The fastest in the open-source world subroutines to count big integer matrice determinant and HNF of a small-det matrice are a by-product.
 
-*I wrote the paragraph above in the morning, to discover in the evening that FLINT is not so good at inverting big matrices as dear old Sage*
+FLINT data structures and subroutines are used.
 
 Bug?
 ^^^^
