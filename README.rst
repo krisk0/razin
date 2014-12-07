@@ -4,9 +4,9 @@ RAZIN - Rigorous algebraic zero impeding numeration
 For now, I offer
   a) A subroutine to calculate HNF of a matrice whose determinant is small in absolute value;
   b) PLU decomposition and inversion of a matrice modulo 2^64;
-  c) inversion of an integer upper-triangular matrice with small determinant and positive diagonal;
+  c) Inversion of an integer upper-triangular matrice with small determinant and positive diagonal;
   c) Python binding to some methods of FLINT, called flint_sage;
-  e) a subroutine to count an integer matrice determinant.
+  e) A subroutine to count an integer matrice determinant.
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
