@@ -14,7 +14,7 @@ See *filelist.txt*
 
 My new algorithm to compute integer matrice determinant: ```fmpz_mat_det_hermitian_decomposition()```
 
-Small-det HNF: ```mod_mat_HNF_nonsquare()``` and ```mod_mat_HNF()```
+Small-det HNF: ``mod_mat_HNF_nonsquare()`` and ```mod_mat_HNF()```
 
 What's the target?
 ^^^^^^^^^^^^^^^^^^
