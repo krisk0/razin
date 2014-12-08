@@ -19,7 +19,7 @@ A_by_B_mod_P.hacks/     Secret voodoo to calculate a*b mod p for small p on amd6
 
 Changelog               History of bugs fixes and additions
 
-To.do                    Plan of changes
+To.do                   Plan of changes
 
 ebuild/                 Useful ebuild scripts
 
@@ -41,11 +41,13 @@ fmpz_mat/window_unsh.c | test_benchmark_invert_triU-4ways | my specialized subro
                        |                                  |  matrice with small determinant is faster
                        |                                  |  than Sage or FLINT general subroutine
 
-fmpz_mat/det.c          | benchmark_fmpz_det               | my subroutine is 30% faster for dim=200, 
-                        |                                  |                  53%                225
-                        |                                  |                  73%                250
-
 nmod_mat/mul_pk_classical.c | nmod_mat-mul.c               | my subroutine multiplies 4x4 matrix modulo
                             |                              |  3**40 150% (2.5 times) faster than FLINT
                             
-             Hint: if         this column                   contains file name with no dot, then it is both .py and .cout
+fmpz_mat/det_hermitian_deco  | test_hd_det.py              | my subroutine is 2.69 times faster than 
+                 mposition.c |                             |  FLINT fmpz_mat_det() for bits=1000 and dim
+                             |                             |  =500
+
+
+             Hint: if          this column                  contains file name with no dot, then it is
+                                                             both .py and .cout
