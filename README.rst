@@ -20,9 +20,9 @@ What's the target?
 ^^^^^^^^^^^^^^^^^^
 Mid-range target of the project is fast HNF computation with a new algorithm inspired by W.Stein double-determinant. Python wrapper is minimalistic and only contains functions required to reach the goal or to test/benchmark subroutines/algorithms.
 
-The fastest in the open-source world subroutines to count big matrice determinant and small-det matrice Hermite form of are a by-product.
+The fastest in the open-source world subroutines to count big matrice determinant and small-det matrice Hermite form are a by-product.
 
-FLINT data structures and subroutines are used.
+FLINT and GMP data structures and subroutines are used.
 
 Bug?
 ^^^^
