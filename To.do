@@ -134,3 +134,12 @@
 04 Sep 2014 Test fmpz_mat/det_suspected_zero.c under Windoz64, too. Chances are 
              it just works under MPIR because MPIR redefined _ui() interface so
              it closely follows GMP/Linux. 
+
+11 Dec 2014 My new algorithm to find int matrice det 
+             fmpz_mat_det_hermitian_decomposition() works correctly and quickly. 
+             However is is hard to explain what and why it does on the 1st 
+             (decomposition) stage. The only valid explanation could be 'that
+             subroutine that counts HNF of small-determinant matrice does the job'.
+             
+            So the task is: implement other method to find right divisor with odd
+             determinant.
