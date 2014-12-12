@@ -81,7 +81,7 @@ head_trigger='ast, it comes this wayλ'
 
 def sed_and_perl__goodbye( oN, iN ):
  '''
- This subroutine filters C file, removing what is not needed in production
+ This subroutine filters C file, removing stuff not needed in production
   code
  
  I fought sed and perl. I lost the fight and say goodbye to them. Let us say
