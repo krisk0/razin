@@ -75,8 +75,8 @@ Report bugs via Github mechanism or e-mail
 My e-mail is in my blog, detailed information on how to get it is close to tail
  of setup.py'''
 
-head_warning='This file is auto-generated from C/nmod_mat_HNF-debug.c'+\
- 'λλ#define NDEBUG 1'
+head_warning='This file is auto-generated from '+\
+ 'C/nmod_mat/nmod_mat_HNF-debug.cλλ#define NDEBUG 1'
 head_trigger='ast, it comes this wayλ'
 
 def sed_and_perl__goodbye( oN, iN ):

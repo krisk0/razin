@@ -5,7 +5,7 @@
 // No, code below is not obfuscated.
 // When I write a program that needs to run fast, it comes this way
 
-// This file is auto-generated from C/nmod_mat_HNF-debug.c
+// This file is auto-generated from C/nmod_mat/nmod_mat_HNF-debug.c
 
 #define NDEBUG 1
 
