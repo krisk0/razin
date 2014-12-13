@@ -159,14 +159,6 @@ DKryskov_gcd_ui(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y,mp_limb_t n)
   return g;
  }
 
-static __inline__ mp_limb_t
-DKryskov_gcd_ui_2arg( mp_limb_t alpha, mp_limb_t betta )
- {
-  if(alpha>betta)
-   return n_gcd( alpha , betta );
-  return n_gcd( betta , alpha );
- }
-
 #define MPLUS( a, b, mod, n ) _nmod_add(a,b,mod)
 #define MMUL( a, b, mod, n ) nmod_mul(a,b,mod)
 
@@ -417,7 +409,7 @@ DKryskov_nmod_reduce_last( mp_limb_t* se_corner, mp_limb_t det_tgt )
      printf("nmod_mat_HNF(): bad last element %ld, det_tgt=%ld\n",*se_corner,
       det_tgt);
     #endif
-  *se_corner = DKryskov_gcd_ui_2arg( *se_corner, det_tgt );
+  *se_corner = n_gcd( *se_corner, det_tgt );
  }
 
 static __inline__ void

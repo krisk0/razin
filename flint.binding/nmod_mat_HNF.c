@@ -120,14 +120,6 @@ DKryskov_gcd_ui(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y,mp_limb_t n)
   return g;
  }
 
-static __inline__ mp_limb_t
-DKryskov_gcd_ui_2arg( mp_limb_t alpha, mp_limb_t betta )
- {
-  if(alpha>betta)
-   return n_gcd( alpha , betta );
-  return n_gcd( betta , alpha );
- }
-
 static __inline__ slong
 DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,
  mp_limb_t* scrth)
@@ -267,7 +259,7 @@ DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scra
 static __inline__ void
 DKryskov_nmod_reduce_last( mp_limb_t* se_corner, mp_limb_t det_tgt )
  {
-  *se_corner = DKryskov_gcd_ui_2arg( *se_corner, det_tgt );
+  *se_corner = n_gcd( *se_corner, det_tgt );
  }
 
 static __inline__ void
