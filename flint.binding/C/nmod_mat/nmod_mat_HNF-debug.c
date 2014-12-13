@@ -592,7 +592,7 @@ slong
 nmod_mat_HNF_nonsquare(nmod_mat_t A)
 /*
 Suppose matrice B exists such that n=A=>mod.n>1, B mod n=A, c=A->c <= A->r, 
- rank of B over Z equals c, H=upper c rows of HNF(B), n divides det(H)
+ rank of B over Z equals c, H=upper c rows of HNF(B), n divides det(H)>0
  
 compute H'=upper c rows of HNF of matrice B modulo a lattice with determinant 
  n, chosen in such a way that det H'=n
