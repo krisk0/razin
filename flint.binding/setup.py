@@ -11,6 +11,13 @@
 # If this program fails to find sage include, set MY_SAGE_IS_HERE to point to 
 #  directory containing sage/rings/integer
 
+'''
+Error message
+ x86_64-pc-linux-gnu-gcc: error: : No such file or directory
+is harmless. And I don't know where it comes from (it occurs before my code
+in setup.py takes control)
+'''
+
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext

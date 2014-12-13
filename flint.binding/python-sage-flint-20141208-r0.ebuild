@@ -1,6 +1,10 @@
 # Copyright 2014 Денис Крыськов
 # License: GNU General Public License (GPL)
 
+# Error message
+#  x86_64-pc-linux-gnu-gcc: error: : No such file or directory
+# is harmless and should be ignored
+
 EAPI=5
 
 PYTHON_COMPAT=( python2_7 ) # I only tested 2.7
