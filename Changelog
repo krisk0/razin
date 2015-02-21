@@ -209,7 +209,7 @@
              
              https://groups.google.com/forum/#!forum/flint-devel 
              
-             F.Johansson, thanks
+            F.Johansson, thanks
 
 29 Nov 2014 benchmark fluctuates for no reason --- even fmpz_mat_det() time 
              varies though it should not. Is my motherboard dying?
@@ -224,3 +224,7 @@
               2) With some easy changes is compiles but does not work
 
 07 Dec 2014 my README.rst was terribly lagging behind, fixed
+
+21 Feb 2015 Added ebuild for FLINT ver. 2.4.5. Tested that my fastest in the 
+             world determinant calculation works. Well, it really works after 
+             fixing bug in nmod_mat_HNF()
