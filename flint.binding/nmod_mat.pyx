@@ -30,6 +30,7 @@ cdef extern from 'flint/fmpz_mat.h':
  void fmpz_mat_zero(fmpz_mat_t A)
 
 cdef extern from './nmod_mat_HNF.c':
+#cdef extern from 'C/nmod_mat/nmod_mat_HNF-debug.c':
  void nmod_mat_HNF(nmod_mat_t A)
  void nmod_mat_HNF_nonsquare(nmod_mat_t A)
 

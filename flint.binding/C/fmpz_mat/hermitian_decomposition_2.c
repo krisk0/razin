@@ -10,6 +10,7 @@
 #include "../fmpz_mat/fmpz_mat_.h"
 
 #define LOUD_smallDet_matrice 0
+#define LOUD_HERMITIAN_DECOMPOSITION 0
 #define po(x) flint_printf("%s\n",x);
 
 static __inline__ void
@@ -86,20 +87,37 @@ Otherwise
  {
   nmod_mat_t a; 
   nmod_mat_mod_t_half(a,m);
+  #if LOUD_HERMITIAN_DECOMPOSITION
+   gmp_printf("fmpz_mat_hermitian_decomposition_2():"
+    " source matrice modulo T\n");
+   nmod_mat_print_pretty(a);
+  #endif
   // a must be cleared
   (void)nmod_mat_HNF(a);
   mp_limb_t d0=nmod_mat_diag_product_ZZ_ui(a);
   if(d0==1)
    {
+    #if LOUD_HERMITIAN_DECOMPOSITION
+     flint_printf(
+      "fmpz_mat_hermitian_decomposition_2(): trivial case --- odd det\n");
+    #endif
     memcpy(b, m, sizeof(fmpz_mat_struct));
     nmod_mat_clear(a);
     fmpz_set_ui(r,UWORD(1));
     return 0;
    }
+  #if LOUD_HERMITIAN_DECOMPOSITION
+   gmp_printf("fmpz_mat_hermitian_decomposition_2(): d0=%Mu factor a=\n",d0);
+   nmod_mat_print_pretty(a);
+  #endif
   slong n=a->r;
   fmpz_mat_t i; fmpz_mat_init(i,n,n);
   fmpz_t di; fmpz_init(di);
   inverse_smallDet_HNF(i,di, a);
+  #if LOUD_HERMITIAN_DECOMPOSITION
+   gmp_printf("fmpz_mat_hermitian_decomposition_2(): inv a=\n");
+   nmod_mat_print_pretty(i);
+  #endif
   nmod_mat_clear(a);
   // di, i must be cleared
   fmpz_mat_init(b,n,n);

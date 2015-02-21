@@ -8,6 +8,7 @@
 #define po(x) flint_printf("%s\n",x);
 #define SHOW_DIXON_RESULT 0
 #define DIXON_INTERNAL_CHECK 0
+#define BUG_INIT2_BAD_ARG 0
 
 void rational_reconstruction_2deg(mpz_t d,mpz_ptr x,slong n,mpz_t M,
   slong log2_M,mp_limb_t log2_N,mp_limb_t log2_D);
@@ -65,6 +66,9 @@ __inline__ static mpfr_prec_t
 _20140914_log2_L2(mpfr_t tgt,const fmpz* vec,slong n)
 // 2*log2(L2 norm) rounded up
  {
+  #if BUG_INIT2_BAD_ARG
+   flint_printf("_20140914_log2_L2() 0\n");
+  #endif
   fmpz_t norm; fmpz_init(norm);
   slong i,i_is_big=0;
   square_L2_fmpz(norm,vec,n);
@@ -74,13 +78,23 @@ _20140914_log2_L2(mpfr_t tgt,const fmpz* vec,slong n)
     i=2;
     i_is_big=1;
    }
+  #if BUG_INIT2_BAD_ARG
+   fmpz_print(norm);
+   flint_printf("\n_20140914_log2_L2() 1 i=%d\n",i);
+  #endif
   mpfr_t normF; mpfr_init2(normF,i*FLINT_BITS);
+  #if BUG_INIT2_BAD_ARG
+   flint_printf("_20140914_log2_L2() 2\n");
+  #endif
   fmpz_get_mpfr(normF,norm,MPFR_RNDU);
   fmpz_clear(norm);
   if(i_is_big)
    mpfr_init2(tgt,1+FLINT_BITS);
   else
    mpfr_init(tgt);
+  #if BUG_INIT2_BAD_ARG
+   flint_printf("_20140914_log2_L2() 3\n");
+  #endif
   mpfr_log2(tgt, normF, MPFR_RNDU);
   //mpfr_printf("log2 of %Rf equals %Rf\n",normF,tgt);
   mpfr_clear(normF);
@@ -541,7 +555,13 @@ else
  {
   __mpfr_struct* e=flint_malloc( sizeof(__mpfr_struct)*n );
   mpfr_prec_t b;
+  #if BUG_INIT2_BAD_ARG
+   flint_printf("starts _20140914_Hadamard_bound()\n");
+  #endif
   slong smallest_row=_20140914_Hadamard(e,&b,A,n);
+  #if BUG_INIT2_BAD_ARG
+   flint_printf("done _20140914_Hadamard()\n");
+  #endif
   MPFR_INIT2(h,b); mpfr_init2(c,b);
   slong i;
   __mpfr_struct* t;
@@ -601,6 +621,9 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
   //rp_Hadamard_Cramer(Bo,hb,cb,Ao,n);
   mpfr_t hb,cb;
   hb_i=_20140914_Hadamard_bound(hb,cb,Ao,n);
+  #if DIXON_INTERNAL_CHECK
+   flint_printf("_20140914_Hadamard_bound() returned 0x%X\n",hb_i);
+  #endif
   if(hb_i)
    {
     //  if H.B. is small, skip Dixon algorithm and leave r=1

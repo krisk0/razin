@@ -176,7 +176,8 @@ def test_matrice_mind_time(a):
  t1 += m2
 
 def test_matrice(x):
- # print 'source matrice:\n',x
+ if 0 and x.nrows()==5:
+  print 'source matrice:\n',x
  g=count_det(fmpz_mat(x))
  b=count_hd_det( fmpz_mat(x) )
  if g!=b:
