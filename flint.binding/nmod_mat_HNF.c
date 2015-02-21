@@ -106,7 +106,7 @@ DKryskov_gcd_ui(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y,mp_limb_t n)
   if(x<y)
    {
     // TODO: n_xgcd is in C and GMP mpn_gcd_1 is in ASM.
-    // Should I use a GMP subroutine instead n_xgcd?
+    // Should I use a GMP subroutine instead of n_xgcd?
     g=n_xgcd(v,u,y,x);
     assert( g == (*v)*y - (*u)*x );
     *u = n-( (*u) % n );
@@ -259,7 +259,7 @@ DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scra
 static __inline__ void
 DKryskov_nmod_reduce_last( mp_limb_t* se_corner, mp_limb_t det_tgt )
  {
-  *se_corner = n_gcd( *se_corner, det_tgt );
+  *se_corner = n_gcd_full( *se_corner, det_tgt );
  }
 
 static __inline__ void
@@ -408,7 +408,7 @@ slong
 nmod_mat_HNF_nonsquare(nmod_mat_t A)
 /*
 Suppose matrice B exists such that n=A=>mod.n>1, B mod n=A, c=A->c <= A->r, 
- rank of B over Z equals c, H=upper c rows of HNF(B), n divides det(H)
+ rank of B over Z equals c, H=upper c rows of HNF(B), n divides det(H)>0
  
 compute H'=upper c rows of HNF of matrice B modulo a lattice with determinant 
  n, chosen in such a way that det H'=n

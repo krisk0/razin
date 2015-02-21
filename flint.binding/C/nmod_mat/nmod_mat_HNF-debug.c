@@ -405,11 +405,14 @@ DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scra
 static __inline__ void
 DKryskov_nmod_reduce_last( mp_limb_t* se_corner, mp_limb_t det_tgt )
  {
-    #if BUG0_nmod_mat_HNF
-     printf("nmod_mat_HNF(): bad last element %ld, det_tgt=%ld\n",*se_corner,
-      det_tgt);
-    #endif
-  *se_corner = n_gcd( *se_corner, det_tgt );
+  #if BUG0_nmod_mat_HNF
+   gmp_printf("nmod_mat_HNF(): bad south-eastern element %Mu, det_tgt=%Mu\n",
+    *se_corner,det_tgt);
+  #endif
+  *se_corner = n_gcd_full( *se_corner, det_tgt );
+  #if BUG0_nmod_mat_HNF
+   gmp_printf("nmod_mat_HNF(): SE changed to %Mu\n",*se_corner);
+  #endif
  }
 
 static __inline__ void
