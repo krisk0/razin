@@ -139,7 +139,7 @@ DKryskov_gcd_ui(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y,mp_limb_t n)
   if(x<y)
    {
     // TODO: n_xgcd is in C and GMP mpn_gcd_1 is in ASM.
-    // Should I use a GMP subroutine instead n_xgcd?
+    // Should I use a GMP subroutine instead of n_xgcd?
     g=n_xgcd(v,u,y,x);
     #if BUG0_nmod_mat_HNF
      printf("DKryskov_gcd_ui() po 0: u=%lu v=%lu\n",*u,*v);
