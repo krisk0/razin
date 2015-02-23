@@ -389,17 +389,28 @@ static __inline__ void
 DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scratch)
  {
   assert(i<A->c-1);
-  if( det_tgt % nmod_mat_entry(A,i,i) )
-   {
-          #if BUG0_nmod_mat_HNF
-           printf("nmod_mat_HNF(): gonna fix diagonal, i=%ld, new det_tgt=%ld\n",i,det_tgt);
-           nmod_mat_print(A);
-          #endif
-    assert( 0 == nmod_mat_entry(A,i+1,i) % det_tgt );
-    // Read DomichKannanTrotter87.pdf before asking me questions
-    nmod_mat_entry(A,i+1,i)=det_tgt;
-    (void)DKryskov_nmod_zero_line(A,i,i+1,det_tgt,scratch);
-   }
+  # if 1
+   if( det_tgt % nmod_mat_entry(A,i,i) )
+    {
+           #if BUG0_nmod_mat_HNF
+            printf("nmod_mat_HNF(): gonna fix diagonal, i=%ld, new det_tgt=%ld\n",i,det_tgt);
+            nmod_mat_print(A);
+           #endif
+     assert( 0 == nmod_mat_entry(A,i+1,i) % det_tgt );
+     nmod_mat_entry(A,i+1,i)=det_tgt;
+     (void)DKryskov_nmod_zero_line(A,i,i+1,det_tgt,scratch);
+    }
+  # else
+   // code below is incorrect: bad algorithm
+   mp_limb_t aII=nmod_mat_entry(A,i,i);
+   if( det_tgt % aII )
+    {
+     #if BUG0_nmod_mat_HNF
+      gmp_printf("reducing A[%d][%d]=%Mu, det_tgt=%Mu\n",i,i,aII,det_tgt);
+     #endif
+     nmod_mat_entry(A,i,i)=n_gcd_full(det_tgt,aII);
+    }
+  # endif
  }
 
 static __inline__ void
