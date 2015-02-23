@@ -401,14 +401,18 @@ DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scra
      (void)DKryskov_nmod_zero_line(A,i,i+1,det_tgt,scratch);
     }
   # else
-   // code below is incorrect: bad algorithm
    mp_limb_t aII=nmod_mat_entry(A,i,i);
    if( det_tgt % aII )
     {
+     mp_limb_t g,q;
+     g=n_gcdinv(&q,aII,det_tgt);
      #if BUG0_nmod_mat_HNF
-      gmp_printf("reducing A[%d][%d]=%Mu, det_tgt=%Mu\n",i,i,aII,det_tgt);
+      gmp_printf("reducing A[%d][%d]=%Mu, det_tgt=%Mu, gcd=%Mu\n",i,i,aII,
+       det_tgt,g);
      #endif
-     nmod_mat_entry(A,i,i)=n_gcd_full(det_tgt,aII);
+     mp_limb_t* p=&nmod_mat_entry(A,i,i);
+     *p++=g;
+     _nmod_vec_scalar_mul_nmod(p,p,A->c-1-i,q,A->mod);
     }
   # endif
  }
