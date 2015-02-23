@@ -53,7 +53,8 @@ def random_data(dim):
   if not shut_up:
    print "Stein double-det g=%s"%g
   CUTOFF = 2**30
-  # aint not interesting to count HNF of unimodular matrice, so g>0
+  # aint not interesting to count HNF of unimodular matrice, 
+  #  so disallow g=1
   if g==1 or 2*g > CUTOFF:
    if not shut_up:
     print 'bad det, going back'
