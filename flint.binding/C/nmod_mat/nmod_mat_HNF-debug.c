@@ -389,7 +389,7 @@ static __inline__ void
 DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scratch)
  {
   assert(i<A->c-1);
-  # if 1
+  # if 0
    if( det_tgt % nmod_mat_entry(A,i,i) )
     {
            #if BUG0_nmod_mat_HNF
