@@ -62,7 +62,7 @@ A0. FLINT, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x;
 
     Sage version should be 6.4 for flint_sage since 01 Dec 2014; 6.1.1 for earlier releases of flint_sage
 
-    FLINT versions known to work: 2.4.1, 2.4.3, 2.4.4.
+    FLINT versions known to work: 2.4.1, 2.4.3, 2.4.4, 2.4.5.
 
     GMP versions known to work: 5.0.2, 6.0.0a. Use of MPIR instead of GMP should be possible. Under Linux, use either GMP or MPIR; under Windows, use MPIR.
     FLINT documentaition requires that you install MPIR in so-called 'gmp compatibility mode' (--enable-gmpcompat).
@@ -93,7 +93,7 @@ Q4. The .zip file contains whole lot of everything, but no documentation for you
 A4. Ha, you just answered your question yourself. .py files (such as test_*.py and benchmark*.py) are samples/demo/test and .cout are captured output of relevant .py files (for instance benchmark_solve_right.cout is what benchmark_solve_right.py output on my desktop).
 
 Q5. Your Python interface is disorganized and inconsistent. Your files are a mess.
-A5. However, I am coming near to my mid-range target of modding W.Stein double-det algorithm. My re-implementation outruns his.
+A5. As a by-product of my research, fastest in the (open-source?) world algorithms were implemented. I publish results as soon as they start working, which brings in some disorder.
 
 Q6. What is the meaning of phrase "W.Stein double-deteminant algorithm to compute HNF specialized for non-singular matrice and instructed to sometimes use faster low-level routines like FLINT Dixon lifting instead of Sage method is in ..."
 A6. I meant to say that 
@@ -115,3 +115,10 @@ Aa. I can do everything, if you hire me. Of course, I will need to access that O
 
 Qb. Your setup.py is Linux-specific because it looks for .so files.
 Ab. No, only a subroutine that runs in a special case when user supplied directory name but not file name. Set MY_FLINT_IS_HERE to point to exact file location, and you will be fine.
+
+Qc. Did you benchmark your determinant calculation against NTL ver 8.Y.Z? 
+Ac. No, I only tested 6.2.1 and older, because
+     1) There is no Sage-compatible ebuild for NTL >6.2.1
+     2) Nothing in changes list published at www.shoup.net/ntl/doc/tour-changes.html suggests that integer arithmetics or det calculation became faster after ver. 6.2.1
+     3) NTL 6.2.1 is considerably slower than FLINT when calculating det. I experiment with different versions of FLINT because it is the closest contestant.
+    If you think some other software does something fast, benchmark it yourself.
