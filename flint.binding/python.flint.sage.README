@@ -121,4 +121,4 @@ Ac. No, I only tested 6.2.1 and older, because
      1) There is no Sage-compatible ebuild for NTL >6.2.1
      2) Nothing in changes list published at www.shoup.net/ntl/doc/tour-changes.html suggests that integer arithmetics or det calculation became faster after ver. 6.2.1
      3) NTL 6.2.1 is considerably slower than FLINT when calculating det. I experiment with different versions of FLINT because it is the closest contestant.
-    If you think some other software does something fast, benchmark it yourself.
+    If you think some software does something fast, benchmark it yourself.
