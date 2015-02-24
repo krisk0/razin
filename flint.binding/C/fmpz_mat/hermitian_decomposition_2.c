@@ -57,7 +57,7 @@ _divide_away(fmpz_mat_t R,const fmpz_mat_t A,const fmpz_mat_t B,const fmpz_t D,
   //fmpz_mat_mul() appears to be somewhat optimized, use it
   fmpz_mat_mul(R,A,B);
   assert( fmpz_size(D)==1 );
-  mp_limb_t d=fmpz_get_ui(D);
+  mp_limb_t d=fmpz_get_ui(D );
   fmpz_mat_scalar_divexact_ui_2arg(R,d);
  }
 
@@ -69,7 +69,7 @@ On entry b uninitialised.
 Find hermitian decomposition of m with respect to 2**126: m=b*h.
 
 If decomposition is trivial, 
- set b to copy of m
+ set b to shallow copy of m
  set r = 1
  return 0.
 
