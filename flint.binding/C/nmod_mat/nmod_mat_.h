@@ -10,6 +10,7 @@
 #include "../ulong_extras/ulong_extras_.h"
 
 void nmod_mat_mod_t_half(nmod_mat_t tgt, const fmpz_mat_t sou);
+void nmod_mat_mod_t(nmod_mat_t tgt, const fmpz_mat_t sou);
 void nmod_mat_init_3arg(nmod_mat_t mat, slong r, slong c);
 void nmod_mat_transpose_square_tgt_virgin(nmod_mat_t tgt,const nmod_mat_t sou);
 void nmod_mat_init_square_2arg(nmod_mat_t mat, slong dim);

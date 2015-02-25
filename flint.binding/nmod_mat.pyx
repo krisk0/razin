@@ -297,6 +297,9 @@ def test_invert_4x4_corner(fmpz_mat A,p,k):
 cdef extern from 'C/nmod_mat/mod_t_half.c':
  void nmod_mat_mod_t_half(nmod_mat_t tgt, fmpz_mat_t sou)
 
+cdef extern from 'C/nmod_mat/mod_t.c':
+ void nmod_mat_mod_t(nmod_mat_t tgt, fmpz_mat_t sou)
+
 def nmod_mat_set_fmpz_mat_mod_thalf(fmpz_mat A):
  cdef nmod_mat r=nmod_mat.__new__( nmod_mat )
  nmod_mat_mod_t_half( r.matZn, A.matr )
