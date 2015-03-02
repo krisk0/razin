@@ -98,27 +98,6 @@ TODO: multiply by -1 to get smaller element
  }
 
 #include <assert.h>
-static __inline__ mp_limb_t
-DKryskov_gcd_ui(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y,mp_limb_t n)
-//return g=gcd(x,y) and set numbers u,v such that u*x+v*y=g modulo n
- {
-  mp_limb_t g;
-  if(x<y)
-   {
-    // TODO: n_xgcd is in C and GMP mpn_gcd_1 is in ASM.
-    // Should I use a GMP subroutine instead of n_xgcd?
-    g=n_xgcd(v,u,y,x);
-    assert( g == (*v)*y - (*u)*x );
-    *u = n-( (*u) % n );
-    *v %= n;
-    return g;
-   }
-  g=n_xgcd(u,v,x,y);
-  assert( g == (*u)*x - (*v)*y );
-  *v = n-( (*v) % n );
-  *u %= n;
-  return g;
- }
 
 static __inline__ slong
 DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,
@@ -135,7 +114,7 @@ DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,
   assert(y>1);
   // TODO: multiply 2nd line by -1 so gcd runs faster
   mp_limb_t u,v,g;
-  g=DKryskov_gcd_ui(&u,&v,x,y,n);
+  g=n_gcd_ui_positive(&u,&v,x,y,n);
   assert(g);
   mp_limb_t vec_len=A->c-iPLUS;
   _nmod_vec_scalar_mul_nmod(    scrth, alpha, vec_len, u  , A->mod );

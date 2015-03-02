@@ -107,7 +107,7 @@ def sed_and_perl__goodbye( oN, iN ):
   r = r.replace( '#include "nmod', '#include "C/nmod_mat/nmod' )
   r = r.replace( head_trigger, head_trigger+'λ// '+head_warning+'λ' )
   #r = re_sub ( r, 'λλλstatic', 'λλstatic' )
-  for s in 'nmod_mat_print','vec_print','DKryskov_nmod_easy_zl':
+  for s in 'nmod_mat_print','vec_print':
    r = zap_subr( r, s )
   for i in range(10):
    r=r.replace( 'λλλ', 'λλ' )

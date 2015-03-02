@@ -131,34 +131,6 @@ vec_print( const char* m, mp_limb_t* v, slong s )
  }
 
 #include <assert.h>
-static __inline__ mp_limb_t
-DKryskov_gcd_ui(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y,mp_limb_t n)
-//return g=gcd(x,y) and set numbers u,v such that u*x+v*y=g modulo n
- {
-  mp_limb_t g;
-  if(x<y)
-   {
-    // TODO: n_xgcd is in C and GMP mpn_gcd_1 is in ASM.
-    // Should I use a GMP subroutine instead of n_xgcd?
-    g=n_xgcd(v,u,y,x);
-    #if BUG0_nmod_mat_HNF
-     printf("DKryskov_gcd_ui() po 0: u=%lu v=%lu\n",*u,*v);
-    #endif
-    assert( g == (*v)*y - (*u)*x );
-    *u = n-( (*u) % n );
-    *v %= n;
-    return g;
-   }
-  g=n_xgcd(u,v,x,y);
-    #if BUG0_nmod_mat_HNF
-     printf("DKryskov_gcd_ui() po 1: u=%lu v=%lu\n",*u,*v);
-    #endif
-  assert( g == (*u)*x - (*v)*y );
-  *v = n-( (*v) % n );
-  *u %= n;
-  return g;
- }
-
 #define MPLUS( a, b, mod, n ) _nmod_add(a,b,mod)
 #define MMUL( a, b, mod, n ) nmod_mul(a,b,mod)
 
@@ -180,7 +152,7 @@ DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,
   assert(y>1);
   // TODO: multiply 2nd line by -1 so gcd runs faster
   mp_limb_t u,v,g;
-  g=DKryskov_gcd_ui(&u,&v,x,y,n);
+  g=n_gcd_ui_positive(&u,&v,x,y,n);
   assert(g);
   #if 0
    //MPLUS and MMUL only used in assert, assert below was seen failing
@@ -223,40 +195,6 @@ DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,
    nmod_mat_print(A);
   #endif
   return g==1;
- }
-
-static __inline__ void
-DKryskov_nmod_easy_zl(nmod_mat_t A,slong i,slong j,mp_limb_t n)
-//act like DKryskov_nmod_zero_line, but return nothing and use the fact that
-// betta=0
- {
-  #if BUG0_nmod_mat_HNF
-   printf("DKryskov_nmod_easy_zl() starts, i=%ld j=%ld n=%ld\n",i,j,n);
-   nmod_mat_print(A);
-  #endif
-  assert(i != j);
-  slong iPLUS=i+1;
-  mp_limb_t* alpha=A->rows[i]+iPLUS;
-  mp_limb_t* betta=A->rows[j]+iPLUS;
-  mp_limb_t x=alpha[-1];
-  mp_limb_t y=betta[-1];
-  assert(x>1);
-  assert(y>1);
-  mp_limb_t u,v,g;
-  g=DKryskov_gcd_ui(&u,&v,x,y,n);
-  #if BUG0_nmod_mat_HNF
-   printf("DKryskov_nmod_easy_zl(): x=%ld y=%ld u=%ld v=%ld g=%ld\n",x,y,u,v,g);
-  #endif
-  assert(g);
-  mp_limb_t vec_len=A->c-iPLUS;
-  _nmod_vec_scalar_mul_nmod( betta, alpha, vec_len, (n-y/g) , A->mod );
-  _nmod_vec_scalar_mul_nmod( alpha, alpha, vec_len, u  , A->mod );
-  alpha[-1]=g;
-  betta[-1]=0;
-  #if BUG0_nmod_mat_HNF
-   printf("DKryskov_nmod_easy_zl() ends\n");
-   nmod_mat_print(A);
-  #endif
  }
 
 static __inline__ void 

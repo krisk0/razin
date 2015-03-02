@@ -108,4 +108,32 @@ typedef struct
 n_primes_rev_struct;
 typedef n_primes_rev_struct n_primes_rev_t[1];
 
+int 
+is_degree_of_2(mp_limb_t x)
+ {
+  return !( x & (x-1) );
+ }
+
+static __inline__ mp_limb_t
+n_gcd_ui_positive(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y,mp_limb_t n)
+//return g=gcd(x,y) and set numbers u,v such that u*x+v*y=g modulo n
+ {
+  mp_limb_t g;
+  if(x<y)
+   {
+    // TODO: n_xgcd is in C and GMP mpn_gcd_1 is in ASM.
+    // Should I use a GMP subroutine instead of n_xgcd?
+    g=n_xgcd(v,u,y,x);
+    assert( g == (*v)*y - (*u)*x );
+    *u = n-( (*u) % n );
+    *v %= n;
+    return g;
+   }
+  g=n_xgcd(u,v,x,y);
+  assert( g == (*u)*x - (*v)*y );
+  *v = n-( (*v) % n );
+  *u %= n;
+  return g;
+ }
+
 #endif
