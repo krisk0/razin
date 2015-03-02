@@ -165,5 +165,63 @@ Otherwise
   return 0;
  }
 
+int
+fmpz_mat_hermitian_decomposition_2_64(fmpz_mat_t b,fmpz_t r, const fmpz_mat_t m)
+/*
+Attempt to decompose m into product b*h such that 
+ det h is a degree of 2 
+ det b is odd
+ h entries fit 1 word
+
+If diagonal entries of HNF of m modulo 2**64 are less than 2**64, decomposition 
+ shall be found
+
+If h is identity, 
+ set b to shallow copy of m
+ set r to 1
+ return 0
+
+If no decomposition found, 
+ set b->r to 0
+ set r to a known divisor of m
+ return 0
+
+Otherwise 
+ allocate b
+ set b to m/h
+ set r=det h
+ return 1
+*/
+ {
+  #if 0
+  nmod_mat_t a; 
+  nmod_mat_mod_t(a,m);
+  // a must be cleared
+  int e=nmod_mat_HNF_mod_t(a,r);
+  if(e)
+   {
+    b->r=0;
+    nmod_mat_clear(a);
+    return 0;
+   }
+  if(0==fmpz_cmp_ui(r, UWORD(1)))
+   {
+    memcpy(b, m, sizeof(fmpz_mat_struct));
+    nmod_mat_clear(a);
+    return 0;
+   }
+  slong n=a->r;
+  fmpz_mat_t i; fmpz_mat_init(i,n,n);
+  fmpz_t di; fmpz_init(di);
+  inverse_smallDet_HNF(i,di, a);
+  nmod_mat_clear(a);
+  // di, i must be cleared
+  _divide_away(b,m,i,di,n);
+  fmpz_clear(di);
+  fmpz_mat_clear(i);
+  #endif
+  return 1;
+ }
+
 #undef NDEBUG
 #undef po
