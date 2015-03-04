@@ -61,4 +61,25 @@ t_invmod(mp_limb_t a)
   return U;
  }
 
+static __inline__ void
+tmod_vec_mul(mp_limb_t* tgt,mp_limb_t* sou,slong siz,mp_limb_t quo)
+ {
+  for(;siz--;)
+   tgt[siz]=sou[siz]*quo;
+ }
+
+static __inline__ void
+tmod_vec_mul_3arg(mp_limb_t* vec,slong siz,mp_limb_t quo)
+ {
+  for(;siz--;)
+   vec[siz] *= quo;
+ }
+
+static __inline__ void
+tmod_vec_muladd(mp_limb_t* tgt,mp_limb_t* sou,slong siz,mp_limb_t quo)
+ {
+  for(;siz--;)
+   tgt[siz] += sou[siz]*quo;
+ }
+
 #endif
