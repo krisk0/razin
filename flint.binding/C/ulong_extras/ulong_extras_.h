@@ -124,15 +124,35 @@ n_gcd_ui_positive(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y,mp_limb_t n)
     // TODO: n_xgcd is in C and GMP mpn_gcd_1 is in ASM.
     // Should I use a GMP subroutine instead of n_xgcd?
     g=n_xgcd(v,u,y,x);
-    assert( g == (*v)*y - (*u)*x );
+    //assert( g == (*v)*y - (*u)*x );
     *u = n-( (*u) % n );
     *v %= n;
     return g;
    }
   g=n_xgcd(u,v,x,y);
-  assert( g == (*u)*x - (*v)*y );
+  //assert( g == (*u)*x - (*v)*y );
   *v = n-( (*v) % n );
   *u %= n;
+  return g;
+ }
+
+static __inline__ mp_limb_t
+n_gcd_ui_positive_4arg(mp_limb_t* u,mp_limb_t* v,mp_limb_t x,mp_limb_t y)
+//return g=gcd(x,y) and set numbers u,v such that u*x+v*y=g modulo T
+ {
+  mp_limb_t g;
+  if(x<y)
+   {
+    // TODO: n_xgcd is in C and GMP mpn_gcd_1 is in ASM.
+    // Should I use a GMP subroutine instead of n_xgcd?
+    g=n_xgcd(v,u,y,x);
+    //assert( g == (*v)*y - (*u)*x );
+    *u = -*u;
+    return g;
+   }
+  g=n_xgcd(u,v,x,y);
+  //assert( g == (*u)*x - (*v)*y );
+  *v = -*v;
   return g;
  }
 
