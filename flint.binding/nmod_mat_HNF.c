@@ -144,32 +144,29 @@ zap A over diagonal
 attempt to avoid row operations if possible
 */
  {
-  slong last_i=A->c-1;
-  slong j,i;
+  slong last_i=A->c-1,i,j;
   mp_limb_t n=nmod_mat_entry(A,1,1);
   for(i=2;i<=last_i;i++)
    n *= nmod_mat_entry(A,i,i);
-  mp_limb_t* sP,*tP;
-  mp_limb_t s,t_ori,t_upd;
   for(i=1;i<last_i;i++)
    {
-    sP=&nmod_mat_entry( A, i,i );
+    mp_limb_t* sP=&nmod_mat_entry( A, i,i );
     mp_limb_t s=*sP;
     assert(s);
     slong v_len=A->c-i;
     for(j=i;j--;)
      {
-      tP=&nmod_mat_entry( A, j,i );
-      t_ori=*tP;
+      mp_limb_t* tP=&nmod_mat_entry( A, j,i );
+      mp_limb_t t_ori=*tP;
       if(t_ori >= s)
        {
-        t_upd=t_ori % n;
-        if(t_upd < s)
+        t_ori %= n;
+        if(t_ori < s)
          // don't need vector operation
-         *tP = t_upd;
+         *tP = t_ori;
         else
          {
-          mp_limb_t q=t_upd/s;
+          mp_limb_t q=t_ori/s;
           _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-q, A->mod );
           *tP %= n;
          }
