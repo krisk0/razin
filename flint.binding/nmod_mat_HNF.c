@@ -154,25 +154,43 @@ attempt to avoid row operations if possible
     mp_limb_t s=*sP;
     assert(s);
     slong v_len=A->c-i;
-    for(j=i;j--;)
-     {
-      mp_limb_t* tP=&nmod_mat_entry( A, j,i );
-      mp_limb_t t_ori=*tP;
-      if(t_ori >= s)
-       {
-        t_ori %= n;
-        if(t_ori < s)
-         // don't need vector operation
+    if(1==s)
+     // Avoid division by 1 and comparison >= 1
+     for(j=i;j--;)
+      {
+       mp_limb_t* tP=&nmod_mat_entry( A, j,i );
+       mp_limb_t t_ori=*tP;
+       if(t_ori)
+        {
+         t_ori %= n;
          *tP = t_ori;
-        else
-         {
-          mp_limb_t q=t_ori/s;
-          _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-q, A->mod );
-          *tP %= n;
-         }
-       }
-      assert( *tP < s );
-     }
+         if(t_ori)
+          {
+           _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-t_ori, A->mod );
+           *tP %= n;
+          }
+        }
+       assert( *tP < s );
+      }
+    else
+     for(j=i;j--;)
+      {
+       mp_limb_t* tP=&nmod_mat_entry( A, j,i );
+       mp_limb_t t_ori=*tP;
+       if(t_ori >= s)
+        {
+         t_ori %= n;
+         if(t_ori < s)
+          *tP = t_ori;
+         else
+          {
+           t_ori /= s;
+           _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-t_ori, A->mod );
+           *tP %= n;
+          }
+        }
+       assert( *tP < s );
+      }
     n /= s; 
    }
   DKryskov_nmod_Gauss_upper_last_col( A, last_i );
