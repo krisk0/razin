@@ -76,6 +76,13 @@ tmod_vec_mul_3arg(mp_limb_t* vec,slong siz,mp_limb_t quo)
  }
 
 static __inline__ void
+tmod_vec_neg_2arg(mp_limb_t* vec,slong siz)
+ {
+  for(;siz--;)
+   vec[siz] = -vec[siz];
+ }
+
+static __inline__ void
 tmod_vec_muladd(mp_limb_t* tgt,mp_limb_t* sou,slong siz,mp_limb_t quo)
  {
   for(;siz--;)
