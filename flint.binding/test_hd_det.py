@@ -30,6 +30,7 @@ count_det=flint.det_20140704
 count_hd_det=flint.det_hermitian_decomposition
 
 bits = 99
+LOUD_5=2
 
 def generate_matrice(n):
  m=random_matrix(ZZ,n,x=-bits,y=bits)
@@ -106,6 +107,8 @@ def det_hermitian(x):
  return count_hd_det( fmpz_mat(x) )
 
 def matrix_with_det( n, d ):
+ if n==5 and LOUD_5:
+  print 'testing matrice with det=%d' % d
  x=identity_matrix(n)
  x[0,0]=d
  return x * unimodular(n)
@@ -161,9 +164,19 @@ def test_for_dim(n):
 def test_this_det( n, y ):
  a=matrix_with_det( n, y )
  test_matrice_mind_time( a )
+
+def loud_source_matrice(x):
+ print 'source matrice:\n',x
+ if LOUD_5 >= 2:
+  xHNF=x.hermite_form()
+  print 'its HNF:\n',xHNF
+  xHNF %= 2**64
+  print 'modulo T:\n',xHNF
  
 def test_matrice_mind_time(a):
  global t0,t1
+ if LOUD_5 and x.nrows()==5:
+  loud_source_matrice(a)
  m0=time.time()
  z=count_det(fmpz_mat(a))
  m1=time.time()
@@ -176,8 +189,8 @@ def test_matrice_mind_time(a):
  t1 += m2
 
 def test_matrice(x):
- if 0 and x.nrows()==5:
-  print 'source matrice:\n',x
+ if LOUD_5 and x.nrows()==5:
+  loud_source_matrice(x)
  g=count_det(fmpz_mat(x))
  b=count_hd_det( fmpz_mat(x) )
  if g!=b:
