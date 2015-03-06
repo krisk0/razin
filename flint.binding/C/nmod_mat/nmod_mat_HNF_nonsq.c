@@ -1,3 +1,9 @@
+#if WANT_ASSERT_IN_HNF_NONSQ
+ #include <assert.h>
+#else
+ #define assert(x) 
+#endif
+
 static __inline__ slong
 DKryskov_fix_diagonal_tail(nmod_mat_t A,slong i,mp_limb_t n)
 //return 1 iff n is not a multiple of diagonal tail
@@ -139,3 +145,9 @@ DKryskov_HNF_zap_below(nmod_mat_t A,slong col,slong hint,mp_limb_t n,
      }
    }
  }
+
+#if WANT_ASSERT_IN_HNF_NONSQ
+ //
+#else
+ #undef assert
+#endif
