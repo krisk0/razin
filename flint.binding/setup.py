@@ -83,7 +83,7 @@ My e-mail is in my blog, detailed information on how to get it is close to tail
  of setup.py'''
 
 head_warning='This file is auto-generated from '+\
- 'C/nmod_mat/nmod_mat_HNF-debug.cλλ#define NDEBUG 1'
+ 'C/nmod_mat/nmod_mat_HNF-debug.cλ'
 head_trigger='ast, it comes this wayλ'
 
 def sed_and_perl__goodbye( oN, iN ):
@@ -94,7 +94,7 @@ def sed_and_perl__goodbye( oN, iN ):
  I fought sed and perl. I lost the fight and say goodbye to them. Let us say
   RAZIN no longer depends on sed or perl caprice, and total code size decreased
  '''
- unwanted=re.compile( 'MPLUS|MMUL' )
+ unwanted=re.compile( 'MPLUS|MMUL|assert' )
  with open( oN, 'wb' ) as o, open( iN, 'rb' ) as i:
   d,r=i.readlines(),''
   for s in d:
@@ -114,8 +114,7 @@ def sed_and_perl__goodbye( oN, iN ):
   if r[-1] != 'λ':
    r += 'λ'
   o.write( r.replace('λ','\n') )
-  o.write( '\n#undef NDEBUG\n\n' )
-  o.write( '/*'+tail_warning+'\n*/' )
+  o.write( '\n/*'+tail_warning+'\n*/' )
 
 def copy_pyx_file( oN, iN, tail ):
  with open( oN, 'wb' ) as o:
