@@ -55,10 +55,24 @@ _divide_away(fmpz_mat_t R,const fmpz_mat_t A,const fmpz_mat_t B,const fmpz_t D,
 */
  {
   //fmpz_mat_mul() appears to be somewhat optimized, use it
+  #if LOUD_smallDet_matrice
+   flint_printf("multiplying:\n");
+   fmpz_mat_print_pretty(A);
+   flint_printf("by\n");
+   fmpz_mat_print_pretty(B);
+  #endif
   fmpz_mat_mul(R,A,B);
+  #if LOUD_smallDet_matrice
+   flint_printf("\nmultiply result:\n");
+   fmpz_mat_print_pretty(R);
+  #endif
   assert( fmpz_size(D)==1 );
-  mp_limb_t d=fmpz_get_ui(D );
+  mp_limb_t d=fmpz_to_t(D );
   fmpz_mat_scalar_divexact_ui_2arg(R,d);
+  #if LOUD_smallDet_matrice
+   flint_printf("\ndivision result:\n");
+   fmpz_mat_print_pretty(R);
+  #endif
  }
 
 int
@@ -165,9 +179,13 @@ Otherwise
   return 0;
  }
 
+int nmod_mat_HNF_mod_t(nmod_mat_t A,fmpz_t d);
+
 int
 fmpz_mat_hermitian_decomposition_2_64(fmpz_mat_t b,fmpz_t r, const fmpz_mat_t m)
 /*
+On entry b uninitialised.
+
 Attempt to decompose m into product b*h such that 
  det h is a degree of 2 
  det b is odd
@@ -193,7 +211,6 @@ Otherwise
  return 1
 */
  {
-  #if 0
   nmod_mat_t a; 
   nmod_mat_mod_t(a,m);
   // a must be cleared
@@ -216,10 +233,10 @@ Otherwise
   inverse_smallDet_HNF(i,di, a);
   nmod_mat_clear(a);
   // di, i must be cleared
+  fmpz_mat_init(b,n,n);
   _divide_away(b,m,i,di,n);
   fmpz_clear(di);
   fmpz_mat_clear(i);
-  #endif
   return 1;
  }
 
