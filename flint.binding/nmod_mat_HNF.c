@@ -7,8 +7,6 @@
 
 // This file is auto-generated from C/nmod_mat/nmod_mat_HNF-debug.c
 
-#define NDEBUG 1
-
 #include <stdlib.h>
 #include <gmp.h>
 #include <flint/flint.h>
@@ -97,25 +95,19 @@ TODO: multiply by -1 to get smaller element
   return -1;
  }
 
-#include <assert.h>
-
 static __inline__ slong
 DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,
  mp_limb_t* scrth)
 //returns 1 iff new A[i,i] becomes 1
  {
-  assert(i != j);
   slong iPLUS=i+1;
   mp_limb_t* alpha=A->rows[i]+iPLUS;
   mp_limb_t* betta=A->rows[j]+iPLUS;
   mp_limb_t x=alpha[-1];
   mp_limb_t y=betta[-1];
-  assert(x>1);
-  assert(y>1);
   // TODO: multiply 2nd line by -1 so gcd runs faster
   mp_limb_t u,v,g;
   g=n_gcd_ui_positive(&u,&v,x,y,n);
-  assert(g);
   mp_limb_t vec_len=A->c-iPLUS;
   _nmod_vec_scalar_mul_nmod(    scrth, alpha, vec_len, u  , A->mod );
   _nmod_vec_scalar_addmul_nmod( scrth, betta, vec_len, v   , A->mod );
@@ -131,7 +123,6 @@ static __inline__ void
 DKryskov_nmod_Gauss_upper_last_col(nmod_mat_t A,slong last_col)
  {
   mp_limb_t s=nmod_mat_entry( A, last_col, last_col );
-  assert(s);
   slong j;
   for(j=last_col;j--;)
    nmod_mat_entry( A, j, last_col ) %= s;
@@ -152,7 +143,6 @@ attempt to avoid row operations if possible
    {
     mp_limb_t* sP=&nmod_mat_entry( A, i,i );
     mp_limb_t s=*sP;
-    assert(s);
     slong v_len=A->c-i;
     if(1==s)
      // Avoid division by 1 and comparison >= 1
@@ -170,7 +160,6 @@ attempt to avoid row operations if possible
            *tP %= n;
           }
         }
-       assert( *tP < s );
       }
     else
      for(j=i;j--;)
@@ -189,7 +178,6 @@ attempt to avoid row operations if possible
            *tP %= n;
           }
         }
-       assert( *tP < s );
       }
     n /= s; 
    }
@@ -219,7 +207,6 @@ DKryskov_nmod_early_abort(nmod_mat_t A,slong e)
    { 
     sP=&nmod_mat_entry( A, i, i );
     mp_limb_t s=*sP;
-    assert(s);
     slong v_len=ePLUS-i;
     for(j=i;j--;)
      {
@@ -230,7 +217,6 @@ DKryskov_nmod_early_abort(nmod_mat_t A,slong e)
         mp_limb_t q=t/s;
         if(q)
          _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-q, A->mod );
-        assert( *tP < s);
        }
      }
    }
@@ -240,11 +226,9 @@ DKryskov_nmod_early_abort(nmod_mat_t A,slong e)
 static __inline__ void
 DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scratch)
  {
-  assert(i<A->c-1);
 # if 0
    if( det_tgt % nmod_mat_entry(A,i,i) )
     {
-     assert( 0 == nmod_mat_entry(A,i+1,i) % det_tgt );
      nmod_mat_entry(A,i+1,i)=det_tgt;
      (void)DKryskov_nmod_zero_line(A,i,i+1,det_tgt,scratch);
     }
@@ -277,7 +261,6 @@ operate modulo n
  {
   slong m=A->c;
   mp_limb_t* sP=A->rows[col]+col;
-  assert( 1 == *sP );
   //TODO: skip counting elements of column col, to save time
   slong v_len = m-col;
   while(j < m)
@@ -331,7 +314,6 @@ aka DomichKannanTrotter87.pdf
   mp_limb_t det_tgt=A->mod.n;
   for(i=0;;i++)
    {// main loop: zap lower, fix diagonal, maintain decreasing modulo
-    assert( (i>=0) && (i<m) );
     slong j=DKryskov_nmod_find_nonzero(A,i,det_tgt);
     if(j==-2)
      {
@@ -393,7 +375,6 @@ aka DomichKannanTrotter87.pdf
        }
      }
     DKryskov_nmod_reduce_diag(A,i,det_tgt,scratch);
-    assert( 0 == det_tgt % nmod_mat_entry(A,i,i) );
     det_tgt /= nmod_mat_entry(A,i,i);
     if( (det_tgt==1) && (i<m-1) )
      {
@@ -429,7 +410,6 @@ Return code:0
   mp_limb_t det_tgt=A->mod.n;
   for(i=0;;i++)
    {// main loop: zap lower, fix diagonal, maintain decreasing modulo
-    assert( (i>=0) && (i<c) );
     j=DKryskov_nmod_find_nonzero(A,i,det_tgt);
     if(i == c-1)
      {
@@ -445,8 +425,6 @@ Return code:0
    }
  }
 
-
-#undef NDEBUG
 
 /*
 I would be greatly irritated if you tell me that the algorithms implemented in
