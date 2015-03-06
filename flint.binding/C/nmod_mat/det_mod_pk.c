@@ -7,11 +7,14 @@
 
 #include <flint/flint.h>
 #include <flint/nmod_mat.h>
-#include <assert.h>
+#if WANT_ASSERT_IN_DET_MOD_PK
+ #include <assert.h>
+#else
+ #define assert(x)
+#endif
 #include "../ulong_extras/ulong_extras_.h"
 #include "../nmod_mat/nmod_mat_.h"
 
-#define NDEBUG 1
 #define VECTOR_DOT_IN_cutoff_4 0
 #define LOUD_4x4_INVERT 0
 #define BUG_IN_cutoff_4 0
@@ -1159,4 +1162,8 @@ nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
   #undef p_deg_k
  }
 
-#undef NDEBUG
+#if WANT_ASSERT_IN_DET_MOD_PK
+ //
+#else
+ #undef assert
+#endif
