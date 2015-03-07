@@ -30,7 +30,7 @@ count_det=flint.det_20140704
 count_hd_det=flint.det_hermitian_decomposition
 
 bits = 99
-LOUD_5=2
+LOUD_5=0
 
 def generate_matrice(n):
  m=random_matrix(ZZ,n,x=-bits,y=bits)
