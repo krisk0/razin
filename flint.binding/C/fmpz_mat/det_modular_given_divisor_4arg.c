@@ -10,8 +10,12 @@
 #include "../fmpz/fmpz_.h"
 #include "../nmod_mat/nmod_mat_.h"
 #include "../tmod_mat/tmod_mat_.h"
-#undef NDEBUG
-#include <assert.h>
+#if WANT_ASSERT_IN_DET_MODULAR_GIVEN_DIV
+ #include <assert.h>
+ #define ASSERT(x) ASSERT(x)
+#else
+ #define ASSERT(x)
+#endif
 
 #define LOUD_DET_BOUND 0
 
@@ -254,3 +258,4 @@ fmpz_mat_det_modular_given_divisor_4arg(mpz_t r, mp_limb_t hb,
 
 #undef NDEBUG
 #undef DESCENDING_PRIMES
+#undef ASSERT

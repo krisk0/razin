@@ -2,9 +2,13 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-#undef NDEBUG
 #include <string.h>
-#include <assert.h>
+#if WANT_ASSERT_IN_HERM_DEC_2
+ #include <assert.h>
+ #define ASSERT(x) assert(x)
+#else
+ #define ASSERT(x)
+#endif
 #include <flint/flint.h>
 #include "../nmod_mat/nmod_mat_.h"
 #include "../fmpz_mat/fmpz_mat_.h"
@@ -242,3 +246,4 @@ Otherwise
 
 #undef NDEBUG
 #undef po
+#undef ASSERT

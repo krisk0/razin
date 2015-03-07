@@ -2,8 +2,12 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-#undef NDEBUG
-#include <assert.h>
+#if WANT_ASSERT_IN_DET_DIVISOR
+ #include <assert.h>
+ #define ASSERT(x) assert(x)
+#else
+ #define ASSERT(x)
+#endif
 
 #define po(x) flint_printf("%s\n",x);
 #define SHOW_DIXON_RESULT 0
@@ -302,7 +306,7 @@ a virgin
     for(j=0;j<n;j++,aP++)
      flint_mpz_addmul_ui(bP,aP,y[j]);
     #if DIXON_INTERNAL_CHECK
-     assert( 0==mpz_getlimbn(bP,0) );
+     ASSERT( 0==mpz_getlimbn(bP,0) );
     #endif
     mpz_shift_right_1limb(bP);
    }
@@ -325,7 +329,7 @@ a virgin
     for(j=0;j<n;j++,aP++)
      flint_mpz_addmul_ui(bP,aP,y[j]);
     #if DIXON_INTERNAL_CHECK
-     assert( 0==mpz_getlimbn(bP,0) );
+     ASSERT( 0==mpz_getlimbn(bP,0) );
     #endif
     mpz_shift_right_1limb(bP);
    }
@@ -354,7 +358,7 @@ not more than w limbs of product or sum are added; a entries can be reduced too
       flint_mpz_addmul_ui(bP,aP,y[j]);
      }
     #if DIXON_INTERNAL_CHECK
-     assert( 0==mpz_getlimbn(bP,0) );
+     ASSERT( 0==mpz_getlimbn(bP,0) );
     #endif
     //mpz_zap_senior_limbs(bP,w);
     mpz_zap_senior_limbs(bP,w);
@@ -715,4 +719,4 @@ returns log2( 2*H.B.(A) / r )  where r is the discovered divisor
 #undef po
 #undef DIXON_INTERNAL_CHECK
 #undef CUT_B
-
+#undef ASSERT

@@ -2,8 +2,12 @@
 // Copyright Денис Крыськов 2014
 // Licence: GNU General Public License (GPL)
 
-#undef NDEBUG
-#include <assert.h>
+#if WANT_ASSERT_IN_DET_SUSPECTED_ZERO
+ #include <assert.h>
+ #define ASSERT(x) assert(x)
+#else
+ #define ASSERT(x)
+#endif
 #include "../mpz_square_mat/mpz_square_mat_.h"
 #include "../fmpz/fmpz_.h"
 #include "../ulong_extras/ulong_extras_.h"
@@ -18,7 +22,6 @@
  mpfr_get_uj() and mpfr_set_uj() might work, too 
 */
 
-// no asserts in code below, if checks disabled
 #define LOUD_nmod_mat_in_det_divisor 0
 #define LOUD_det_divisor_count_y 0
 #define DIXON_INTERNAL_CHECK 0
@@ -218,7 +221,7 @@ det_divisor_mul_add_divide(mpz_ptr b,const mp_limb_t* y,
     mpz_clear(s);
     // b[i] should divide by p exactly
     #if DIXON_INTERNAL_CHECK
-     assert( 0 == mpz_tdiv_ui(pB, prime_p) );
+     ASSERT( 0 == mpz_tdiv_ui(pB, prime_p) );
     #endif
     mpz_divexact_ui(pB, pB, prime_p);
    }
@@ -255,7 +258,7 @@ det_divisor_xAbM_check(mpz_ptr x,mpz_square_mat_t A,const mpz_t M,slong n)
      mpz_sub_ui(zp, zp, 1);
     else
      mpz_add_ui(zp, zp, 1);
-    assert( (0==mpz_cmp_ui(zp,0) || (0==mpz_cmp(zp,M)) ) );
+    ASSERT( (0==mpz_cmp_ui(zp,0) || (0==mpz_cmp(zp,M)) ) );
    }
   flint_printf("xA=b modulo M  check positive\n");
   clear_mpz_array(xA,n);
@@ -586,9 +589,10 @@ fmpz_mat_det_suspected_zero(mpz_t r,const fmpz_mat_t A,const mpz_t W)
   DUMP_TIME("count_det_suspected_zero()",t_st)
  }
 
-#undef NDEBUG
 #undef DIXON_INTERNAL_CHECK
 #undef LOUD_nmod_mat_in_det_divisor
 #undef LOUD_det_divisor_count_y
 #undef LOUD_DET_RESULT
 #undef LOUD_DET_BOUND
+#undef ASSERT
+

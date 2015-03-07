@@ -1,7 +1,8 @@
 #if WANT_ASSERT_IN_HNF_NONSQ
  #include <assert.h>
+ #define ASSERT(x) assert(x)
 #else
- #define assert(x) 
+ #define ASSERT(x) 
 #endif
 
 static __inline__ slong
@@ -77,7 +78,7 @@ operate modulo n
     #endif
   slong m=A->r;
   mp_limb_t* sP=A->rows[col]+col;
-  assert( 1 == *sP );
+  ASSERT( 1 == *sP );
   //TODO: skip counting elements of column col, to save time
   slong v_len = A->c-col;
   while(j < m)
@@ -146,6 +147,4 @@ DKryskov_HNF_zap_below(nmod_mat_t A,slong col,slong hint,mp_limb_t n,
    }
  }
 
-#if !WANT_ASSERT_IN_HNF_NONSQ
- #undef assert
-#endif
+#undef ASSERT

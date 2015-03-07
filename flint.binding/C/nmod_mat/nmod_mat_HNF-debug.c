@@ -5,6 +5,13 @@
 // No, code below is not obfuscated.
 // When I write a program that needs to run fast, it comes this way
 
+#if WANT_ASSERT_IN_NMOD_MAT_HNF_DEBUG
+ #include <assert.h>
+ #define ASSERT(x) assert(x)
+#else
+ #define ASSERT(x)
+#endif
+
 #include <stdlib.h>
 #include <gmp.h>
 #include <flint/flint.h>
@@ -130,7 +137,6 @@ vec_print( const char* m, mp_limb_t* v, slong s )
    printf("%lu ",v[i]);
  }
 
-#include <assert.h>
 #define MPLUS( a, b, mod, n ) _nmod_add(a,b,mod)
 #define MMUL( a, b, mod, n ) nmod_mul(a,b,mod)
 
@@ -142,21 +148,21 @@ DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,
   #if BUG0_nmod_mat_HNF
    printf("DKryskov_nmod_zero_line() i=%ld j=%ld\n",i,j);
   #endif
-  assert(i != j);
+  ASSERT(i != j);
   slong iPLUS=i+1;
   mp_limb_t* alpha=A->rows[i]+iPLUS;
   mp_limb_t* betta=A->rows[j]+iPLUS;
   mp_limb_t x=alpha[-1];
   mp_limb_t y=betta[-1];
-  assert(x>1);
-  assert(y>1);
+  ASSERT(x>1);
+  ASSERT(y>1);
   // TODO: multiply 2nd line by -1 so gcd runs faster
   mp_limb_t u,v,g;
   g=n_gcd_ui_positive(&u,&v,x,y,n);
-  assert(g);
+  ASSERT(g);
   #if 0
    //MPLUS and MMUL only used in assert, assert below was seen failing
-   assert( g == MPLUS( MMUL(u,x,A->mod,n), MMUL(v,y,A->mod,n), A->mod,n) );
+   ASSERT( g == MPLUS( MMUL(u,x,A->mod,n), MMUL(v,y,A->mod,n), A->mod,n) );
    // somehow operands are correct, but sum is wrong, WTF? compiler error? 
   #endif
   #if 0 && !defined(NDEBUG)
@@ -179,7 +185,7 @@ DKryskov_nmod_zero_line(nmod_mat_t A,slong i,slong j,mp_limb_t n,
      printf( "their sum again %lu\n", 
       MPLUS( MMUL(u,x,A->mod,n), MMUL(v,y,A->mod,n), A->mod,n) );
      
-     assert(0);
+     ASSERT(0);
     }
   #endif
   mp_limb_t vec_len=A->c-iPLUS;
@@ -201,7 +207,7 @@ static __inline__ void
 DKryskov_nmod_Gauss_upper_last_col(nmod_mat_t A,slong last_col)
  {
   mp_limb_t s=nmod_mat_entry( A, last_col, last_col );
-  assert(s);
+  ASSERT(s);
   slong j;
   for(j=last_col;j--;)
    nmod_mat_entry( A, j, last_col ) %= s;
@@ -225,7 +231,7 @@ attempt to avoid row operations if possible
    {
     mp_limb_t* sP=&nmod_mat_entry( A, i,i );
     mp_limb_t s=*sP;
-    assert(s);
+    ASSERT(s);
     slong v_len=A->c-i;
     if(1==s)
      // Avoid division by 1 and comparison >= 1
@@ -249,7 +255,7 @@ attempt to avoid row operations if possible
            #endif
           }
         }
-       assert( *tP < s );
+       ASSERT( *tP < s );
       }
     else
      for(j=i;j--;)
@@ -274,7 +280,7 @@ attempt to avoid row operations if possible
            #endif
           }
         }
-       assert( *tP < s );
+       ASSERT( *tP < s );
       }
     n /= s; 
     #if BUG0_nmod_mat_HNF
@@ -318,7 +324,7 @@ DKryskov_nmod_early_abort(nmod_mat_t A,slong e)
    { 
     sP=&nmod_mat_entry( A, i, i );
     mp_limb_t s=*sP;
-    assert(s);
+    ASSERT(s);
     slong v_len=ePLUS-i;
     for(j=i;j--;)
      {
@@ -329,7 +335,7 @@ DKryskov_nmod_early_abort(nmod_mat_t A,slong e)
         mp_limb_t q=t/s;
         if(q)
          _nmod_vec_scalar_addmul_nmod( tP, sP, v_len, n-q, A->mod );
-        assert( *tP < s);
+        ASSERT( *tP < s);
        }
      }
    }
@@ -347,7 +353,7 @@ DKryskov_nmod_early_abort(nmod_mat_t A,slong e)
 static __inline__ void
 DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scratch)
  {
-  assert(i<A->c-1);
+  ASSERT(i<A->c-1);
   # if 0
    if( det_tgt % nmod_mat_entry(A,i,i) )
     {
@@ -355,7 +361,7 @@ DKryskov_nmod_reduce_diag(nmod_mat_t A,slong i,mp_limb_t det_tgt,mp_limb_t* scra
             printf("nmod_mat_HNF(): gonna fix diagonal, i=%ld, new det_tgt=%ld\n",i,det_tgt);
             nmod_mat_print(A);
            #endif
-     assert( 0 == nmod_mat_entry(A,i+1,i) % det_tgt );
+     ASSERT( 0 == nmod_mat_entry(A,i+1,i) % det_tgt );
      nmod_mat_entry(A,i+1,i)=det_tgt;
      (void)DKryskov_nmod_zero_line(A,i,i+1,det_tgt,scratch);
     }
@@ -403,7 +409,7 @@ operate modulo n
     #endif
   slong m=A->c;
   mp_limb_t* sP=A->rows[col]+col;
-  assert( 1 == *sP );
+  ASSERT( 1 == *sP );
   //TODO: skip counting elements of column col, to save time
   slong v_len = m-col;
   while(j < m)
@@ -469,7 +475,7 @@ aka DomichKannanTrotter87.pdf
   mp_limb_t det_tgt=A->mod.n;
   for(i=0;;i++)
    {// main loop: zap lower, fix diagonal, maintain decreasing modulo
-    assert( (i>=0) && (i<m) );
+    ASSERT( (i>=0) && (i<m) );
     #if BUG0_nmod_mat_HNF
      printf("nmod_mat_HNF() i=%ld n=%lu\n",i,det_tgt);
      nmod_mat_print(A);
@@ -542,7 +548,7 @@ aka DomichKannanTrotter87.pdf
        }
      }
     DKryskov_nmod_reduce_diag(A,i,det_tgt,scratch);
-    assert( 0 == det_tgt % nmod_mat_entry(A,i,i) );
+    ASSERT( 0 == det_tgt % nmod_mat_entry(A,i,i) );
     det_tgt /= nmod_mat_entry(A,i,i);
           #if BUG0_nmod_mat_HNF
            printf("nmod_mat_HNF(): fixed diagonal, i=%ld, new det_tgt=%ld\n",i,det_tgt);
@@ -585,7 +591,7 @@ Return code:0
   mp_limb_t det_tgt=A->mod.n;
   for(i=0;;i++)
    {// main loop: zap lower, fix diagonal, maintain decreasing modulo
-    assert( (i>=0) && (i<c) );
+    ASSERT( (i>=0) && (i<c) );
           #if BUG0_nmod_mat_HNF
            printf("nmod_mat_HNF(): main loop i=%ld\n",i);
            nmod_mat_print(A);
@@ -607,3 +613,5 @@ Return code:0
     det_tgt /= nmod_mat_entry(A,i,i);
    }
  }
+
+#undef ASSERT

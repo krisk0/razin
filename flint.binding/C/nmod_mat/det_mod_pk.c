@@ -9,8 +9,9 @@
 #include <flint/nmod_mat.h>
 #if WANT_ASSERT_IN_DET_MOD_PK
  #include <assert.h>
+ #define ASSERT(x) assert(x)
 #else
- #define assert(x)
+ #define ASSERT(x)
 #endif
 #include "../ulong_extras/ulong_extras_.h"
 #include "../nmod_mat/nmod_mat_.h"
@@ -553,7 +554,7 @@ nmod_invert_2x2(mp_limb_t* s0,mp_limb_t* s1,const nmod_t mod,const p_k_pk_t pp)
     epsil=n_submod(delta,epsil,mod.n);
     // zetta=-epsil'*alpha'*betta
     s0[0]=epsil=inv_mod_pk_3arg(epsil,pp,mod);
-    assert(epsil<pp.p_deg_k);
+    ASSERT(epsil<pp.p_deg_k);
     zetta=n_mulmod_preinv_4arg(pp.p_deg_k-epsil,alpha,mod.n,mod.ninv);
     s1[0]=zetta=n_mulmod_preinv_4arg(zetta,betta,mod.n,mod.ninv);
     // theta=gamma*alpha'
@@ -576,7 +577,7 @@ nmod_invert_2x2(mp_limb_t* s0,mp_limb_t* s1,const nmod_t mod,const p_k_pk_t pp)
     epsil=n_mulmod_preinv_4arg(epsil,betta,mod.n,mod.ninv);
     epsil=n_submod(delta,epsil,mod.n);
     s0[1]=epsil=inv_mod_pk_3arg(epsil,pp,mod);
-    assert(epsil<pp.p_deg_k);
+    ASSERT(epsil<pp.p_deg_k);
     zetta=n_mulmod_preinv_4arg(pp.p_deg_k-epsil,gamma,mod.n,mod.ninv);
     s1[1]=zetta=n_mulmod_preinv_4arg(zetta,betta,mod.n,mod.ninv);
     theta=n_mulmod_preinv_4arg(pp.p_deg_k-gamma,alpha,mod.n,mod.ninv);
@@ -829,7 +830,7 @@ when switching rows, add 1 to negate_det
   // row 1
   if( 0==det_mod_pk_SE_1st_row( I, M, negate_det, pp ) )
    return 1;
-  assert(1 == n_mulmod_preinv_4arg(I[0],M->rows[M->r-1][M->r-1], 
+  ASSERT(1 == n_mulmod_preinv_4arg(I[0],M->rows[M->r-1][M->r-1], 
    M->mod.n,M->mod.ninv) % pp.p_deg_k);
   SHOW_0TH_COL("after 1st row",M);
   // protect inverse of 0th pivot
@@ -1162,6 +1163,4 @@ nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
   #undef p_deg_k
  }
 
-#if !WANT_ASSERT_IN_DET_MOD_PK
- #undef assert
-#endif
+#undef ASSERT
