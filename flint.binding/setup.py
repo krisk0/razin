@@ -94,7 +94,7 @@ def sed_and_perl__goodbye( oN, iN ):
  I fought sed and perl. I lost the fight and say goodbye to them. Let us say
   RAZIN no longer depends on sed or perl caprice, and total code size decreased
  '''
- unwanted=re.compile( 'MPLUS|MMUL|assert' )
+ unwanted=re.compile( 'MPLUS|MMUL| ASSERT' )
  with open( oN, 'wb' ) as o, open( iN, 'rb' ) as i:
   d,r=i.readlines(),''
   for s in d:
@@ -114,7 +114,7 @@ def sed_and_perl__goodbye( oN, iN ):
   if r[-1] != 'λ':
    r += 'λ'
   o.write( r.replace('λ','\n') )
-  o.write( '\n/*'+tail_warning+'\n*/' )
+  o.write( '/*'+tail_warning+'\n*/' )
 
 def copy_pyx_file( oN, iN, tail ):
  with open( oN, 'wb' ) as o:
