@@ -228,3 +228,6 @@
 21 Feb 2015 Added ebuild for FLINT ver. 2.4.5. Tested that my fastest in the 
              world determinant calculation works. Well, it really works after 
              fixing bug in nmod_mat_HNF()
+
+07 Mar 2015 Replaced decomposition subroutine that runs at start of my 
+             determinant calculation. No noticeable speed change
