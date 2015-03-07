@@ -16,8 +16,7 @@ _27022015_print_diag_and_above(nmod_mat_t d,slong clean_column,mp_limb_t m)
  {
   slong n=d->r,i,j;
   nmod_mat_t c; nmod_mat_init_3arg(c,n,n); memset(&c->mod,0,sizeof(c->mod));
-  if(m)
-   c->mod.n=m;
+  c->mod.n=m;
   for(i=n;i--;)
    for(j=n;j--;)
     {
