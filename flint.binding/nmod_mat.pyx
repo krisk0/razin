@@ -34,6 +34,9 @@ cdef extern from './nmod_mat_HNF.c':
  void nmod_mat_HNF(nmod_mat_t A)
  void nmod_mat_HNF_nonsquare(nmod_mat_t A)
 
+cdef extern from 'C/nmod_mat/HNF_mod_t.c':
+ int nmod_mat_HNF_mod_t(nmod_mat_t A,fmpz_t d)
+
 cdef extern from 'C/nmod_mat/transpose_square_tgt_virgin.c':
  void nmod_mat_transpose_square_tgt_virgin(nmod_mat_t r,const nmod_mat_t s)
 
