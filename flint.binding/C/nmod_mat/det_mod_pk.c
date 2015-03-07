@@ -1162,8 +1162,6 @@ nmod_mat_det_mod_pk_4block(nmod_mat_t M,const p_k_pk_t pp,mp_limb_t* scrtch)
   #undef p_deg_k
  }
 
-#if WANT_ASSERT_IN_DET_MOD_PK
- //
-#else
+#if !WANT_ASSERT_IN_DET_MOD_PK
  #undef assert
 #endif

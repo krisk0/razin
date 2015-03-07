@@ -146,8 +146,6 @@ DKryskov_HNF_zap_below(nmod_mat_t A,slong col,slong hint,mp_limb_t n,
    }
  }
 
-#if WANT_ASSERT_IN_HNF_NONSQ
- //
-#else
+#if !WANT_ASSERT_IN_HNF_NONSQ
  #undef assert
 #endif
