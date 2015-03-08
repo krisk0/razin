@@ -2,28 +2,29 @@ Installation
 ============
 
 With portage package manager: 
- download .zip (via a push-button on https://github.com/krisk0/razin or link at https://github.com/krisk0/razin/releases, the latter is likely to contain less errors than the former)
+ 1) recall how to use home-brewed .ebuild script, or read a manual such as http://gentoo-en.vfose.ru/wiki/Overlay#Adding_packages_to_a_Local_Overlay
 
- unpack the file
+ 2) download a zipped release from https://github.com/krisk0/razin/releases
+
+ 3) unpack the file
  
- put flint.binding/python-sage-flint-<ver>.ebuild into /your/private/overlay/dev-python/python-sage-flint
+ 4) put flint.binding/python-sage-flint-<ver>.ebuild into /your/private/overlay/dev-python/python-sage-flint
  
- move .zip to /distfiles/razin-<ver>.zip
+ 5) move .zip to /distfiles/razin-<ver>.zip (for example /distfiles/razin-20150223-r0.zip)
  
- # ebuild /your/private/o.../python-sage-flint-<ver>.ebuild manifest
+ 6) # ebuild /your/private/overlay/python-sage-flint-<ver>.ebuild manifest
  
- # emerge dev-python/python-sage-flint 
+ 7) # emerge dev-python/python-sage-flint 
  or 
  # emerge =dev-python/python-sage-flint-<ver>
  
 Without portage:
- download .zip
+ 1) download .zip
 
- unpack it
+ 2) unpack it
  
- # cd flint.binding/
- 
- # python2 ./setup.py install
+ 3) # cd flint.binding/
+    # python2 ./setup.py install
  
  if sage include not found, read comments in setup.py, then
  
