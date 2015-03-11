@@ -15,7 +15,6 @@
 
 #define LOUD_smallDet_matrice 0
 #define LOUD_HERMITIAN_DECOMPOSITION 0
-#define po(x) flint_printf("%s\n",x);
 
 static __inline__ void
 inverse_smallDet_HNF(fmpz_mat_t r,fmpz_t d,const nmod_mat_t a)
@@ -245,5 +244,4 @@ Otherwise
  }
 
 #undef NDEBUG
-#undef po
 #undef ASSERT
