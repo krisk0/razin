@@ -231,3 +231,7 @@
 
 07 Mar 2015 Replaced decomposition subroutine that runs at start of my 
              determinant calculation. No noticeable speed change
+
+12 Mar 2015 Python package name and version were misleading, fixed. Now version
+             string is taken from ebuild; python package name changed to RAZIN
+
