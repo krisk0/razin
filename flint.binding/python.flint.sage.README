@@ -6,7 +6,7 @@ With portage package manager:
 
  2) download a zipped release from https://github.com/krisk0/razin/releases
 
- 3) unpack the file
+ 3) unpack the .zip file
  
  4) put flint.binding/python-sage-flint-<ver>.ebuild into /your/private/overlay/dev-python/python-sage-flint
  
@@ -23,12 +23,17 @@ Without portage:
 
  2) unpack it
  
- 3) # cd flint.binding/
-    # python2 ./setup.py install
+ 3) go to directory flint.binding/
+ 
+ 4) insert version information by editing setup.py: replace string RAZIN_version with current date (or date of source archive) such as 20150317 where 2015=year, 03=march and 17=date
+ 
+ 5) # python2 ./setup.py install
  
  if sage include not found, read comments in setup.py, then
  
  # MY_SAGE_IS_HERE=... EPREFIX=... python2 ./setup.py install
+ 
+ if python2 executable not found, use full path instead
 
 If you feel like optimizing, prepend compiler options:
 
@@ -44,7 +49,7 @@ If you have more than one version of FLINT run-time library, set MY_FLINT_IS_HER
 
 After successful compilation with MY_FLINT_IS_HERE=... directive, flint_sage.so will tie to a flint*.so from that location (and would not work if flint*.so is not there).
 
-Two files are installed: flint_sage.so and FLINT_...egg-info. With portage, documentation (this file) will be installed, too.
+Two files are installed: flint_sage.so and RAZIN_...egg-info. With portage, documentation (this file) will be installed, too.
 
 Note that setup.py script re-creates file nmod_mat_HNF.c even though the latter is included into .zip. This is feature and not a bug.
 
