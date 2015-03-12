@@ -346,8 +346,7 @@ setup\
    'on top of FLINT',
   long_description = 'some FLINT and my home-brewed algorithms for '+
    'linear algebra and number theory exposed to Python',
-  platforms = ['64-bit supported by Sage, look into python.flint.sage.README '+
-                'for technical req'],
+  platforms = ['64-bit supported by Sage'],
   cmdclass = {'build_ext':build_ext},
   version='RAZIN_version',
   ext_modules = ext_modules,
