@@ -338,17 +338,18 @@ ext_modules = \
    )
  ]
 
-# tiny.cc and blog.com are unreliable, good luck with email quest
+# tiny.cc not always works, good luck with email quest
 setup\
  (
-  name = 'FLINT wrapper, accessed with Sage matrix or numbers',
-  description = 'FLINT integer/rational matrice bindings',
-  long_description = 'For now, some FLINT and my home-brewed algorithms for '+
-   'integer linear algebra exposed to Python',
-  platforms = ['64-bit supported by Sage, scan python.flint.sage.README '+
+  name = 'RAZIN',
+  description = 'Integer linear algebra library, built by Денис Крыськов '+
+   'on top of FLINT',
+  long_description = 'some FLINT and my home-brewed algorithms for '+
+   'linear algebra and number theory exposed to Python',
+  platforms = ['64-bit supported by Sage, look into python.flint.sage.README '+
                 'for technical req'],
   cmdclass = {'build_ext':build_ext},
-  version='20140309',
+  version='RAZIN_version',
   ext_modules = ext_modules,
   author_email = 'quest: http://tiny.cc/DKryskov -> "Hello world"'+
    ' -> current address at the bottom',

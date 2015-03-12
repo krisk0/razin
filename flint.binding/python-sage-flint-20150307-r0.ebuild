@@ -19,7 +19,7 @@ SRC_URI="$HOMEPAGE/archive/$PV-$PR.zip -> $MYnv.zip"
 
 LICENSE=GPL
 SLOT=0
-KEYWORDS="amd64"
+KEYWORDS=amd64
 RESTRICT=mirror
 
 DEPEND=sci-mathematics/sage
@@ -31,3 +31,8 @@ RDEPEND="
 
 S="$WORKDIR/$MYnv/flint.binding"
 DOCS=( python.flint.sage.README )
+
+src_prepare()
+ {
+  sed -e s:RAZIN_version:$PV-$PR: -i setup.py
+ }
