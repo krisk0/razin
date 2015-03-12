@@ -30,7 +30,7 @@ RDEPEND="
         "
 
 S="$WORKDIR/$MYnv/flint.binding"
-DOCS=( python.flint.sage.README )
+DOCS=( python.sage.flint.README )
 
 src_prepare()
  {
