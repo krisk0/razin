@@ -235,3 +235,5 @@
 12 Mar 2015 Python package name and version were misleading, fixed. Now version
              string is taken from ebuild; python package name changed to RAZIN
 
+03 Apr 2015 Gentoo official ebuilds for gmp are broken: they optimize for K8 on Haswell.
+             Uncrippled ebuild (configuring GMP as it should) is in ebuild/ directory
