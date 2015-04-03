@@ -72,7 +72,6 @@ multilib_src_configure() {
 
 	tc-export CC
  export ac_cv_host=$build_alias
- export ac_build_alias=$build_alias
 	ECONF_SOURCE="${S}" econf \
 		--localstatedir=/var/state/gmp \
 		--enable-shared \
