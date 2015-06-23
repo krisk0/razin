@@ -1,7 +1,6 @@
 # Copyright 1999-2015 Gentoo Foundation
 # Copyright      2015 Крыськов Денис
 # Distributed under the terms of the GNU General Public License v2
-
 # Hacked by Денис Крыськов to properly optimize for host CPU
 #          (treat Haswell as Haswell but not K8)
 
@@ -50,6 +49,12 @@ src_prepare() {
  exec env ABI=$GMPABI "$0.wrapped" "$@"
  EOF
  chmod a+rx configure
+
+ # multilib_src_configure() clobbers config.guess, so we run it here
+ export build_alias=`/bin/sh $S/config.guess` ||
+  die "failed to run config.guess"
+ [ -z $build_alias ] && die "empty result from config.guess"
+ einfo "guessed processor type: $build_alias"
 }
 
 multilib_src_configure() {
@@ -67,13 +72,10 @@ multilib_src_configure() {
  esac
  export GMPABI
 
- build_alias=`/bin/sh $S/config.guess` ||
-  die "failed to run config.guess"
- [ -z $build_alias ] && die "empty result from config.guess"
- einfo "guessed processor type: $build_alias"
-
  tc-export CC
  export ac_cv_host=$build_alias
+ [ -z $ac_cv_host ] && die 'problem with build_alias'
+ export ac_build_alias=$ac_cv_host
  ECONF_SOURCE="${S}" econf \
   --localstatedir=/var/state/gmp \
   --enable-shared \
