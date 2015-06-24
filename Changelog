@@ -237,3 +237,10 @@
 
 03 Apr 2015 Gentoo official ebuilds for gmp are broken: they optimize for K8 on Haswell.
              Uncrippled ebuild (configuring GMP as it should) is in ebuild/ directory
+
+24 Jun 2015 My python package does not build on Sage 6.7 (error: ccobject.h not found).
+             I am not the only one suffering from the problem:
+             
+            https://groups.google.com/forum/#!msg/sage-devel/wSX2i4Ic8sQ/EDK0k5hhbz0J
+            
+            
