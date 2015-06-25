@@ -1,54 +1,54 @@
 10 Mar 2014  Fixed bugs in unimodular.{4,5}way.py, which resulted in
               incorrect test results or abnormal termination
 
-             Fredrik Johansson, thanks for help. 
-             
+             Fredrik Johansson, thanks for help.
+
              The secret method _clean_cache() is really hard to find.
 
 20140312-r0 flint.pyx, class fmpz_mat:
-             wrapped fmpz_mat_solve() as solve_right(); 
+             wrapped fmpz_mat_solve() as solve_right();
              added __richcmp__()
-            
-            benchmark_solve_right.py: benchmarked solve_right() in flint_sage 
+
+            benchmark_solve_right.py: benchmarked solve_right() in flint_sage
              and Sage
-            
-            Anybody feels like implementing a good interface to Dixon method? 
+
+            Anybody feels like implementing a good interface to Dixon method?
             Question answered, thanks Fredrick
 
 20140313-r1: fmpq_mat constructor workin
 
-20140314-r0: Some fmpq_mat methods wrapped. benchmark_Dixon_square.py 
+20140314-r0: Some fmpq_mat methods wrapped. benchmark_Dixon_square.py
              terminated. Sage .inverse() is a winner for matrix larger than 170
 
 15 Mar 2014  Spent few hours wrapping methods nmod_mat_
 
-             Tests show that nmod_mat_rref does not preserve matrice 
+             Tests show that nmod_mat_rref does not preserve matrice
               determinant, and nmod_mat_lu* malfunction for non-prime moduli
-              
-             So how do I count HNF over ring? Do I need to use NTL HNF? 
-             
-             I wonder what fmpz_mat_fflu, fmpz_mat_rref, 
+
+             So how do I count HNF over ring? Do I need to use NTL HNF?
+
+             I wonder what fmpz_mat_fflu, fmpz_mat_rref,
               fmpz_mat_rref_fraction_free do
 
-17 Mar 2014  Invented ?new? algorithm to compute HNF modulo small number, 
-              implemented it. C code (cleaned from debug statements) is 318 
-              lines long. The subroutine turned to be slower than its analog 
+17 Mar 2014  Invented ?new? algorithm to compute HNF modulo small number,
+              implemented it. C code (cleaned from debug statements) is 318
+              lines long. The subroutine turned to be slower than its analog
               in Sage
 
-20140318-r0  Corrected documentation on fmpz_mat_hermite_form() and 
+20140318-r0  Corrected documentation on fmpz_mat_hermite_form() and
               nmod_mat_HNF() interface
 
-20140318-r1  my modular HNF is at least 2.35 times faster than Sage method doing 
-              the same (ratio depends on dimension). See file 
+20140318-r1  my modular HNF is at least 2.35 times faster than Sage method doing
+              the same (ratio depends on dimension). See file
               benchmark_nmod_mat_HNF-sage.cout
-             
-20140319-r0  the fastest in galaxy C code to count HNF modulo lattice slightly 
+
+20140319-r0  the fastest in galaxy C code to count HNF modulo lattice slightly
               cleaned and now contains 402 lines including 17 assert lines
 
-             nmod_mat_HNF() interface changed: this subroutine returns 0 iff 
-              determinant confirmed. This is last interface change for this 
-              subroutine. 
-              
+             nmod_mat_HNF() interface changed: this subroutine returns 0 iff
+              determinant confirmed. This is last interface change for this
+              subroutine.
+
              I mean it. Really last last change of the interface.
 
 19 Mar 2014 NTL HNF benchmarked. Guess who wins?
@@ -64,97 +64,97 @@
              n=100 bits=256 max time sage/mine=2.91527295113/2.11966109276
 
 24 Mar 2014 Dixon is sometimes faster and sometimes slower, only in add_column().
-            In double_det() it is faster always. Profiling takes time... 
+            In double_det() it is faster always. Profiling takes time...
 
 27 Mar 2014 Equilibrium found, final version of profile_Sage_hnf_square.py is
              running
 
-28 Mar 2014 Profile/Benchmark failed due to bug (exception at line 
-             'x[i,0] = x[i,0]/d')            
-            Will record the matrice that causes the bug and report it to Sage 
+28 Mar 2014 Profile/Benchmark failed due to bug (exception at line
+             'x[i,0] = x[i,0]/d')
+            Will record the matrice that causes the bug and report it to Sage
              devs
 
-28 Mar 2014 Sage is playing tricks on me. The exception only occured once, and 
+28 Mar 2014 Sage is playing tricks on me. The exception only occured once, and
              I did not record the matrice. I restared my program with same
              random generator seed, but the exception did not show up.
-             
-            Specialized re-implemented hnf_square() runs faster than original, 
+
+            Specialized re-implemented hnf_square() runs faster than original,
              30% faster for n=500, bits=512, 13% faster for n=3000, bits=8
 
 03 Apr 2014 riddle `what is this code doing' partially solved
-            3 lines 
+            3 lines
              rhs = a_prime - (w * x)[0]    # row-by-col multiplication
              alpha = rhs / lhs             # integer division
              x=x + alpha*k                 # vector add-mul
-            take more than 4 seconds on average when source matrice (on input 
+            take more than 4 seconds on average when source matrice (on input
              to HNF_square()) is random with n=2000, bits=8
 
 04 Apr 2014 tmod_mat now not only finds LU decomposition (if it exists), but
              also is capable of inverting the two matrix L,U
 
-06 Apr 2014 while random_matrix(ZZ, dim, dim, algorithm='unimodular') takes 
-             nearly forever for dim=100, my computation of PLU modulo 2**64 
-             and subsequent inversion of it is so fast that it does not make 
-             sense to make it faster (gains in speed of HNF computation will 
+06 Apr 2014 while random_matrix(ZZ, dim, dim, algorithm='unimodular') takes
+             nearly forever for dim=100, my computation of PLU modulo 2**64
+             and subsequent inversion of it is so fast that it does not make
+             sense to make it faster (gains in speed of HNF computation will
              be unnoticed).
 
-08 Apr 2014 experimenting with different versions of MPIR/GMP, safely, in 
+08 Apr 2014 experimenting with different versions of MPIR/GMP, safely, in
              lmonade prefixed environment.
-             
-            My idea was to benchmark integer arithmetic. However, flint-2.4.3 
+
+            My idea was to benchmark integer arithmetic. However, flint-2.4.3
              test failed under gmp 6.0.0. Need to further investigate this,
              before doing benchmarks
 
-09 Apr 2014 The error is harmless --- I don't plan to check if smth is 
+09 Apr 2014 The error is harmless --- I don't plan to check if smth is
              invertible modulo 1, so hopefully it should not be a problem if
              I choose to switch to linking FLINT to GMP 6.0.0
-             
-            Linking flint_sage to MPIR turned to be harder than I thought 
-             before, due to bugs in gcc/ld behavior. gcc contrary to 
-             specification links to standard library rather than library in 
-             custom directory. After walking around the gcc bug my flint_sage 
-             links to two versions of gmp*.so (one from MPIR and one that is 
-             used by Sage), and I suspect that code from the 2nd library is used 
+
+            Linking flint_sage to MPIR turned to be harder than I thought
+             before, due to bugs in gcc/ld behavior. gcc contrary to
+             specification links to standard library rather than library in
+             custom directory. After walking around the gcc bug my flint_sage
+             links to two versions of gmp*.so (one from MPIR and one that is
+             used by Sage), and I suspect that code from the 2nd library is used
              in calculation, which is not what I want.
 
-            Tests show that replacing GMP implementation does not make 
-             determinant() or solve_right() faster on my computer (at least for 
+            Tests show that replacing GMP implementation does not make
+             determinant() or solve_right() faster on my computer (at least for
              matrice of size 90 with 100-bit entries)
 
-11 Apr 2014 Under GMP 6.0.0a Sage/Flint is a lot faster than under MPIR 2.7.0. 
+11 Apr 2014 Under GMP 6.0.0a Sage/Flint is a lot faster than under MPIR 2.7.0.
              Probably everybody except me knows that MPIR is not something to
              be used under Linux. Now I know that, too. MPIR, goodbye.
 
 20140414-r0 New subroutine mod_mat_HNF_nonsquare(matrice,number): matrice can be
-             non-square; number should be a divisor of determinant of lattice 
+             non-square; number should be a divisor of determinant of lattice
              (rather than multiple). Full spec in C source between func header
              and func body (as usual)
 
 17 Apr 2014 invert upper-triangular integer matrice with small determinant:
              fmpz_triU_small_det_inverse().
-            My specialzed procedure is a lot faster than FLINT 
+            My specialzed procedure is a lot faster than FLINT
              fmpz_mat_inverse(): 28.5 times for dim=100, 4.9 times for dim=10
 
 18 Apr 2014 Changing measuring procedure makes figures different: 4.5 not 4.9
              times for dim=10. But who cares for this low dim? For big dimension
-             the ratio becomes substantially bigger anyway, see 
+             the ratio becomes substantially bigger anyway, see
              test_benchmark_invert_triU-4ways.cout
 
 28 Apr 2014 Included Agrawal-Kayal-Saxena primality test implemented by 袁轶君:
              n_is_prime_AKS()
 
 29 Apr 2014 Fixed errors in AKS() subroutine, by completely re-implementing it.
-             袁轶君, thanks for initial version. The code is terribly slow on 
+             袁轶君, thanks for initial version. The code is terribly slow on
              64-bit primes. I spent many hours on the code and therefore do not
              delete it
 
 01 May 2014 implemented reverse iterator on primes, which is able to re-iterate
-             at incredible speed (since it memorises primes found). On first run 
+             at incredible speed (since it memorises primes found). On first run
              it is twice slower than FLINT n_nextprime()
 
-05 May 2014 Dana Jacobsen checked on example my calculation of bounds in AKS() 
-             subroutine, found no error. Thanks, Dana. For now I am happy with 
-             deterministic Miller-Rabin test and do not need the slow 
+05 May 2014 Dana Jacobsen checked on example my calculation of bounds in AKS()
+             subroutine, found no error. Thanks, Dana. For now I am happy with
+             deterministic Miller-Rabin test and do not need the slow
              AKS().
 
 07 Jun 2014 Hopefully fast subroutine to invert a number modulo prime power:
@@ -166,8 +166,8 @@
 04 Jul 2014 fmpz_mat_det_Kryskov(): test passes, runs slower than fmpz_mat_det()
 
 07 Jul 2014 fmpz_mat_det_Kryskov() is actually faster than FLINT fmpz_mat_det()
-             for big and fat matrix. For instance, with 1000-bit entries and 
-             dimension 221, my subroutine is 50% faster; the relative speed 
+             for big and fat matrix. For instance, with 1000-bit entries and
+             dimension 221, my subroutine is 50% faster; the relative speed
              appears to monotonically grow as dimension grows
 
 15 Jul 2014 for bits=1000, dim=300 the pedestal looks this way:
@@ -176,10 +176,10 @@
              Sage padic  4.34e+02
              Sage   NTL  Time-out
              Sage  pari  Time-out
- 
+
             My determinant calculation is the fastest open-source subroutine
             (for big and fat matrix)
-            
+
 25 Jul 2014 Optimizing nmod_mat/det_mod_pk.c, starting from top. Time varies
              strangely. Replacing heavier macro NMOD_RED3_pk()
              NMOD_RED3_pk_easy() brings slow-down, instead of speed-up. Is that
@@ -194,28 +194,28 @@
              (out of my genial vector dot multiplication macros). GCC 4.8.3
              gives slightly better code than GCC 4.7.3. Long live GCC.
 
-14 Oct 2014 FLINT test-suite is consistently broken: it tests installed version 
-             rather than freshly-compiled. However, I keep my 
+14 Oct 2014 FLINT test-suite is consistently broken: it tests installed version
+             rather than freshly-compiled. However, I keep my
              flint-20141001.ebuild
 
-06 Nov 2014 Since spring 2014, RAZIN had a subroutine to invert a 
-             lower-triangular matrice modulo 2**64. A subroutine to invert an 
-             arbitrary matrice modulo 2**64 added today: 
+06 Nov 2014 Since spring 2014, RAZIN had a subroutine to invert a
+             lower-triangular matrice modulo 2**64. A subroutine to invert an
+             arbitrary matrice modulo 2**64 added today:
              tmod_mat_invert_transpose()
 
 26 Nov 2014 fmpz_mat_det_hermitian_decomposition() is working (slow but faster
              than FLINT on fat matrix). My question about multiplication modulo
-             degree of two answered at FLINT forum 
-             
-             https://groups.google.com/forum/#!forum/flint-devel 
-             
+             degree of two answered at FLINT forum
+
+             https://groups.google.com/forum/#!forum/flint-devel
+
             F.Johansson, thanks
 
-29 Nov 2014 benchmark fluctuates for no reason --- even fmpz_mat_det() time 
+29 Nov 2014 benchmark fluctuates for no reason --- even fmpz_mat_det() time
              varies though it should not. Is my motherboard dying?
-             
+
             Optimized slightly some fmpz_mat_det_hermitian_decomposition()
-             subroutines. For dim=100 new time/old time=9.48/9.85 (ratio 
+             subroutines. For dim=100 new time/old time=9.48/9.85 (ratio
              close to 1 within margin of error)
 
 30 Nov 2014 switched to Sage 6.4-r1. Good news: Sage Matrix_integer_dense has
@@ -225,22 +225,23 @@
 
 07 Dec 2014 my README.rst was terribly lagging behind, fixed
 
-21 Feb 2015 Added ebuild for FLINT ver. 2.4.5. Tested that my fastest in the 
-             world determinant calculation works. Well, it really works after 
+21 Feb 2015 Added ebuild for FLINT ver. 2.4.5. Tested that my fastest in the
+             world determinant calculation works. Well, it really works after
              fixing bug in nmod_mat_HNF()
 
-07 Mar 2015 Replaced decomposition subroutine that runs at start of my 
+07 Mar 2015 Replaced decomposition subroutine that runs at start of my
              determinant calculation. No noticeable speed change
 
 12 Mar 2015 Python package name and version were misleading, fixed. Now version
              string is taken from ebuild; python package name changed to RAZIN
 
-03 Apr 2015 Gentoo official ebuilds for gmp are broken: they optimize for K8 on Haswell.
-             Uncrippled ebuild (configuring GMP as it should) is in ebuild/ directory
+03 Apr 2015 Gentoo official ebuilds for gmp are broken: they optimize for K8 on
+             Haswell. Uncrippled ebuild (configuring GMP as it should) is in
+             ebuild/ directory
 
-24 Jun 2015 My python package does not build on Sage 6.7 (error: ccobject.h not found).
-             I am not the only one suffering from the problem:
-             
+24 Jun 2015 My python package does not build on Sage 6.7 (error: ccobject.h not 
+             found). I am not the only victim:
+
             https://groups.google.com/forum/#!msg/sage-devel/wSX2i4Ic8sQ/EDK0k5hhbz0J
-            
-            
+
+            Fixed the Sage bug by adding another include directory
