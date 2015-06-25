@@ -66,7 +66,8 @@ FAQ
 Q0. What are the technical requirements of the package?
 A0. FLINT, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x; standard Unix utilities such as grep; standards-complying <stdint.h>. I attempt to write portable code, but since I never compiled RAZIN under OS other than Linux, you may experience problems, if your OS has a different ABI (for instance if long int is not 64 bit). Your bug-report is welcome.
 
-    Sage version should be 6.4 for flint_sage since 01 Dec 2014; 6.1.1 for earlier releases of flint_sage
+    Sage version should be 6.4 for flint_sage since 01 Dec 2014; 6.1.1 for earlier releases of flint_sage. python-sage-flint-20150624-0 is 
+    known to build without errors for Sage 6.4 and 6.7-r1
 
     FLINT versions known to work: 2.4.1, 2.4.3, 2.4.4, 2.4.5.
 
