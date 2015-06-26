@@ -51,3 +51,8 @@ fmpz_mat/det_hermitian_deco  | test_hd_det.py              | my subroutine is 2.
 
              Hint: if          this column                  contains file name with no dot, then it is
                                                              both .py and .cout
+
+
+Benchmark result might be at cout/*.cout or attached as trailing comment
+ to a benchmark script. For instance, my benchmark of my fastest open-source 
+ determinant calculation is appended to benchmark.script/det_20141201*.py
