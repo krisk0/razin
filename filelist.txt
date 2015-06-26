@@ -27,7 +27,7 @@ ebuild/                 Useful ebuild scripts
 Subroutines I am proud of:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-C file name              test program                   comment
+C file name        !    test or benchmark program    !             comment
 -------------------+---------------------------------+---------------------------------------------------
 nmod_mat_HNF.c     |  benchmark_nmod_mat_HNF-sage    | for dim=200, my code is 4.30/1.65=2.56 times faster
 
@@ -44,7 +44,7 @@ fmpz_mat/window_unsh.c | test_benchmark_invert_triU-4ways | my specialized subro
 nmod_mat/mul_pk_classical.c | nmod_mat-mul.c               | my subroutine multiplies 4x4 matrix modulo
                             |                              |  3**40 150% (2.5 times) faster than FLINT
                             
-fmpz_mat/det_hermitian_deco  | test_hd_det.py              | my subroutine is 2.69 times faster than 
+fmpz_mat/det_hermitian_deco  | det_20141201*.py            | my subroutine is 2.69 times faster than 
                  mposition.c |                             |  FLINT fmpz_mat_det() for bits=1000 and dim
                              |                             |  =500
 
@@ -54,5 +54,5 @@ fmpz_mat/det_hermitian_deco  | test_hd_det.py              | my subroutine is 2.
 
 
 Benchmark result might be at cout/*.cout or attached as trailing comment
- to a benchmark script. For instance, my benchmark of my fastest open-source 
+ to a benchmark script. For instance, timing of my fastest open-source 
  determinant calculation is appended to benchmark.script/det_20141201*.py
