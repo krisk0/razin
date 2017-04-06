@@ -10,7 +10,7 @@ For now, I offer
  
 Where are the files?
 ^^^^^^^^^^^^^^^^^^^^
-See *filelist.txt*
+See *filelist.txt*. For build instructions, see flint.binding/python.flint.sage.README.
 
 My new algorithm to compute integer matrice determinant: ``fmpz_mat_det_hermitian_decomposition()``
 
