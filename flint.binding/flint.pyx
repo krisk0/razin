@@ -29,15 +29,21 @@ from sage.modules.free_module_element import vector
 
 from libc.stdlib cimport malloc, free
 from libc.string cimport strcpy
+from sage.libs.gmp.mpz cimport *
+# Would not import sage.libs.gmpxx because this will force C++ mode
+#from sage.libs.gmpxx cimport mpz_class
+from sage.libs.gmp.types cimport *
+#Failed to include "sage/libs/gmp/mpq.pxd":
+# relative cimport beyond main package is not allowed
+include "mpq.pxd"
+include "slong.pyx"
+include "mpfr.pyx"
 include "sage/libs/ntl/decl.pxi"
 include "sage/ext/interrupt.pxi"
 
 cdef extern from 'flint/flint.h':
  void* flint_malloc(unsigned size)
  void flint_free(void* p)
-
-# numbers imported
-include "mp_limb_t.pyx"
 
 #ctypedef __mpz_struct* mpz_ptr # already defined by whom?
 
@@ -49,8 +55,6 @@ cdef extern from 'mpfr.h':
   mp_limb_t   *_mpfr_d
  ctypedef __mpfr_struct mpfr_t[1]
  ctypedef int mpfr_rnd_t
-
-include "slong.pyx"
 
 from sage.libs.gmp.all cimport gmp_randstate_t
 

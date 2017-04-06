@@ -11,48 +11,19 @@
 # If this program fails to find sage include, set MY_SAGE_IS_HERE to point to 
 #  directory containing sage/rings/integer
 
-'''
-Error message
- x86_64-pc-linux-gnu-gcc: error: : No such file or directory
-is harmless. And I don't know where it comes from (it occurs before my code
-in setup.py takes control)
-'''
-
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
-import os,sys,re,subprocess
-osE=os.environ.get
+import os,sys,re,subprocess,site
 write=sys.stdout.write
 cout_please=subprocess.check_output
 delete_us=[]
 
-def find_sage_include_dir( prefix, suffix, user_set ):
- if user_set == None:
-  # no user-supplied directory, start with empty list
-  w=[]
- else:
-  # user-supplied setting tried on the 1st place
-  w=[user_set]
- if prefix==None:
-  # EPREFIX unset, only one variant
-  w.append( suffix )
- else:
-  # EPREFIX set, try both ways
-  w += [ prefix+suffix, suffix ]
- r=None
- for x in w:
-  if os.path.isdir(x):
-   r=x
-   break
- if r==None:
-  # todo: use locate command
-  write('Failed to find include dir, tried directories:\n')
-  for x in w:
-   write('   >'+x+'<\n')
-  sys.exit(1)
- write('sage lives in '+r+'\n')
- return r
+def osE( x, z=None ):
+ y=os.environ.get(x)
+ if y=='':
+  y=z
+ return y
 
 def die(x):
  print x
@@ -66,23 +37,19 @@ def re_sub( d, sou, tgt ):
 def zap_subr( d, subr ):
  # the following expression eats too much :
  #  'static.*?'+subr+'.*?λ }λ'
- # so doing replacement 'static.*?'+subr -> subr in stupid way
+ # so doing replacement 'static.*?'+subr -> subr in a stupid way
  p0=d.find(subr)
  p1=d[:p0].rfind('static')
  d=d[:p1]+d[p0:]
  e=re.compile( subr+'.*?λ }λ' )
  return e.sub( '', d )
 
+EPREFIX=osE('EPREFIX')
 tail_warning='''
-I would be greatly irritated if you tell me that the algorithms implemented in
- this file are wrong WITHOUT GIVING EXAMPLE OF INPUT DATA that make them fail
+Bug reports via Github issue are welcome, see README.rst for details
+'''
 
-Report bugs via Github mechanism or e-mail
-
-My e-mail is in my blog, detailed information on how to get it is close to tail
- of setup.py'''
-
-head_warning='This file is auto-generated from '+\
+head_warning='This file is auto-generated from '+
  'C/nmod_mat/nmod_mat_HNF-debug.cλ'
 head_trigger='ast, it comes this wayλ'
 
@@ -92,7 +59,8 @@ def sed_and_perl__goodbye( oN, iN ):
   code
  
  I fought sed and perl. I lost the fight and say goodbye to them. Let us say
-  RAZIN no longer depends on sed or perl caprice, and total code size decreased
+  RAZIN no longer depends on sed or perl caprice, and total code size is now
+  smaller
  '''
  unwanted=re.compile( 'MPLUS|MMUL| ASSERT' )
  with open( oN, 'wb' ) as o, open( iN, 'rb' ) as i:
@@ -116,11 +84,6 @@ def sed_and_perl__goodbye( oN, iN ):
   o.write( r.replace('λ','\n') )
   o.write( '/*'+tail_warning+'\n*/' )
 
-def copy_pyx_file( oN, iN, tail ):
- with open( oN, 'wb' ) as o:
-  o.write('include "%s"' % iN)
-  o.write('\n\n' + tail + '\n')
-
 def fix_include( c, ii ):
  ext_file_exist( c )
  p='''sed -e 's:#include "%s.h":#include "flint/%s.h":' -i %s'''
@@ -139,28 +102,15 @@ def find_flint_so_in_dir(d):
 sed_and_perl__goodbye( 'nmod_mat_HNF.c', 'C/nmod_mat/nmod_mat_HNF-debug.c' )
 
 '''
- sage-on-gentoo ebuilds put *.p* into $EPREFIX/usr/share/sage
+ as of 2015, sage-on-gentoo ebuilds put *.p* into $EPREFIX/usr/share/sage
+ as of 2017, there is no csage library and no such directory
 '''
-
-p0=osE('EPREFIX')
-p1='/usr/share/sage/src'
-p2=osE('MY_SAGE_IS_HERE')
-include_0=find_sage_include_dir( p0, p1, p2 )
-'''
-With some versions of Sage .pyx fails to compile, error message: 
- can't find ccobject.h
-Arranging extra include directory
-'''
-# /usr/share/sage/src -> /usr/share/sage/src/sage/ext/ccobject.h
-find_ccobject_please=include_0+'/sage/ext/'
-p4='/usr/include/csage/' # Sage .h should be in $EPREFIX/usr/include/csage/
-include_1=find_sage_include_dir( p0, p4, None )
 
 # Link to flint dynamically or statically
 # I failed to link statically under Linux, however leave code here 
-libraries=['flint','csage']
+libraries=['flint']
 extra_objects,library_dirs,runtime_library_dirs=[],[],[]
-flint_so=0
+flint_so=bad_path=0
 my_so=osE('MY_FLINT_IS_HERE')
 if my_so != None:
  bad_path=1
@@ -169,7 +119,7 @@ if my_so != None:
   flint_so=my_so
   extra_objects=[flint_so]
   runtime_library_dirs=[ os.path.dirname( flint_so ) ]
-  libraries=['csage']
+  libraries=[]
  if os.path.isdir(my_so):
   library_dirs=[ my_so ]
   runtime_library_dirs=[ my_so ]
@@ -181,21 +131,6 @@ if my_so != None:
 
 print 'libraries taken via -l:',libraries
 print 'libraries taken as extra objects:',extra_objects
-
-def create__fmpz_mat_HNF(h_file,out_file):
- if os.system( "grep -q 'void fmpz_mat_hnf' '%s'" % h_file ):
-  with open(out_file,'wb') as f:
-   pass
- else:
-  os.system( "cp '%s.in' '%s'" % (out_file,out_file) )
- global delete_us
- delete_us.append(out_file)
-
-# create fmpz_mat_HNF.pyx: either empty or defining AlexBest_hnf()
-fmpz_mat__h='/usr/include/flint/fmpz_mat.h'
-if p0!=None:
- fmpz_mat__h=p0+fmpz_mat__h
-create__fmpz_mat_HNF( fmpz_mat__h, 'fmpz_mat_HNF.pyx' )
 
 def ext_file_exist(x):
  if not os.path.isfile(x):
@@ -235,22 +170,6 @@ def ctypedef( c ):
  d=d.replace(';','').strip().replace('typedef',' ctypedef')
  return d
 
-def mp_limb_t( gmpH, mpfrH ):
- ' invoke C pre-processor to extract 2 type definitions from gmp.h '
- c_pattern="%s -E %s|grep '%s;'|grep typedef"
- if not os.path.isfile( gmpH ):
-  die('Failed to find gmp.h')
- global delete_us
- delete_us.append("mp_limb_t.pyx")
- with open("mp_limb_t.pyx",'wb') as o:
-  o.write( setup_automagic % (gmpH+' and '+mpfrH) )
-  o.write( "cdef extern from 'gmp.h':\n" )
-  for t in 'mp_limb_t','mp_limb_signed_t','mp_bitcnt_t':
-   o.write( ctypedef( c_pattern % (CC,gmpH,t) )+'\n' )
-  o.write( "\ncdef extern from 'mpfr.h':\n" )
-  for t in 'mpfr_prec_t', 'mpfr_sign_t', 'mpfr_exp_t', 'mpfr_uexp_t':
-   o.write( ctypedef( c_pattern % (CC,mpfrH,t) )+'\n' )
-
 def take_define( f, q ):
  with open(f,'rb') as i:
   for j in i:
@@ -280,24 +199,34 @@ def slong( p ):
   o.write( "\ncdef extern from 'flint/fmpz.h':\n" )
   o.write( fmpz+'\n' )
 
+def mpfr_h(mpfrH):
+ ' invoke C pre-processor to extract smth from mpfr.h '
+ c_pattern="%s -E %s|grep '%s;'|grep typedef"
+ global delete_us
+ delete_us.append("mpfr.pyx")
+ with open("mpfr.pyx",'wb') as o:
+  o.write( setup_automagic % mpfrH )
+  o.write( "\ncdef extern from 'mpfr.h':\n" )
+  for t in 'mpfr_prec_t', 'mpfr_sign_t', 'mpfr_exp_t', 'mpfr_uexp_t':
+   o.write( ctypedef( c_pattern % (CC,mpfrH,t) )+'\n' )
+
 def slong__mp_limb_t( x ):
  '''
-  assume FLINT, GMP and MPFR headers share same directory. 
   Extract basic number type definitions 
  '''
- mp_limb_t( x+'/gmp.h', x+'/mpfr.h' )
+ mpfr_h( x+'/mpfr.h' )
  slong( x+'/flint/flint.h' )
 
 def mullow_n( so ):
  global delete_us
  if 0==so:
   so='-lflint'
- if p0==None:
+ if EPREFIX==None:
   incl=' '
   libr=' '
  else:
-  incl=' "-I'+p0+'/usr/include"'
-  libr=' "'+p0+'"'
+  incl=' "-I'+EPREFIX+'/usr/include"'
+  libr=' "'+EPREFIX+'"'
  rc=os.system( CC+incl+' C/mullow_n.c -c -omullow_n.o -O2 -g' )
  if rc:
   die( 'mullow_n(): compilation problem. FLINT header not found?' )
@@ -315,20 +244,53 @@ def mullow_n( so ):
 def MulMod_2x( p ):
  if mullow_n( flint_so ):
   smart='smaart'
+  print 'Found mullow_n undocumented subroutine'
  else:
   smart='stupid'
+  print 'Failed to find mullow_n undocumented subroutine'
  tgt=p+'_positive.c'
  os.system( "cp %s.%s %s" % (p,smart,tgt) )
  global delete_us
  delete_us.append(tgt)
 
+def sage_ext_dir():
+ site_packages=None
+ for p in site.getsitepackages():
+  q=os.path.realpath(p)
+  if os.path.exists(q):
+   site_packages=q
+   break
+ if not site_packages:
+  die('Failed to find site_packages directory.\n'+\
+      'Install python as sage-on-gentoo or sage documentation says')
+ q=q+'/sage/ext'
+ if not os.path.exists(q):
+  die('Found site-packages directory >%s< but no sage/ext inside it' % \
+   site_packages)
+ return q
+
+def mpq_pxd( f ):
+ f=os.path.realpath(f+'/../libs/gmp/mpq.pxd')
+ if not os.path.exists(f):
+  die("Failed to find include file "+f)
+ g=os.path.basename(f)
+ global delete_us
+ delete_us.append(g)
+ os.system('fgrep -v .types < %s > %s' % (f,g))
+ if not os.path.exists(g):
+  die("Failed to create "+g)
+
 CC=osE('CC','gcc')
-include_dirs=[include_0,include_1,find_ccobject_please]
-if p0 == None:
+include_dirs=[sage_ext_dir()]
+mpq_pxd(include_dirs[0])
+include_dirs.append( os.path.realpath(include_dirs[0]+'/../..') )
+# cython fails to find cysignals/struct_signals.h
+include_dirs.append( include_dirs[-1]+'/cysignals' )
+if not EPREFIX:
  slong__mp_limb_t( '/usr/include' )
 else:
- slong__mp_limb_t( p0+'/usr/include' )
- include_dirs.append( p0+'/usr/include' )
+ include_dirs.append( EPREFIX+'/usr/include' )
+ slong__mp_limb_t( include_dirs[-1] )
 
 MulMod_2x( 'C/fmpz/MulMod_2x' )
 
@@ -336,7 +298,8 @@ ext_modules = \
  [
   Extension
    (
-    "flint_sage", ['flint.pyx'], 
+    "flint_sage", ['flint.pyx'],
+    language="c",
     include_dirs=include_dirs,
     libraries=libraries, 
     extra_objects=extra_objects,
