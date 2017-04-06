@@ -12,7 +12,7 @@ GMP_or_MPIR_version_c()
 GMP or MPIR lib called libgmp* or libmpir* should define gmp_version and/or 
  mpir_version
  
-this subroutine extracts this string (using malloc to allocate memory)
+this subroutine extracts the string (using malloc to allocate memory)
 */
  {
   slong s;
