@@ -49,7 +49,7 @@ tail_warning='''
 Bug reports via Github issue are welcome, see README.rst for details
 '''
 
-head_warning='This file is auto-generated from '+
+head_warning='This file is auto-generated from '+\
  'C/nmod_mat/nmod_mat_HNF-debug.cλ'
 head_trigger='ast, it comes this wayλ'
 
