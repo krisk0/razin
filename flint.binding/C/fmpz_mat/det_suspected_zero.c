@@ -88,7 +88,7 @@ dixon_lifting_max_i(mp_limb_t b,mp_limb_t p)
   return r;
  }
 
-__inline__ static mp_limb_t
+__inline__ static void
 det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
  {
   slong i;
@@ -109,7 +109,7 @@ det_divisor_reduce_b(mp_limb_t* tgt, mpz_srcptr src, slong n,mp_limb_t p)
  }
 
 __inline__ static void
-det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t const* pp,nmod_mat_t m, 
+det_divisor_inverse_A(nmod_mat_t r,const p_k_pk_t* const pp,nmod_mat_t m, 
   const fmpz_mat_t a, slong n)
  {
   #if LOUD_nmod_mat_in_det_divisor

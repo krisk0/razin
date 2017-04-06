@@ -23,7 +23,7 @@ tmod_mat_print_hex(char* m,const tmod_mat_t S)
   j=(FLINT_BITS-j+15)>>2;
   j += (!j);
   char fmt[10];
-  sprintf(fmt,"%c%dMX ",'%',j);
+  sprintf(fmt,"%c%dMX ",'%',(int)j);
   if(m)
    gmp_printf("%s\n",m);
   for(i=0;i<S->r;i++)

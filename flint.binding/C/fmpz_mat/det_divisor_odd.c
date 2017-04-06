@@ -469,7 +469,7 @@ _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
     if(k>0)
      mpz_mod_2x(xP, k);
    }
-  _20140914_x_to_d(r, x, n, abs(k), hb_i-1, cb_i
+  _20140914_x_to_d(r, x, n, labs(k), hb_i-1, cb_i
     #if DIXON_INTERNAL_CHECK
      ,a, b
     #endif
