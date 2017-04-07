@@ -460,16 +460,15 @@ _20140914_ratnl_rcnstrction(mpz_t r, const tmod_mat_t y, slong max_i, slong n,
   mp_limb_t hb_i=mpfr_get_uj(hb,MPFR_RNDU);
   mp_limb_t cb_i=mpfr_get_uj(cb,MPFR_RNDU);
   slong k=hb_i+cb_i;
-  if(k==max_i*FLINT_BITS)
-   k=-k;
+  int must_reduce=k<p;
   for(i=0,xP=x; i<n; xP++,i++)
    {
     mpz_init2(xP, p);
     _20140914_y_to_x(xP, i, y, max_i, n);
-    if(k>0)
+    if(must_reduce)
      mpz_mod_2x(xP, k);
    }
-  _20140914_x_to_d(r, x, n, labs(k), hb_i-1, cb_i
+  _20140914_x_to_d(r, x, n, k, hb_i-1, cb_i
     #if DIXON_INTERNAL_CHECK
      ,a, b
     #endif
