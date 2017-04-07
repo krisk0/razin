@@ -1,34 +1,39 @@
 Installation
 ============
 
-With portage package manager: 
+With portage package manager:
  1) recall how to use home-brewed .ebuild script, or read a manual such as http://gentoo-en.vfose.ru/wiki/Overlay#Adding_packages_to_a_Local_Overlay
 
- 2) download a tar.gz'ed code. If your Sage is fresh enough, take RAZIN dated 06 Apr 2017 or later
+ 2) download a tar.gz'ed code. If your Sage is fresh enough, take RAZIN dated 07 Apr 2017 or later.
 
  3) unpack the .tar.gz file
- 
+
  4) put flint.binding/python-sage-flint-<ver>.ebuild into /your/private/overlay/dev-python/python-sage-flint/
- 
+
  5) # ebuild /your/private/overlay/python-sage-flint-<ver>.ebuild manifest
- 
- 6) # emerge dev-python/python-sage-flint 
- or 
+
+ 6) # emerge dev-python/python-sage-flint
+ or
  # emerge =dev-python/python-sage-flint-<ver>
- 
- 7) On error change compiler and/or compiler options. As of 06 Apr 2017, emerge command above will fail with GCC internal error (see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80345 for details), so use Clang:
- 
+
+ 7) On error change compiler and/or compiler options. As of 06 Apr 2017, emerge command above will fail with GCC internal error when using GCC 5.*; GCC 6.3 and clang 3.7.1 are known to work. To use Clang:
+
  # CC=clang emerge dev-python/python-sage-flint
- 
+
+ To use GCC version 6.3:
+
+ # CC=gcc-6.3 emerge dev-python/python-sage-flint
+
+
 Without portage:
  1) download .tar.gz
 
  2) unpack it
- 
+
  3) go to directory flint.binding/
- 
+
  4) insert version information by editing setup.py: replace string RAZIN_version with current date (or date of source archive) such as 20150317 where 2015=year, 03=march and 17=date
- 
+
  5) # python2 ./setup.py install
  , where python2 is the name of the executable that starts Python interpreter required by Sage.
 
@@ -36,13 +41,9 @@ Without portage:
 
  # CC=gcc-super-new CFLAGS='-O2 ... ' python2 ./setup.py install
 
- If you want to try FLINT shared library installed in no-standard location (such as lmonade prefix/local/lib), prepend definition 
+ If you want to try FLINT shared library installed in a no-standard location (such as lmonade prefix/local/lib), prepend definition
 
  # MY_FLINT_IS_HERE=/home/of/lmonade/prefix/local/lib
-
- If you have more than one version of FLINT run-time library, set MY_FLINT_IS_HERE to point to the one you want.
-
- # MY_FLINT_IS_HERE="$lmonade_prefix/usr/lib/flint.so.2.4.5"
 
  On success, two files are installed: flint_sage.so and RAZIN_...egg-info. With portage, documentation (this file) will be installed, too.
 
@@ -59,29 +60,31 @@ FAQ
 ===
 
 Q0. What are the technical requirements of the package?
-A0. FLINT, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x; standard Unix utilities such as grep; standards-complying <stdint.h>. I attempt to write portable code, but since I never compiled RAZIN under OS other than Linux, you may experience problems, if your OS has a different ABI (for instance if long int is not 64 bit). Your bug-report is welcome.
+A0. FLINT, Sage, AMD/Intel 64-bit platform aka amd64 aka x86_64, Python ver.2.x as mandated by Sage; standard Unix utilities such as grep; standards-complying <stdint.h>. I attempt to write portable code, but since I never compiled RAZIN under OS other than Linux, you may experience problems, if your OS has a different ABI (for instance if long int is not 64 bit). Your bug-report is welcome.
 
-    Sage version should be 6.4 for flint_sage since 01 Dec 2014; 6.1.1 for earlier releases of flint_sage. python-sage-flint-20150625-r0 is 
-    known to build without errors for Sage 6.4 and 6.7-r1
+    For Sage version 7.*, take RAZIN dated 20170407 or later.
+
+    For Sage 6.7, take RAZIN 20150625.
+
+    For Sage 6.4, take 20141201.
 
     FLINT versions known to work: 2.4.1, 2.4.3, 2.4.4, 2.4.5.
 
-    GMP versions known to work: 5.0.2, 6.0.0a. Use of MPIR instead of GMP should be possible. Under Linux, use either GMP or MPIR; under Windows, use MPIR.
-    FLINT documentaition requires that you install MPIR in so-called 'gmp compatibility mode' (--enable-gmpcompat).
+    With FLINT 2.5.2, and GCC 6.3, RAZIN 201704* compiles fine (need to test if it works).
     
-    Why amd64? Because I want to reach my goal sooner and sometimes write     un-portable code. Besides I only have one desktop computer used for all purposes. 
+    As I said above, you need GCC 6.3 or clang (and not GCC 5.4) to compile RAZIN. However Parma Polyhedra Library does not compile with GCC 6.3. Which means you mix GCC 5.* and GCC 6.*–compiled code, or use both clang and GCC when building Sage and RAZIN.
 
-    Why Python2? Because I usually use Python2 and doubt that my software will work faster under Python3.
-    
-    flint_sage is about speed, rather than complete support for everything or your convenience.
+    GMP versions known to work: all (if Sage works then RAZIN should work, too). Use of MPIR instead of GMP should be possible. Under Linux, use either GMP or MPIR; under Windows, use MPIR. FLINT documentaition requires that you install MPIR in so-called 'gmp compatibility mode' (--enable-gmpcompat).
+
+    According to flint .ebuild script, FLINT library supports ARM and x86. RAZIN only supports x86_64. And there are no plans to port it to other architectures. Period.
 
 Q1. You write some words incorrectly.
-A1. No, I am using special rules: complex wordz such as un-shit, re-implement or bug-report have hyphen in them.
+A1. No, I am using special rules: complex words such as un-shit, re-implement or bug-report have hyphen in them.
 
 Q2. Why Sage library is required?
 A2. Because mpz_t number need to be converted to/from a Python int, and plain Python does not support this. Therefore some Python wrapper for GMP library like gmpy, pycddlib or Sage required. Besides some fast algorithms doing certain tasks are part of Sage, which makes direct comparison possible.
 
-    It takes less than half day to install Sage into lmonade prefix environment, url: http://www.lmona.de
+    Installing Sage onto existing system can be difficult. I suggest that you build from source custom stage3 image with Gentoo catalyst using sage-on-gentoo and Science ebuilds, then turn it into lxc container/chroot/QEMU image.
 
 Q3. Your binding to fmpq_mat is ugly
      f=flint_sage.fmpq_mat( (Integer(1), flint_sage.fmpz_mat(s)) )
@@ -98,7 +101,7 @@ Q5. Your Python interface is disorganized and inconsistent. Your files are a mes
 A5. As a by-product of my research, fastest in the (open-source?) world algorithms were implemented. I publish results as soon as they start working, which brings in some disorder.
 
 Q6. What is the meaning of phrase "W.Stein double-deteminant algorithm to compute HNF specialized for non-singular matrice and instructed to sometimes use faster low-level routines like FLINT Dixon lifting instead of Sage method is in ..."
-A6. I meant to say that 
+A6. I meant to say that
      1) I re-implemented the Stein algorithm, restricting input matrice to be square non-singular;
      2) in my implemetation, the biggest change is using subroutines that are usually faster, for instance Sage .solve_right() is replaced by FLINT Dixon linear solver fmpq_mat_solve_dixon(), and Sage ._hnf_mod(2*g) by my more-than-twice faster subroutine fmpz_mat_hermite_form(W, g);
      3) since FLINT Dixon solver is not always faster than IML solver, my code SOMETIMES uses IML solver.
@@ -110,15 +113,15 @@ Q8. I successfully compiled flint_sage.so. How do I check which GMP/FLINT header
 A8. Auto-generated file slong.pyx contain full path to FLINT header. 'ldd flint_sage.so' command will tell you which dynamic libraries are linked.
 
 Q9. How do I install your software on <your OS name>?
-A9. Use Unix-like shell and GNU C compiler. Install GMP and FLINT (CC=gcc CFLAGS='-O2 -march=native ...' ./configure); install Sage. Arrange it so gmp.h is in /usr/include/ or in $EPREFIX/usr/include. To install my software, use command CC=gcc CFLAGS=... python2 ./setup.py install (might need EPREFIX, too). If you find it impossible without changing my setup.py, report this as error. Your bug-report should at least include exact whereabouts of your gmp.h, flint.h and so on; gcc version; relevant error message in English.
+A9. Use Unix-like shell and GNU C compiler. Install GMP and FLINT (CC=gcc CFLAGS='-O2 -march=native ...' ./configure); install Sage. Arrange it so gmp.h is in /usr/include/ or in $EPREFIX/usr/include. To install my software, use command CC=gcc CFLAGS=... python2 ./setup.py install (might need EPREFIX, too). If you find it impossible without changing my setup.py, report this as error. Your bug-report should at least include exact whereabouts of your gmp.h, flint.h and so on; GCC version; relevant error message in English.
 
-Qa. Can you make it so that your software compiles under <specific OS> with <specific compiler>? Can you port your software to <specific platform>? Can you write a documentation? a documentation in <specific language>?
-Aa. I can do everything, if you hire me. Of course, I will need to access that OS/platform, directly or via command-line. I will fix a bug in my code for free, if you fill in a good bug-report.
+Qa. Can you make it so that your software compiles under <specific OS> with <specific compiler>? on ARM, on x86? Can you port your software to <specific platform>? Can you write a documentation? a documentation in <specific language>?
+Aa. No, I can't. I have a full-time job which takes much time and brings good money. So you hire someone else.
 
 Qb. Your setup.py is Linux-specific because it looks for .so files.
-Ab. No, only a subroutine that runs in a special case when user supplied directory name but not file name. Set MY_FLINT_IS_HERE to point to exact file location, and you will be fine.
+Ab. No, only a subroutine that runs in a special case when user supplied directory name but not file name. Set MY_FLINT_IS_HERE to full name of your .dll or .dylib.
 
-Qc. Did you benchmark your determinant calculation against NTL ver X.Y.Z? 
-Ac. Unfortunately, I only tested 6.2.1 and older, and found that NTL is considerably slower than FLINT. Looks like NTL came alive and I need to test it.
-    
+Qc. Did you benchmark your determinant calculation against NTL ver X.Y.Z?
+Ac. Unfortunately, I only tested 6.2.1 and older, and found that NTL is considerably slower than FLINT. Looks like NTL is improving and I need to re-test.
+
     If some open-sourced code out-performs my small-det HNF or my determinant calculation (on big and fat matrice), file issue at Github with enough details (such as download link and script that runs benchmarks).
