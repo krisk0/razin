@@ -24,6 +24,9 @@ With portage package manager:
 
  # CC=gcc-6.3 emerge dev-python/python-sage-flint
 
+ To compile with GCC 5.4: first build GCC with official patch https://gist.github.com/krisk0/e8d1c9e6f2c7db7f53de570302a9ebb8 . Under Gentoo, put this patch into /etc/portage/patches/sys-devel/gcc-5.4.0-r3, then run emerge command:
+ 
+ # emerge =sys-devel/gcc-5.4.0-r3
 
 Without portage:
  1) download .tar.gz
@@ -34,10 +37,7 @@ Without portage:
 
  4) insert version information by editing setup.py: replace string RAZIN_version with current date (or date of source archive) such as 20150317 where 2015=year, 03=march and 17=date
 
- 5) # python2 ./setup.py install
- , where python2 is the name of the executable that starts Python interpreter required by Sage.
-
- If you feel like optimizing, prepend compiler options:
+ 5) Prepend compiler name and options to standard setup command:
 
  # CC=gcc-super-new CFLAGS='-O2 ... ' python2 ./setup.py install
 
@@ -125,3 +125,8 @@ Qc. Did you benchmark your determinant calculation against NTL ver X.Y.Z?
 Ac. Unfortunately, I only tested 6.2.1 and older, and found that NTL is considerably slower than FLINT. Looks like NTL is improving and I need to re-test.
 
     If some open-sourced code out-performs my small-det HNF or my determinant calculation (on big and fat matrice), file issue at Github with enough details (such as download link and script that runs benchmarks).
+
+Qd. I am under <THIS LINUX DISTRIBUTION>. Which version of GCC should I use to compile RAZIN?
+Ad. Under Gentoo, use GCC 5.4 with patch dated 11 Apr 2017 as explained above. Under your distribution, I don't know, and don't want to deal with the problem.
+
+    I recommend GCC 5.x because Parma Polyhedra library does not compile under GCC 6.3, which means you better use GCC 5 to compile Sage and RAZIN.
